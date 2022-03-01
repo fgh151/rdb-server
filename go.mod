@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/getsentry/sentry-go v0.12.0
 	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/websocket v1.4.1
 	github.com/joho/godotenv v1.4.0
 	go.mongodb.org/mongo-driver v1.8.3
 )

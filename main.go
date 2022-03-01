@@ -32,14 +32,15 @@ func main() {
 		}
 	}()
 
-	//events.Subscribe("test", "test-listener")
+	//socket.StartSocketServer()
 
 	initServer()
 }
 
 func initServer() {
 	r := mux.NewRouter()
-	r.HandleFunc("/push/{topic}", pushHandler) // each request calls pushHandler
+	r.HandleFunc("/push/{topic}", pushHandler)           // each request calls pushHandler
+	r.HandleFunc("/subscribe/{topic}", subscribeHandler) // each request calls pushHandler
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADDR")+":"+os.Getenv("SERVER_PORT"), nil))

@@ -1,24 +1,27 @@
 package events
 
-import "fmt"
+import (
+	"encoding/json"
+	"github.com/gorilla/websocket"
+)
 
 type subscribers struct {
-	list map[string][]string
+	list map[string][]*websocket.Conn
 }
 
 var Subscribers = subscribers{}
 
 func init() {
-	Subscribers.list = make(map[string][]string)
+	Subscribers.list = make(map[string][]*websocket.Conn)
 }
 
-func Subscribe(topic string, listener string) {
+func Subscribe(topic string, listener *websocket.Conn) {
 
-	var currentList []string
+	var currentList []*websocket.Conn
 
 	if _, ok := Subscribers.list[topic]; ok {
 	} else {
-		currentList = []string{}
+		currentList = []*websocket.Conn{}
 	}
 
 	currentList = append(currentList, listener)
@@ -27,14 +30,10 @@ func Subscribe(topic string, listener string) {
 }
 
 func RegisterNewMessage(topic string, content interface{}) {
-
 	if currentList, ok := Subscribers.list[topic]; ok {
-
 		for _, listener := range currentList {
-
-			fmt.Println(listener)
-			fmt.Println(content)
-
+			msg, _ := json.Marshal(content)
+			listener.WriteMessage(1, msg)
 		}
 	}
 }
