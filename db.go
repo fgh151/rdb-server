@@ -9,11 +9,12 @@ import (
 	"time"
 )
 
-type singleton struct {
-	ctx context.Context
+type database struct {
+	ctx    context.Context
+	client *mongo.Client
 }
 
-func (s singleton) insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error) {
+func (s database) insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error) {
 	client := s.getConnection()
 
 	db := client.Database(dbName)
@@ -34,33 +35,40 @@ type Db interface {
 }
 
 // declare variable
-var instance *singleton = nil
+var instance *database = nil
 
 // Get only one object
 func GetDbInstance() Db {
 	if instance == nil {
-		instance = new(singleton)
+		instance = new(database)
 	}
 	return instance
 }
 
-func (s singleton) getContext() context.Context {
+func (s database) getContext() context.Context {
 	return s.ctx
 }
 
-func (s singleton) getConnection() *mongo.Client {
+func (s database) getConnection() *mongo.Client {
+
+	if s.client != nil {
+		return s.client
+	}
+
 	dbUri := os.Getenv("DB_URI")
 
 	s.ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 
-	client, err := mongo.Connect(s.ctx, options.Client().ApplyURI(dbUri))
+	var err error
+
+	s.client, err = mongo.Connect(s.ctx, options.Client().ApplyURI(dbUri))
 
 	checkErr(err)
 
 	// Ping the primary
-	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
+	if err := s.client.Ping(context.TODO(), readpref.Primary()); err != nil {
 		panic(err)
 	}
 
-	return client
+	return s.client
 }
