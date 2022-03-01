@@ -12,7 +12,9 @@ import (
 
 func main() {
 
-	godotenv.Load()
+	err := godotenv.Load()
+
+	checkErr(err)
 
 	client := GetDbInstance().getConnection()
 
@@ -24,35 +26,13 @@ func main() {
 		}
 	}()
 
-	init()
-
+	initServer()
 }
 
-func init() {
+func initServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("/push/{topic}", pushHandler) // each request calls pushHandler
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADDR")+":"+os.Getenv("SERVER_PORT"), nil))
-}
-
-func pushHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	topic := vars["topic"]
-	_, err := GetDbInstance().insert(os.Getenv("DB_NAME"), topic, r.Body)
-
-	if err == nil {
-		w.WriteHeader(202)
-	} else {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-	}
-
-	fmt.Fprintf(w, "request %q\n", r.Body)
-}
-
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
