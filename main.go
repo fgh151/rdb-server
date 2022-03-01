@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"log"
@@ -26,8 +25,6 @@ func main() {
 	defer sentry.Flush(2 * time.Second)
 
 	client := GetDbInstance().getConnection()
-
-	fmt.Println(client)
 
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
