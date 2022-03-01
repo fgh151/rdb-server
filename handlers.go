@@ -1,6 +1,7 @@
 package main
 
 import (
+	"db-server/events"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -19,10 +20,9 @@ func pushHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err = GetDbInstance().insert(os.Getenv("DB_NAME"), topic, requestPayload)
 
-	fmt.Printf("%+v\n", requestPayload)
-
 	if err == nil {
 		w.WriteHeader(202)
+		events.RegisterNewMessage(topic, requestPayload)
 	} else {
 		w.WriteHeader(500)
 		w.Write([]byte(err.Error()))

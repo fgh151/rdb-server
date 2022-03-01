@@ -32,6 +32,8 @@ func main() {
 		}
 	}()
 
+	//events.Subscribe("test", "test-listener")
+
 	initServer()
 }
 
