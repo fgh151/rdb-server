@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"github.com/gorilla/mux"
+	"db-server/drivers"
+	err2 "db-server/err"
+	"db-server/web"
 	"github.com/joho/godotenv"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 
 func main() {
 	err := godotenv.Load()
-	checkErr(err)
+	err2.CheckErr(err)
 
 	err = sentry.Init(sentry.ClientOptions{
 		Dsn: os.Getenv("SENTRY_DSN"),
@@ -24,7 +25,7 @@ func main() {
 	}
 	defer sentry.Flush(2 * time.Second)
 
-	client := GetDbInstance().getConnection()
+	client := drivers.GetDbInstance().GetConnection()
 
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
@@ -32,16 +33,5 @@ func main() {
 		}
 	}()
 
-	//socket.StartSocketServer()
-
-	initServer()
-}
-
-func initServer() {
-	r := mux.NewRouter()
-	r.HandleFunc("/push/{topic}", pushHandler)           // each request calls pushHandler
-	r.HandleFunc("/subscribe/{topic}", subscribeHandler) // each request calls pushHandler
-
-	http.Handle("/", r)
-	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADDR")+":"+os.Getenv("SERVER_PORT"), nil))
+	web.InitServer()
 }

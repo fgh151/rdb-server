@@ -1,7 +1,8 @@
-package main
+package drivers
 
 import (
 	"context"
+	err2 "db-server/err"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -14,24 +15,24 @@ type database struct {
 	client *mongo.Client
 }
 
-func (s database) insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error) {
-	client := s.getConnection()
+func (s database) Insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error) {
+	client := s.GetConnection()
 
 	db := client.Database(dbName)
 
 	collection := db.Collection(collectionName)
 
-	return collection.InsertOne(GetDbInstance().getContext(), value)
+	return collection.InsertOne(GetDbInstance().GetContext(), value)
 }
 
 // defined type with interface
 type Db interface {
 	// here will be methods
-	getConnection() *mongo.Client
+	GetConnection() *mongo.Client
 
-	getContext() context.Context
+	GetContext() context.Context
 
-	insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error)
+	Insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error)
 }
 
 // declare variable
@@ -45,11 +46,11 @@ func GetDbInstance() Db {
 	return instance
 }
 
-func (s database) getContext() context.Context {
+func (s database) GetContext() context.Context {
 	return s.ctx
 }
 
-func (s database) getConnection() *mongo.Client {
+func (s database) GetConnection() *mongo.Client {
 
 	if s.client != nil {
 		return s.client
@@ -63,7 +64,7 @@ func (s database) getConnection() *mongo.Client {
 
 	s.client, err = mongo.Connect(s.ctx, options.Client().ApplyURI(dbUri))
 
-	checkErr(err)
+	err2.CheckErr(err)
 
 	// Ping the primary
 	if err := s.client.Ping(context.TODO(), readpref.Primary()); err != nil {

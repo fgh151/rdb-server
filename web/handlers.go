@@ -1,6 +1,8 @@
-package main
+package web
 
 import (
+	"db-server/drivers"
+	err2 "db-server/err"
 	"db-server/events"
 	"encoding/json"
 	"fmt"
@@ -11,16 +13,16 @@ import (
 	"os"
 )
 
-func pushHandler(w http.ResponseWriter, r *http.Request) {
+func PushHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	topic := vars["topic"]
 
 	var requestPayload map[string]interface{}
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestPayload)
-	checkErr(err)
+	err2.CheckErr(err)
 
-	_, err = GetDbInstance().insert(os.Getenv("DB_NAME"), topic, requestPayload)
+	_, err = drivers.GetDbInstance().Insert(os.Getenv("DB_NAME"), topic, requestPayload)
 
 	if err == nil {
 		w.WriteHeader(202)
@@ -35,7 +37,7 @@ func pushHandler(w http.ResponseWriter, r *http.Request) {
 
 var upgrader = websocket.Upgrader{} // use default options
 
-func subscribeHandler(w http.ResponseWriter, r *http.Request) {
+func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	topic := vars["topic"]
 
