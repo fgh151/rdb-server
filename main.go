@@ -25,7 +25,7 @@ func main() {
 	}
 	defer sentry.Flush(2 * time.Second)
 
-	client := drivers.GetDbInstance().GetConnection()
+	client, _ := drivers.GetDbInstance().GetConnection()
 
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {

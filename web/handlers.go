@@ -13,16 +13,25 @@ import (
 	"os"
 )
 
-func PushHandler(w http.ResponseWriter, r *http.Request) {
+func getTopic(r *http.Request) string {
 	vars := mux.Vars(r)
-	topic := vars["topic"]
+	return vars["topic"]
+}
 
+func getPayload(r *http.Request) interface{} {
 	var requestPayload map[string]interface{}
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestPayload)
 	err2.CheckErr(err)
 
-	_, err = drivers.GetDbInstance().Insert(os.Getenv("DB_NAME"), topic, requestPayload)
+	return requestPayload
+}
+
+func PushHandler(w http.ResponseWriter, r *http.Request) {
+	topic := getTopic(r)
+	requestPayload := getPayload(r)
+
+	_, err := drivers.GetDbInstance().Insert(os.Getenv("DB_NAME"), topic, requestPayload)
 
 	if err == nil {
 		w.WriteHeader(202)
@@ -38,12 +47,9 @@ func PushHandler(w http.ResponseWriter, r *http.Request) {
 var upgrader = websocket.Upgrader{} // use default options
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	topic := vars["topic"]
-
 	c, err := upgrader.Upgrade(w, r, nil)
 
-	events.Subscribe(topic, c)
+	events.Subscribe(getTopic(r), c)
 
 	c.WriteMessage(1, []byte("test own message"))
 
@@ -64,5 +70,21 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("write:", err)
 			break
 		}
+	}
+}
+
+func FindHandler(w http.ResponseWriter, r *http.Request) {
+	topic := getTopic(r)
+	requestPayload := getPayload(r)
+
+	res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload)
+
+	if err == nil {
+		resp, _ := json.Marshal(res)
+		w.WriteHeader(202)
+		w.Write(resp)
+	} else {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
 	}
 }
