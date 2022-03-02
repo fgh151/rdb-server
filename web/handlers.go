@@ -5,7 +5,6 @@ import (
 	err2 "db-server/err"
 	"db-server/events"
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"log"
@@ -33,15 +32,12 @@ func PushHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := drivers.GetDbInstance().Insert(os.Getenv("DB_NAME"), topic, requestPayload)
 
-	if err == nil {
-		w.WriteHeader(202)
-		events.RegisterNewMessage(topic, requestPayload)
-	} else {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-	}
+	var i interface{}
+	sendResponse(w, 202, i, err)
 
-	fmt.Fprintf(w, "request %q\n", r.Body)
+	if err == nil {
+		events.RegisterNewMessage(topic, requestPayload)
+	}
 }
 
 var upgrader = websocket.Upgrader{} // use default options
@@ -79,14 +75,7 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 
 	res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload)
 
-	if err == nil {
-		resp, _ := json.Marshal(res)
-		w.WriteHeader(202)
-		w.Write(resp)
-	} else {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-	}
+	sendResponse(w, 200, res, err)
 }
 
 func ListHandler(w http.ResponseWriter, r *http.Request) {
@@ -94,14 +83,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 	res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic)
 
-	if err == nil {
-		resp, _ := json.Marshal(res)
-		w.WriteHeader(202)
-		w.Write(resp)
-	} else {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-	}
+	sendResponse(w, 200, res, err)
 }
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
@@ -113,10 +95,16 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	res, err := drivers.GetDbInstance().Update(os.Getenv("DB_NAME"), topic, id, requestPayload)
 
+	sendResponse(w, 202, res, err)
+}
+
+func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}, err error) {
 	if err == nil {
-		resp, _ := json.Marshal(res)
-		w.WriteHeader(202)
-		w.Write(resp)
+		w.WriteHeader(statusCode)
+		if payload != nil {
+			resp, _ := json.Marshal(payload)
+			w.Write(resp)
+		}
 	} else {
 		w.WriteHeader(500)
 		w.Write([]byte(err.Error()))
