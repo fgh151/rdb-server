@@ -88,3 +88,18 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 	}
 }
+
+func ListHandler(w http.ResponseWriter, r *http.Request) {
+	topic := getTopic(r)
+
+	res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic)
+
+	if err == nil {
+		resp, _ := json.Marshal(res)
+		w.WriteHeader(202)
+		w.Write(resp)
+	} else {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+	}
+}

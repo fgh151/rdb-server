@@ -51,6 +51,33 @@ func (s database) Find(dbName string, collectionName string, filter interface{})
 	return res, err
 }
 
+func (s database) List(dbName string, collectionName string) ([]*bson.D, error) {
+	client, _ := s.GetConnection()
+
+	db := client.Database(dbName)
+
+	collection := db.Collection(collectionName)
+
+	findOptions := options.Find()
+
+	var ctx = GetDbInstance().GetContext()
+	var res []*bson.D
+
+	cur, err := collection.Find(ctx, bson.D{{}}, findOptions)
+	defer cur.Close(ctx)
+
+	for cur.Next(ctx) {
+
+		var d bson.D
+		err := cur.Decode(&d)
+		err2.CheckErr(err)
+
+		res = append(res, &d)
+	}
+
+	return res, err
+}
+
 // defined type with interface
 type Db interface {
 	// here will be methods
@@ -61,6 +88,8 @@ type Db interface {
 	Insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error)
 
 	Find(dbName string, collectionName string, filter interface{}) ([]*bson.D, error)
+
+	List(dbName string, collectionName string) ([]*bson.D, error)
 }
 
 // declare variable
