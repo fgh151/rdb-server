@@ -18,7 +18,7 @@ func getTopic(r *http.Request) string {
 	return vars["topic"]
 }
 
-func getPayload(r *http.Request) interface{} {
+func getPayload(r *http.Request) map[string]interface{} {
 	var requestPayload map[string]interface{}
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestPayload)
@@ -93,6 +93,25 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 	topic := getTopic(r)
 
 	res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic)
+
+	if err == nil {
+		resp, _ := json.Marshal(res)
+		w.WriteHeader(202)
+		w.Write(resp)
+	} else {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+	}
+}
+
+func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+	topic := getTopic(r)
+	requestPayload := getPayload(r)
+
+	id := requestPayload["id"]
+	delete(requestPayload, "id")
+
+	res, err := drivers.GetDbInstance().Update(os.Getenv("DB_NAME"), topic, id, requestPayload)
 
 	if err == nil {
 		resp, _ := json.Marshal(res)

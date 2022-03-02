@@ -16,6 +16,16 @@ type database struct {
 	client *mongo.Client
 }
 
+func (s database) Update(dbName string, collectionName string, id interface{}, value interface{}) (*mongo.UpdateResult, error) {
+	client, _ := s.GetConnection()
+
+	db := client.Database(dbName)
+
+	collection := db.Collection(collectionName)
+
+	return collection.UpdateByID(GetDbInstance().GetContext(), id, value)
+}
+
 func (s database) Insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error) {
 	client, _ := s.GetConnection()
 
@@ -90,13 +100,15 @@ type Db interface {
 	Find(dbName string, collectionName string, filter interface{}) ([]*bson.D, error)
 
 	List(dbName string, collectionName string) ([]*bson.D, error)
+
+	Update(dbName string, collectionName string, value interface{}) (*mongo.UpdateResult, error)
 }
 
 // declare variable
 var instance *database = nil
 
 // Get only one object
-func GetDbInstance() Db {
+func GetDbInstance() *database {
 	if instance == nil {
 		instance = new(database)
 	}

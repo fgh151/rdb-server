@@ -10,6 +10,7 @@ import (
 func InitServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("/push/{topic}", PushHandler).Methods("POST")          // each request calls PushHandler
+	r.HandleFunc("/push/{topic}", UpdateHandler).Methods("PATCH")       // each request calls PushHandler
 	r.HandleFunc("/find/{topic}", FindHandler).Methods("POST")          // each request calls PushHandler
 	r.HandleFunc("/list/{topic}", ListHandler).Methods("GET")           // each request calls PushHandler
 	r.HandleFunc("/subscribe/{topic}", SubscribeHandler).Methods("GET") // each request calls PushHandler
