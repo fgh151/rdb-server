@@ -3,52 +3,66 @@ package events
 import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
+	"sync"
 )
 
 type subscribers struct {
 	list map[string][]*websocket.Conn
 }
 
-var Subscribers = subscribers{}
-
-func init() {
-	Subscribers.list = make(map[string][]*websocket.Conn)
+type EventHandler struct {
+	subscribers subscribers
+	sync.RWMutex
 }
 
-func Subscribe(topic string, listener *websocket.Conn) {
+func (e *EventHandler) Subscribe(topic string, listener *websocket.Conn) {
 
 	var currentList []*websocket.Conn
 
-	if _, ok := Subscribers.list[topic]; ok {
+	if _, ok := e.subscribers.list[topic]; ok {
 	} else {
 		currentList = []*websocket.Conn{}
 	}
 
+	e.Lock()
+	defer e.Unlock()
+
 	currentList = append(currentList, listener)
 
-	Subscribers.list[topic] = currentList
+	e.subscribers.list[topic] = currentList
 }
 
-func Unsubscribe(topic string, listener *websocket.Conn) {
-	if _, ok := Subscribers.list[topic]; ok {
-		for i, val := range Subscribers.list[topic] {
+func (e *EventHandler) Unsubscribe(topic string, listener *websocket.Conn) {
+	if _, ok := e.subscribers.list[topic]; ok {
+		for i, val := range e.subscribers.list[topic] {
 			if val == listener {
-				remove(Subscribers.list[topic], i)
+				e.Lock()
+				e.remove(e.subscribers.list[topic], i)
+				e.Unlock()
 			}
 		}
 	}
 }
 
-func remove(s []*websocket.Conn, i int) []*websocket.Conn {
+func (e *EventHandler) remove(s []*websocket.Conn, i int) []*websocket.Conn {
 	s[i] = s[len(s)-1]
 	return s[:len(s)-1]
 }
 
-func RegisterNewMessage(topic string, content interface{}) {
-	if currentList, ok := Subscribers.list[topic]; ok {
+func (e *EventHandler) RegisterNewMessage(topic string, content interface{}) {
+	if currentList, ok := e.subscribers.list[topic]; ok {
 		for _, listener := range currentList {
 			msg, _ := json.Marshal(content)
 			listener.WriteMessage(1, msg)
 		}
 	}
+}
+
+var instance *EventHandler = nil
+
+func GetInstance() *EventHandler {
+	if instance == nil {
+		instance = new(EventHandler)
+	}
+	return instance
 }

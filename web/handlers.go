@@ -61,7 +61,7 @@ func PushHandler(w http.ResponseWriter, r *http.Request) {
 		sendResponse(w, 202, i, err)
 
 		if err == nil {
-			events.RegisterNewMessage(topic, requestPayload)
+			events.GetInstance().RegisterNewMessage(topic, requestPayload)
 		}
 	}
 }
@@ -80,8 +80,8 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		c, err := upgrader.Upgrade(w, r, nil)
 
-		events.Subscribe(topic, c)
-		defer events.Unsubscribe(topic, c)
+		events.GetInstance().Subscribe(topic, c)
+		defer events.GetInstance().Unsubscribe(topic, c)
 
 		c.WriteMessage(1, []byte("test own message"))
 
