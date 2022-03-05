@@ -4,6 +4,7 @@ import (
 	"db-server/drivers"
 	err2 "db-server/err"
 	"db-server/events"
+	"db-server/meta"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -26,45 +27,80 @@ func getPayload(r *http.Request) map[string]interface{} {
 	return requestPayload
 }
 
-func PushHandler(w http.ResponseWriter, r *http.Request) {
+func checkAccess(w http.ResponseWriter, r *http.Request) bool {
 	topic := getTopic(r)
-	requestPayload := getPayload(r)
+	key := meta.MetaDb.GetKey(topic)
+	rkey := r.Header.Get("db-key")
 
-	_, err := drivers.GetDbInstance().Insert(os.Getenv("DB_NAME"), topic, requestPayload)
+	if !validateKey(key, rkey) {
+		send403Error(w)
+		return false
+	}
 
-	var i interface{}
-	sendResponse(w, 202, i, err)
+	return true
+}
 
-	if err == nil {
-		events.RegisterNewMessage(topic, requestPayload)
+func validateKey(k1 string, k2 string) bool {
+	return k1 == k2
+}
+
+func send403Error(w http.ResponseWriter) {
+	payload := map[string]string{"code": "not acceptable"}
+	sendResponse(w, 403, payload, nil)
+}
+
+func PushHandler(w http.ResponseWriter, r *http.Request) {
+
+	topic := getTopic(r)
+
+	if checkAccess(w, r) {
+		requestPayload := getPayload(r)
+		_, err := drivers.GetDbInstance().Insert(os.Getenv("DB_NAME"), topic, requestPayload)
+
+		var i interface{}
+		sendResponse(w, 202, i, err)
+
+		if err == nil {
+			events.RegisterNewMessage(topic, requestPayload)
+		}
 	}
 }
 
 var upgrader = websocket.Upgrader{} // use default options
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
 
-	events.Subscribe(getTopic(r), c)
+	topic := getTopic(r)
 
-	c.WriteMessage(1, []byte("test own message"))
+	vars := mux.Vars(r)
+	rkey := vars["key"]
 
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
+	if !validateKey(meta.MetaDb.GetKey(topic), rkey) {
+		send403Error(w)
+	} else {
+		c, err := upgrader.Upgrade(w, r, nil)
+
+		events.Subscribe(topic, c)
+
+		c.WriteMessage(1, []byte("test own message"))
+
 		if err != nil {
-			log.Println("read:", err)
-			break
+			log.Print("upgrade:", err)
+			return
 		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
+		defer c.Close()
+		for {
+			mt, message, err := c.ReadMessage()
+			if err != nil {
+				log.Println("read:", err)
+				break
+			}
+			log.Printf("recv: %s", message)
+			err = c.WriteMessage(mt, message)
+			if err != nil {
+				log.Println("write:", err)
+				break
+			}
 		}
 	}
 }
@@ -73,29 +109,39 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 	topic := getTopic(r)
 	requestPayload := getPayload(r)
 
-	res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload)
+	if checkAccess(w, r) {
 
-	sendResponse(w, 200, res, err)
+		res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload)
+
+		sendResponse(w, 200, res, err)
+	}
 }
 
 func ListHandler(w http.ResponseWriter, r *http.Request) {
 	topic := getTopic(r)
 
-	res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic)
+	if checkAccess(w, r) {
 
-	sendResponse(w, 200, res, err)
+		res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic)
+
+		sendResponse(w, 200, res, err)
+	}
 }
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	topic := getTopic(r)
-	requestPayload := getPayload(r)
 
-	id := requestPayload["id"]
-	delete(requestPayload, "id")
+	if checkAccess(w, r) {
 
-	res, err := drivers.GetDbInstance().Update(os.Getenv("DB_NAME"), topic, id, requestPayload)
+		requestPayload := getPayload(r)
 
-	sendResponse(w, 202, res, err)
+		id := requestPayload["id"]
+		delete(requestPayload, "id")
+
+		res, err := drivers.GetDbInstance().Update(os.Getenv("DB_NAME"), topic, id, requestPayload)
+
+		sendResponse(w, 202, res, err)
+	}
 }
 
 func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}, err error) {
