@@ -81,6 +81,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 		c, err := upgrader.Upgrade(w, r, nil)
 
 		events.Subscribe(topic, c)
+		defer events.Unsubscribe(topic, c)
 
 		c.WriteMessage(1, []byte("test own message"))
 

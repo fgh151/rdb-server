@@ -29,6 +29,21 @@ func Subscribe(topic string, listener *websocket.Conn) {
 	Subscribers.list[topic] = currentList
 }
 
+func Unsubscribe(topic string, listener *websocket.Conn) {
+	if _, ok := Subscribers.list[topic]; ok {
+		for i, val := range Subscribers.list[topic] {
+			if val == listener {
+				remove(Subscribers.list[topic], i)
+			}
+		}
+	}
+}
+
+func remove(s []*websocket.Conn, i int) []*websocket.Conn {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
+}
+
 func RegisterNewMessage(topic string, content interface{}) {
 	if currentList, ok := Subscribers.list[topic]; ok {
 		for _, listener := range currentList {
