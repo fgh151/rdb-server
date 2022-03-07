@@ -1,0 +1,34 @@
+### Отправка сообщения в топик
+POST localhost:9090/push/test
+Content-Type: application/json
+db-key: 12356
+
+{
+  "rr": 999,
+  "value": "content"
+}
+
+### Изменение сообщения в топике
+PATCH localhost:9090/push/test
+Content-Type: application/json
+db-key: 12356
+
+{
+  "id": "1113115156",
+  "rr": 999,
+  "value": "content"
+}
+
+### Поиск в топике
+POST localhost:9090/find/test
+Content-Type: application/json
+db-key: 12356
+
+{
+  "id": "1113115156"
+}
+
+### Список всего в топике
+GET localhost:9090/list/test
+Content-Type: application/json
+db-key: 12356
