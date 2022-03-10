@@ -32,3 +32,6 @@ db-key: 12356
 GET localhost:9090/list/test
 Content-Type: application/json
 db-key: 12356
+
+###
+GET localhost:9090/admin/topics

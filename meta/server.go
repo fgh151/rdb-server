@@ -6,6 +6,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
+	"time"
 )
 
 type Connection struct {
@@ -13,9 +14,14 @@ type Connection struct {
 }
 
 type Project struct {
-	gorm.Model
-	Topic string
-	Key   string
+	//gorm.Model
+	//Id    int    `json:"id"`
+	Id        uint           `gorm:"primarykey" json:"id"`
+	Topic     string         `json:"topic"`
+	Key       string         `json:"key"`
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
 func (c Connection) connect() (*gorm.DB, error) {
@@ -53,6 +59,27 @@ func (c Connection) GetKey(topic string) string {
 	conn.First(&project, "topic = ?", topic)
 
 	return project.Key
+}
+
+func (c Connection) GetById(id string) Project {
+	var project Project
+
+	conn := c.getConnection()
+
+	conn.First(&project, "id = ?", id)
+
+	return project
+}
+
+func (c Connection) List() []Project {
+
+	var projects []Project
+
+	conn := c.getConnection()
+
+	conn.Find(&projects)
+
+	return projects
 }
 
 var MetaDb = Connection{}
