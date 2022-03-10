@@ -1,0 +1,67 @@
+consumes:
+- application/json
+info:
+  title: Db Server
+  version: 0.1.0
+paths:
+  /list/{topic}:
+    get:
+      parameters:
+        - in: path
+          name: topic
+          type: string
+          required: true
+          description: Topic name
+      responses:
+        200:
+          description: list the topic records
+          schema:
+            type: array
+  /find/{topic}:
+    post:
+      parameters:
+        - in: path
+          name: topic
+          type: string
+          required: true
+          description: Topic name
+      responses:
+        200:
+          description: list the topic records
+          schema:
+            type: array
+  /push/{topic}:
+    post:
+      parameters:
+        - in: path
+          name: topic
+          type: string
+          required: true
+          description: Topic name
+      responses:
+        200:
+          description: push message to topic
+    patch:
+      parameters:
+        - in: path
+          name: topic
+          type: string
+          required: true
+          description: Topic name
+        - in: query
+          name: id
+          type: string
+          required: true
+          description: Message id to update
+      responses:
+        200:
+          description: update message in topic
+
+produces:
+- application/json
+schemes:
+- http
+
+host:
+  localhost:8080
+swagger: "2.0"
