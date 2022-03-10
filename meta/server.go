@@ -36,7 +36,7 @@ func (c Connection) connect() (*gorm.DB, error) {
 	panic("failed to connect database")
 }
 
-func (c Connection) getConnection() *gorm.DB {
+func (c Connection) GetConnection() *gorm.DB {
 
 	if c.db == nil {
 
@@ -54,7 +54,7 @@ func (c Connection) getConnection() *gorm.DB {
 func (c Connection) GetKey(topic string) string {
 	var project Project
 
-	conn := c.getConnection()
+	conn := c.GetConnection()
 
 	conn.First(&project, "topic = ?", topic)
 
@@ -64,18 +64,24 @@ func (c Connection) GetKey(topic string) string {
 func (c Connection) GetById(id string) Project {
 	var project Project
 
-	conn := c.getConnection()
+	conn := c.GetConnection()
 
 	conn.First(&project, "id = ?", id)
 
 	return project
 }
 
+func (c Connection) DeleteById(id string) {
+	var project Project
+	conn := c.GetConnection()
+	conn.Where("id = ?", id).Delete(&project)
+}
+
 func (c Connection) List() []Project {
 
 	var projects []Project
 
-	conn := c.getConnection()
+	conn := c.GetConnection()
 
 	conn.Find(&projects)
 

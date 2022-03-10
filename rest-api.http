@@ -35,3 +35,7 @@ db-key: 12356
 
 ###
 GET localhost:9090/admin/topics
+
+
+###
+OPTIONS localhost:9090/admin/topics/2
