@@ -63,6 +63,7 @@ var instance *EventHandler = nil
 func GetInstance() *EventHandler {
 	if instance == nil {
 		instance = new(EventHandler)
+		instance.subscribers.list = make(map[string][]*websocket.Conn)
 	}
 	return instance
 }

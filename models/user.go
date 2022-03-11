@@ -16,8 +16,6 @@ type User struct {
 	CreatedAt    time.Time      `json:"-"`
 	UpdatedAt    time.Time      `json:"-"`
 	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
-
-	Model
 }
 
 func (p User) List() []interface{} {
@@ -50,6 +48,10 @@ func (p User) Delete(id string) {
 	conn.Where("id = ?", id).Delete(&p)
 }
 
+func (p User) ValidatePassword(password string) bool {
+	return p.PasswordHash == security.HashPassword(password)
+}
+
 type CreateUserForm struct {
 	Email    string `json:"Email"`
 	Password string `json:"Password"`
@@ -77,7 +79,7 @@ func (f LoginForm) Login() (User, error) {
 
 	meta.MetaDb.GetConnection().First(&user, "email = ?", f.Email)
 
-	if !security.ValidatePassword(f.Password, user) {
+	if !user.ValidatePassword(f.Password) {
 		return user, errors.New("invalid login or password")
 	}
 

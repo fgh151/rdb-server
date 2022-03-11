@@ -2,14 +2,9 @@ package security
 
 import (
 	"crypto/md5"
-	"db-server/models"
 	"fmt"
 	"math/rand"
 )
-
-func ValidatePassword(password string, user models.User) bool {
-	return user.PasswordHash == HashPassword(password)
-}
 
 func HashPassword(password string) string {
 

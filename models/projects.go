@@ -13,8 +13,6 @@ type Project struct {
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
-
-	Model
 }
 
 func (p Project) List() []interface{} {

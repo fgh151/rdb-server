@@ -1,7 +1,6 @@
 package meta
 
 import (
-	"db-server/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -28,14 +27,7 @@ func (c Connection) connect() (*gorm.DB, error) {
 func (c Connection) GetConnection() *gorm.DB {
 
 	if c.db == nil {
-
 		c.db, _ = c.connect()
-
-		err := c.db.AutoMigrate(&models.Project{})
-		err = c.db.AutoMigrate(&models.User{})
-		if err != nil {
-			panic("failed to migrate meta database")
-		}
 	}
 
 	return c.db
