@@ -2,6 +2,8 @@ package web
 
 import (
 	"db-server/meta"
+	"db-server/models"
+	"db-server/security"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -38,14 +40,9 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type createUserForm struct {
-	Email    string `json:"Email"`
-	Password string `json:"Password"`
-}
-
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 
-	var t createUserForm
+	var t models.CreateUserForm
 
 	err := json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
@@ -53,10 +50,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var u = meta.User{
+	var u = models.User{
 		Email:        t.Email,
-		PasswordHash: meta.HashPassword(t.Password),
-		Token:        meta.GenerateRandomString(15),
+		PasswordHash: security.HashPassword(t.Password),
+		Token:        security.GenerateRandomString(15),
 	}
 
 	meta.MetaDb.GetConnection().Create(&u)
@@ -102,7 +99,7 @@ func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 
 func CreateTopic(w http.ResponseWriter, r *http.Request) {
 
-	var t meta.Project
+	var t models.Project
 
 	err := json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
@@ -117,24 +114,19 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
-type LoginForm struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 func Auth(w http.ResponseWriter, r *http.Request) {
-	var l LoginForm
+	var l models.LoginForm
 	err := json.NewDecoder(r.Body).Decode(&l)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	var user meta.User
+	var user models.User
 
 	meta.MetaDb.GetConnection().First(&user, "email = ?", l.Email)
 
-	if user.ValidatePassword(l.Password) {
+	if security.ValidatePassword(l.Password, user) {
 		resp, _ := json.Marshal(user)
 		w.WriteHeader(200)
 		w.Write(resp)
