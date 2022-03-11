@@ -1,6 +1,7 @@
 package web
 
 import (
+	"db-server/auth"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
@@ -16,11 +17,14 @@ func InitServer() {
 	r.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet)                 // each request calls PushHandler
 	r.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet) // each request calls PushHandler
 
-	r.HandleFunc("/admin/topics", ListTopics).Methods(http.MethodGet)                       // each request calls PushHandler
-	r.HandleFunc("/admin/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
-	r.HandleFunc("/admin/topics/{id}", TopicItem).Methods(http.MethodGet)                   // each request calls PushHandler
-	r.HandleFunc("/admin/topics/{id}", DeleteTopic).Methods(http.MethodDelete)              // each request calls PushHandler
-	//r.Use(mux.CORSMethodMiddleware(r))
+	r.HandleFunc("/admin/auth", Auth).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+
+	secure := r.PathPrefix("/admin").Subrouter()
+	secure.Use(auth.BearerVerify)
+	secure.HandleFunc("/topics", ListTopics).Methods(http.MethodGet)                       // each request calls PushHandler
+	secure.HandleFunc("/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	secure.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet)                   // each request calls PushHandler
+	secure.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete)              // each request calls PushHandler
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Access-Control-Allow-Origin"})
 	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})

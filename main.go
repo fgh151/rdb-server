@@ -4,6 +4,7 @@ import (
 	"context"
 	"db-server/drivers"
 	err2 "db-server/err"
+	"db-server/meta"
 	"db-server/web"
 	"github.com/joho/godotenv"
 	"log"
@@ -26,6 +27,7 @@ func main() {
 	defer sentry.Flush(2 * time.Second)
 
 	client, _ := drivers.GetDbInstance().GetConnection()
+	meta.MetaDb.GetConnection()
 
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {

@@ -33,9 +33,11 @@ GET localhost:9090/list/test
 Content-Type: application/json
 db-key: 12356
 
-###
-GET localhost:9090/admin/topics
+### Поиск в топике
+POST localhost:9090/admin/auth
+Content-Type: application/json
 
-
-###
-OPTIONS localhost:9090/admin/topics/2
+{
+  "email": "test@example.com",
+  "password": "test"
+}

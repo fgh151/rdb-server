@@ -56,3 +56,29 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	w.Write(resp)
 }
+
+type LoginForm struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func Auth(w http.ResponseWriter, r *http.Request) {
+	var l LoginForm
+	err := json.NewDecoder(r.Body).Decode(&l)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	var user meta.User
+
+	meta.MetaDb.GetConnection().First(&user, "email = ?", l.Email)
+
+	if user.ValidatePassword(l.Password) {
+		resp, _ := json.Marshal(user)
+		w.WriteHeader(200)
+		w.Write(resp)
+	}
+
+	return
+}
