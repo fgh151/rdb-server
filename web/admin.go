@@ -3,7 +3,6 @@ package web
 import (
 	"db-server/meta"
 	"db-server/models"
-	"db-server/security"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -105,15 +104,16 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user models.User
+	user, err := l.Login()
 
-	meta.MetaDb.GetConnection().First(&user, "email = ?", l.Email)
-
-	if security.ValidatePassword(l.Password, user) {
-		resp, _ := json.Marshal(user)
-		w.WriteHeader(200)
-		w.Write(resp)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
 	}
+
+	resp, _ := json.Marshal(user)
+	w.WriteHeader(200)
+	w.Write(resp)
 
 	return
 }

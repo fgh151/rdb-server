@@ -3,6 +3,7 @@ package models
 import (
 	"db-server/meta"
 	"db-server/security"
+	"errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -69,4 +70,16 @@ func (f CreateUserForm) Save() User {
 type LoginForm struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+func (f LoginForm) Login() (User, error) {
+	var user User
+
+	meta.MetaDb.GetConnection().First(&user, "email = ?", f.Email)
+
+	if !security.ValidatePassword(f.Password, user) {
+		return user, errors.New("invalid login or password")
+	}
+
+	return user, nil
 }
