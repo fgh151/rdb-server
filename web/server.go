@@ -26,6 +26,11 @@ func InitServer() {
 	secure.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet)                   // each request calls PushHandler
 	secure.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete)              // each request calls PushHandler
 
+	secure.HandleFunc("/users", ListUsers).Methods(http.MethodGet)                       // each request calls PushHandler
+	secure.HandleFunc("/users", CreateUser).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	secure.HandleFunc("/users/{id}", UserItem).Methods(http.MethodGet)                   // each request calls PushHandler
+	secure.HandleFunc("/topics/{id}", DeleteUser).Methods(http.MethodDelete)             // each request calls PushHandler
+
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Access-Control-Allow-Origin"})
 	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
 	methodsOk := handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPatch, http.MethodOptions, http.MethodDelete})

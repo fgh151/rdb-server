@@ -7,6 +7,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -37,6 +38,21 @@ type User struct {
 func (u User) ValidatePassword(password string) bool {
 	hash := fmt.Sprintf("%x", md5.Sum([]byte(password)))
 	return u.PasswordHash == hash
+}
+
+func HashPassword(password string) string {
+
+	return fmt.Sprintf("%x", md5.Sum([]byte(password)))
+}
+
+func GenerateRandomString(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
 
 func (c Connection) connect() (*gorm.DB, error) {
@@ -77,7 +93,7 @@ func (c Connection) GetKey(topic string) string {
 	return project.Key
 }
 
-func (c Connection) GetById(id string) Project {
+func (c Connection) GetProjectById(id string) Project {
 	var project Project
 
 	conn := c.GetConnection()
@@ -87,13 +103,29 @@ func (c Connection) GetById(id string) Project {
 	return project
 }
 
-func (c Connection) DeleteById(id string) {
+func (c Connection) GetUserById(id string) User {
+	var user User
+
+	conn := c.GetConnection()
+
+	conn.First(&user, "id = ?", id)
+
+	return user
+}
+
+func (c Connection) DeleteProjectById(id string) {
 	var project Project
 	conn := c.GetConnection()
 	conn.Where("id = ?", id).Delete(&project)
 }
 
-func (c Connection) List() []Project {
+func (c Connection) DeleteUserById(id string) {
+	var user User
+	conn := c.GetConnection()
+	conn.Where("id = ?", id).Delete(&user)
+}
+
+func (c Connection) ListProjects() []Project {
 
 	var projects []Project
 
@@ -102,6 +134,17 @@ func (c Connection) List() []Project {
 	conn.Find(&projects)
 
 	return projects
+}
+
+func (c Connection) ListUsers() []User {
+
+	var users []User
+
+	conn := c.GetConnection()
+
+	conn.Find(&users)
+
+	return users
 }
 
 var MetaDb = Connection{}
