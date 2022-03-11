@@ -4,7 +4,7 @@ import (
 	"db-server/drivers"
 	err2 "db-server/err"
 	"db-server/events"
-	"db-server/meta"
+	"db-server/models"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -29,7 +29,7 @@ func getPayload(r *http.Request) map[string]interface{} {
 
 func checkAccess(w http.ResponseWriter, r *http.Request) bool {
 	topic := getTopic(r)
-	key := meta.MetaDb.GetKey(topic)
+	key := models.Project{}.GetKey(topic)
 	rkey := r.Header.Get("db-key")
 
 	if !validateKey(key, rkey) {
@@ -75,7 +75,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	rkey := vars["key"]
 
-	if !validateKey(meta.MetaDb.GetKey(topic), rkey) {
+	if !validateKey(models.Project{}.GetKey(topic), rkey) {
 		send403Error(w)
 	} else {
 		c, err := upgrader.Upgrade(w, r, nil)
