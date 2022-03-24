@@ -36,6 +36,25 @@ func TopicItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.Project{}, w, r)
 }
 
+func UpdateTopic(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	var t = models.Project{}.GetById(vars["id"]).(models.Project)
+
+	err := json.NewDecoder(r.Body).Decode(&t)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	meta.MetaDb.GetConnection().Save(&t)
+
+	resp, _ := json.Marshal(t)
+	w.WriteHeader(200)
+	w.Write(resp)
+}
+
 func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	resp, _ := json.Marshal(m.GetById(vars["id"]))
@@ -45,6 +64,24 @@ func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.User{}, w, r)
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	var t = models.User{}.GetById(vars["id"]).(models.User)
+
+	err := json.NewDecoder(r.Body).Decode(&t)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	meta.MetaDb.GetConnection().Save(&t)
+
+	resp, _ := json.Marshal(t)
+	w.WriteHeader(200)
+	w.Write(resp)
 }
 
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {

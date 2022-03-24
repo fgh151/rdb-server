@@ -49,15 +49,17 @@ func InitServer() {
 	secure.HandleFunc("/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
 	secure.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
 	secure.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	secure.HandleFunc("/topics/{id}", UpdateTopic).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
 	secure.HandleFunc("/users", ListUsers).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
 	secure.HandleFunc("/users", CreateUser).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler
 	secure.HandleFunc("/users/{id}", UserItem).Methods(http.MethodGet, http.MethodOptions)       // each request calls PushHandler
 	secure.HandleFunc("/topics/{id}", DeleteUser).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	secure.HandleFunc("/topics/{id}", UpdateUser).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
 	headersOk := handlers.AllowedHeaders(allowedHeaders)
 	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPatch, http.MethodOptions, http.MethodDelete})
+	methodsOk := handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodOptions, http.MethodDelete})
 
 	s := handlers.ExposedHeaders([]string{"X-Total-Count"})
 
