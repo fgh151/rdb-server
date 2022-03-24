@@ -10,29 +10,53 @@ import (
 )
 
 func InitServer() {
+
+	allowedHeaders := []string{
+		"Access-Control-Allow-Origin",
+		"Content-Type",
+		"X-Requested-With",
+		"Accept",
+		"Content-Length",
+		"Accept-Encoding",
+		"X-CSRF-Token",
+		"Authorization",
+		"Accept-Language",
+		"Access-Control-Request-Headers",
+		"Access-Control-Request-Method",
+		"Cache-Control",
+		"Connection",
+		"Host",
+		"Origin",
+		"Sec-Fetch-Dest",
+		"Sec-Fetch-Mode",
+		"Sec-Fetch-Site",
+		"User-Ag",
+		"db-key",
+	}
+
 	r := mux.NewRouter()
-	r.HandleFunc("/push/{topic}", PushHandler).Methods(http.MethodPost)                // each request calls PushHandler
-	r.HandleFunc("/push/{topic}", UpdateHandler).Methods(http.MethodPatch)             // each request calls PushHandler
-	r.HandleFunc("/find/{topic}", FindHandler).Methods(http.MethodPost)                // each request calls PushHandler
-	r.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet)                 // each request calls PushHandler
-	r.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet) // each request calls PushHandler
+	r.HandleFunc("/push/{topic}", PushHandler).Methods(http.MethodPost, http.MethodOptions)    // each request calls PushHandler
+	r.HandleFunc("/push/{topic}", UpdateHandler).Methods(http.MethodPatch, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/find/{topic}", FindHandler).Methods(http.MethodPost, http.MethodOptions)    // each request calls PushHandler
+	r.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet, http.MethodOptions)     // each request calls PushHandler
+	r.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet)         // each request calls PushHandler
 
 	r.HandleFunc("/admin/auth", Auth).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
 
 	secure := r.PathPrefix("/admin").Subrouter()
 	secure.Use(auth.BearerVerify)
-	secure.HandleFunc("/topics", ListTopics).Methods(http.MethodGet)                       // each request calls PushHandler
-	secure.HandleFunc("/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
-	secure.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet)                   // each request calls PushHandler
-	secure.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete)              // each request calls PushHandler
+	secure.HandleFunc("/topics", ListTopics).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	secure.HandleFunc("/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	secure.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	secure.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 
-	secure.HandleFunc("/users", ListUsers).Methods(http.MethodGet)                       // each request calls PushHandler
-	secure.HandleFunc("/users", CreateUser).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
-	secure.HandleFunc("/users/{id}", UserItem).Methods(http.MethodGet)                   // each request calls PushHandler
-	secure.HandleFunc("/topics/{id}", DeleteUser).Methods(http.MethodDelete)             // each request calls PushHandler
+	secure.HandleFunc("/users", ListUsers).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	secure.HandleFunc("/users", CreateUser).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler
+	secure.HandleFunc("/users/{id}", UserItem).Methods(http.MethodGet, http.MethodOptions)       // each request calls PushHandler
+	secure.HandleFunc("/topics/{id}", DeleteUser).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Access-Control-Allow-Origin"})
-	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
+	headersOk := handlers.AllowedHeaders(allowedHeaders)
+	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPatch, http.MethodOptions, http.MethodDelete})
 
 	s := handlers.ExposedHeaders([]string{"X-Total-Count"})

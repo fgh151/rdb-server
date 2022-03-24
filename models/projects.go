@@ -10,6 +10,7 @@ type Project struct {
 	Id        uint           `gorm:"primarykey" json:"id"`
 	Topic     string         `json:"topic"`
 	Key       string         `json:"key"`
+	Origins   string         `json:"origins"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
@@ -36,6 +37,16 @@ func (p Project) GetById(id string) interface{} {
 	conn := meta.MetaDb.GetConnection()
 
 	conn.First(&project, "id = ?", id)
+
+	return project
+}
+
+func (p Project) GetByTopic(topic string) interface{} {
+	var project Project
+
+	conn := meta.MetaDb.GetConnection()
+
+	conn.First(&project, "topic = ?", topic)
 
 	return project
 }
