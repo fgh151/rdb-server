@@ -1,7 +1,8 @@
 ### Отправка сообщения в топик
 POST localhost:9090/push/test
 Content-Type: application/json
-db-key: 12356
+db-key: 123
+Origin: http://localhost:3000
 
 {
   "rr": 999,
@@ -11,7 +12,8 @@ db-key: 12356
 ### Изменение сообщения в топике
 PATCH localhost:9090/push/test
 Content-Type: application/json
-db-key: 12356
+db-key: 123
+Origin: http://localhost:3000
 
 {
   "id": "1113115156",

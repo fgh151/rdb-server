@@ -1,7 +1,7 @@
 package web
 
 import (
-	"db-server/meta"
+	"db-server/db"
 	"db-server/models"
 	"encoding/json"
 	"github.com/gorilla/mux"
@@ -48,7 +48,7 @@ func UpdateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	meta.MetaDb.GetConnection().Save(&t)
+	db.DB.GetConnection().Save(&t)
 
 	resp, _ := json.Marshal(t)
 	w.WriteHeader(200)
@@ -77,7 +77,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	meta.MetaDb.GetConnection().Save(&t)
+	db.DB.GetConnection().Save(&t)
 
 	resp, _ := json.Marshal(t)
 	w.WriteHeader(200)
@@ -110,7 +110,7 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	meta.MetaDb.GetConnection().Create(&t)
+	db.DB.GetConnection().Create(&t)
 
 	resp, _ := json.Marshal(t)
 	w.WriteHeader(200)

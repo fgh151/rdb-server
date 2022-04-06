@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
-	"db-server/drivers"
+	"db-server/db"
 	err2 "db-server/err"
-	"db-server/meta"
 	"db-server/models"
 	"db-server/web"
 	"github.com/joho/godotenv"
@@ -27,19 +25,16 @@ func main() {
 	}
 	defer sentry.Flush(2 * time.Second)
 
-	client, _ := drivers.GetDbInstance().GetConnection()
-	db := meta.MetaDb.GetConnection()
+	dbInstance := db.DB.GetConnection()
 
-	err = db.AutoMigrate(&models.Project{})
+	err = dbInstance.AutoMigrate(&models.Project{})
 	err2.CheckErr(err)
-	err = db.AutoMigrate(&models.User{})
+	err = dbInstance.AutoMigrate(&models.User{})
 	err2.CheckErr(err)
-
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
+	err = dbInstance.AutoMigrate(&models.Topic{})
+	err2.CheckErr(err)
+	err = dbInstance.AutoMigrate(&models.Message{})
+	err2.CheckErr(err)
 
 	web.InitServer()
 }

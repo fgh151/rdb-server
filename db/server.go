@@ -1,4 +1,4 @@
-package meta
+package db
 
 import (
 	"gorm.io/driver/mysql"
@@ -33,4 +33,4 @@ func (c Connection) GetConnection() *gorm.DB {
 	return c.db
 }
 
-var MetaDb = Connection{}
+var DB = Connection{}
