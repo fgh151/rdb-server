@@ -32,6 +32,19 @@ db-key: 12356
 GET localhost:9090/list/test
 Content-Type: application/json
 db-key: 123
+Accept: */*
+Accept-Encoding: gzip, deflate, br
+Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+Access-Control-Request-Headers: access-control-allow-origin,content-type,db-key
+Access-Control-Request-Method: GET
+Cache-Control: max-age=0
+Connection: keep-alive
+Host: localhost:9090
+Origin: http://localhost:3000
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+User-Ag
 
 ### OPTIONS
 OPTIONS localhost:9090/list/test
@@ -60,3 +73,7 @@ Content-Type: application/json
   "password": "test"
 }
 
+### Admin users
+GET http://localhost:9090/admin/users?_end=10&_order=ASC&_sort=id&_start=0
+Accept: */*
+Authorization: Bearer 123

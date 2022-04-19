@@ -13,9 +13,12 @@ type User struct {
 	Email        string         `gorm:"index" json:"email"`
 	Token        string         `gorm:"index" json:"token"`
 	PasswordHash string         `json:"-"`
+	Admin        bool           `gorm:"index;default:false;type:bool" json:"admin"`
+	Active       bool           `gorm:"index;default:true;type:bool" json:"active"`
 	CreatedAt    time.Time      `json:"-"`
 	UpdatedAt    time.Time      `json:"-"`
 	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
+	LastLogin    *time.Time     `json:"lastLogin,omitempty"`
 }
 
 func (p User) List() []interface{} {
@@ -77,11 +80,16 @@ type LoginForm struct {
 func (f LoginForm) Login() (User, error) {
 	var user User
 
-	meta.MetaDb.GetConnection().First(&user, "email = ?", f.Email)
+	meta.MetaDb.GetConnection().Where("email = ? AND active = ? AND admin = ?", f.Email, true, true).First(&user)
 
 	if !user.ValidatePassword(f.Password) {
 		return user, errors.New("invalid login or password")
 	}
+
+	now := time.Now()
+
+	user.LastLogin = &now
+	meta.MetaDb.GetConnection().Save(user)
 
 	return user, nil
 }

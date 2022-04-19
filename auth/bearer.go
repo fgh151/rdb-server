@@ -11,19 +11,7 @@ import (
 func BearerVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		reqToken := r.Header.Get("Authorization")
-		splitToken := strings.Split(reqToken, "Bearer ")
-
-		if len(splitToken) < 2 {
-			w.WriteHeader(http.StatusForbidden)
-			json.NewEncoder(w).Encode("Missing auth token")
-			return
-		}
-
-		reqToken = splitToken[1]
-
-		var user *models.User
-		meta.MetaDb.GetConnection().Find(&user, "token = ? ", reqToken)
+		user := getUserFromRequest(r)
 
 		if user == nil {
 			w.WriteHeader(http.StatusForbidden)
@@ -33,4 +21,20 @@ func BearerVerify(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func getUserFromRequest(r *http.Request) *models.User {
+	reqToken := r.Header.Get("Authorization")
+	splitToken := strings.Split(reqToken, "Bearer ")
+
+	if len(splitToken) < 2 {
+		return nil
+	}
+
+	reqToken = splitToken[1]
+
+	var user *models.User
+	meta.MetaDb.GetConnection().Find(&user, "token = ? ", reqToken)
+
+	return user
 }

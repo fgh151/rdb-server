@@ -5,7 +5,7 @@ import (
 	"db-server/drivers"
 	err2 "db-server/err"
 	"db-server/meta"
-	"db-server/models"
+	"db-server/migrations"
 	"db-server/web"
 	"github.com/joho/godotenv"
 	"log"
@@ -29,11 +29,7 @@ func main() {
 
 	client, _ := drivers.GetDbInstance().GetConnection()
 	db := meta.MetaDb.GetConnection()
-
-	err = db.AutoMigrate(&models.Project{})
-	err2.CheckErr(err)
-	err = db.AutoMigrate(&models.User{})
-	err2.CheckErr(err)
+	migrations.Migrate(db)
 
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
