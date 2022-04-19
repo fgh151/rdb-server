@@ -57,6 +57,12 @@ func InitServer() {
 	admin.HandleFunc("/topics/{id}", DeleteUser).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/topics/{id}", UpdateUser).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
+	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler
+	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	api := r.PathPrefix("/api").Subrouter()
+	api.Use(auth.BearerVerify)
+	api.HandleFunc("/user/me", ApiMe).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+
 	headersOk := handlers.AllowedHeaders(allowedHeaders)
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodOptions, http.MethodDelete})

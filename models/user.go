@@ -77,19 +77,27 @@ type LoginForm struct {
 	Password string `json:"password"`
 }
 
-func (f LoginForm) Login() (User, error) {
-	var user User
+func (f LoginForm) AdminLogin() (User, error) {
+	return f.login(&User{Email: f.Email, Admin: true, Active: true})
+}
 
-	meta.MetaDb.GetConnection().Where("email = ? AND active = ? AND admin = ?", f.Email, true, true).First(&user)
+func (f LoginForm) ApiLogin() (User, error) {
+	return f.login(&User{Email: f.Email, Active: true})
+}
 
-	if !user.ValidatePassword(f.Password) {
-		return user, errors.New("invalid login or password")
+func (f LoginForm) login(condition *User) (User, error) {
+	var login User
+
+	meta.MetaDb.GetConnection().Where(condition).First(&login)
+
+	if !login.ValidatePassword(f.Password) {
+		return login, errors.New("invalid login or password")
 	}
 
 	now := time.Now()
 
-	user.LastLogin = &now
-	meta.MetaDb.GetConnection().Save(user)
+	login.LastLogin = &now
+	meta.MetaDb.GetConnection().Save(&login)
 
-	return user, nil
+	return login, nil
 }

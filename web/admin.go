@@ -141,7 +141,7 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := l.Login()
+	user, err := l.AdminLogin()
 
 	if err != nil {
 		http.Error(w, err.Error(), 400)

@@ -11,7 +11,7 @@ import (
 func BearerVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		user := getUserFromRequest(r)
+		user := GetUserFromRequest(r)
 
 		if user == nil {
 			w.WriteHeader(http.StatusForbidden)
@@ -23,7 +23,7 @@ func BearerVerify(next http.Handler) http.Handler {
 	})
 }
 
-func getUserFromRequest(r *http.Request) *models.User {
+func GetUserFromRequest(r *http.Request) *models.User {
 	reqToken := r.Header.Get("Authorization")
 	splitToken := strings.Split(reqToken, "Bearer ")
 

@@ -8,7 +8,7 @@ import (
 func AdminVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		user := getUserFromRequest(r)
+		user := GetUserFromRequest(r)
 
 		if user == nil {
 			w.WriteHeader(http.StatusForbidden)
