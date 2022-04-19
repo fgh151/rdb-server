@@ -1,7 +1,7 @@
 package web
 
 import (
-	"db-server/db/functions"
+	"db-server/drivers"
 	err2 "db-server/err"
 	"db-server/events"
 	"db-server/models"
@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -70,9 +71,10 @@ func PushHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 		requestPayload := getPayload(r)
-		m, err := functions.Insert(topic, requestPayload)
+		_, err := drivers.GetDbInstance().Insert(os.Getenv("DB_NAME"), topic, requestPayload)
 
-		sendResponse(w, 202, m, err)
+		var i interface{}
+		sendResponse(w, 202, i, err)
 
 		if err == nil {
 			events.GetInstance().RegisterNewMessage(topic, requestPayload)
@@ -130,9 +132,9 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 
-		arr := functions.Find(topic, requestPayload)
+		res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload)
 
-		sendResponse(w, 200, arr, nil)
+		sendResponse(w, 200, res, err)
 	}
 }
 
@@ -141,13 +143,15 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 
-		arr := functions.List(topic)
+		res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic)
 
-		sendResponse(w, 200, arr, nil)
+		sendResponse(w, 200, res, err)
 	}
 }
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+	topic := getTopic(r)
+
 	if checkAccess(w, r) {
 
 		requestPayload := getPayload(r)
@@ -155,9 +159,9 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 		id := requestPayload["id"]
 		delete(requestPayload, "id")
 
-		err := functions.Update(id, requestPayload)
+		res, err := drivers.GetDbInstance().Update(os.Getenv("DB_NAME"), topic, id, requestPayload)
 
-		sendResponse(w, 202, "", err)
+		sendResponse(w, 202, res, err)
 	}
 }
 

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"db-server/db"
+	"db-server/meta"
 	"gorm.io/gorm"
 	"time"
 )
@@ -19,7 +19,7 @@ type Project struct {
 func (p Project) List() []interface{} {
 	var projects []Project
 
-	conn := db.DB.GetConnection()
+	conn := meta.MetaDb.GetConnection()
 
 	conn.Find(&projects)
 
@@ -34,7 +34,7 @@ func (p Project) List() []interface{} {
 func (p Project) GetById(id string) interface{} {
 	var project Project
 
-	conn := db.DB.GetConnection()
+	conn := meta.MetaDb.GetConnection()
 
 	conn.First(&project, "id = ?", id)
 
@@ -44,7 +44,7 @@ func (p Project) GetById(id string) interface{} {
 func (p Project) GetByTopic(topic string) interface{} {
 	var project Project
 
-	conn := db.DB.GetConnection()
+	conn := meta.MetaDb.GetConnection()
 
 	conn.First(&project, "topic = ?", topic)
 
@@ -52,14 +52,14 @@ func (p Project) GetByTopic(topic string) interface{} {
 }
 
 func (p Project) Delete(id string) {
-	conn := db.DB.GetConnection()
+	conn := meta.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
 func (c Project) GetKey(topic string) string {
 	var project Project
 
-	conn := db.DB.GetConnection()
+	conn := meta.MetaDb.GetConnection()
 
 	conn.First(&project, "topic = ?", topic)
 

@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"db-server/db"
+	"db-server/meta"
 	"db-server/models"
 	"encoding/json"
 	"net/http"
@@ -23,7 +23,7 @@ func BearerVerify(next http.Handler) http.Handler {
 		reqToken = splitToken[1]
 
 		var user *models.User
-		db.DB.GetConnection().Find(&user, "token = ? ", reqToken)
+		meta.MetaDb.GetConnection().Find(&user, "token = ? ", reqToken)
 
 		if user == nil {
 			w.WriteHeader(http.StatusForbidden)

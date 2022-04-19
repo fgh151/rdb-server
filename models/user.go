@@ -1,7 +1,7 @@
 package models
 
 import (
-	"db-server/db"
+	"db-server/meta"
 	"db-server/security"
 	"errors"
 	"gorm.io/gorm"
@@ -21,7 +21,7 @@ type User struct {
 func (p User) List() []interface{} {
 	var users []User
 
-	conn := db.DB.GetConnection()
+	conn := meta.MetaDb.GetConnection()
 
 	conn.Find(&users)
 
@@ -36,7 +36,7 @@ func (p User) List() []interface{} {
 func (p User) GetById(id string) interface{} {
 	var user User
 
-	conn := db.DB.GetConnection()
+	conn := meta.MetaDb.GetConnection()
 
 	conn.First(&user, "id = ?", id)
 
@@ -44,7 +44,7 @@ func (p User) GetById(id string) interface{} {
 }
 
 func (p User) Delete(id string) {
-	conn := db.DB.GetConnection()
+	conn := meta.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
@@ -64,7 +64,7 @@ func (f CreateUserForm) Save() User {
 		Token:        security.GenerateRandomString(15),
 	}
 
-	db.DB.GetConnection().Create(&u)
+	meta.MetaDb.GetConnection().Create(&u)
 
 	return u
 }
@@ -77,7 +77,7 @@ type LoginForm struct {
 func (f LoginForm) Login() (User, error) {
 	var user User
 
-	db.DB.GetConnection().First(&user, "email = ?", f.Email)
+	meta.MetaDb.GetConnection().First(&user, "email = ?", f.Email)
 
 	if !user.ValidatePassword(f.Password) {
 		return user, errors.New("invalid login or password")
