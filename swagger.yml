@@ -57,6 +57,22 @@ paths:
         200:
           description: update message in topic
 
+  /api/storage:
+    post:
+      summary: Uploads a file.
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          description: The file to upload.
+      responses:
+        200:
+          description: result and path
+          schema:
+            type: array
+
 produces:
 - application/json
 schemes:

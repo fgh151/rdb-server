@@ -2,7 +2,7 @@ package web
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -12,20 +12,8 @@ import (
 )
 
 func StoragePut(w http.ResponseWriter, r *http.Request) {
+	minioClient, err := getClient()
 	ctx := context.Background()
-	endpoint := os.Getenv("STORAGE_ENDPOINT")
-	accessKeyID := os.Getenv("STORAGE_ACCESS_KEY")
-	secretAccessKey := os.Getenv("STORAGE_SECRET_KEY")
-	useSSL := false
-
-	// Initialize minio client object.
-	minioClient, err := minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
-	})
-	if err != nil {
-		sentry.CaptureException(err)
-	}
 
 	bucketName := os.Getenv("STORAGE_BUCKET")
 
@@ -46,22 +34,42 @@ func StoragePut(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
-	//// Upload the zip file
 	objectName := fileHeader.Filename
-	//filePath := "/tmp/golden-oldies.zip"
 	contentType := fileHeader.Header["Content-Type"][0]
 
-	fmt.Println(fileHeader.Header)
-	fmt.Println(contentType)
-
 	info, err := minioClient.PutObject(ctx, bucketName, objectName, file, fileHeader.Size, minio.PutObjectOptions{ContentType: contentType})
-	//
-	//// Upload the zip file with FPutObject
-	//info, err := minioClient.FPutObject(ctx, bucketName, objectName, filePath, minio.PutObjectOptions{ContentType: contentType})
+
 	if err != nil {
-		log.Fatalln(err)
+		sentry.CaptureException(err)
 	}
-	//
+
 	log.Printf("Successfully uploaded %s of size %d\n", objectName, info.Size)
 
+	path := os.Getenv("STORAGE_PUBLIC_URL") + "/" + os.Getenv("STORAGE_BUCKET") + "/" + objectName
+
+	resp := make(map[string]string)
+
+	resp["path"] = path
+
+	wr, _ := json.Marshal(resp)
+
+	w.WriteHeader(200)
+	w.Write(wr)
+}
+
+func getClient() (*minio.Client, error) {
+	endpoint := os.Getenv("STORAGE_ENDPOINT")
+	accessKeyID := os.Getenv("STORAGE_ACCESS_KEY")
+	secretAccessKey := os.Getenv("STORAGE_SECRET_KEY")
+	useSSL := true
+
+	// Initialize minio client object.
+	minioClient, err := minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure: useSSL,
+	})
+	if err != nil {
+		sentry.CaptureException(err)
+	}
+	return minioClient, err
 }
