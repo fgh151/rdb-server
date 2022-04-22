@@ -1,14 +1,41 @@
 version: '3.7'
 
+networks:
+  router:
+    external:
+      name: router
+
+volumes:
+  fs_storage:
+
 services:
-    mongodb:
-        image: mongo:latest
-        container_name: mongodb
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: dockerMongoAdmin
-            MONGO_INITDB_ROOT_PASSWORD: dockerMongoPassword
-            MONGO_INITDB_DATABASE: dockerdb
-        ports:
-            - 27017:27017
-        volumes:
-            - .docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: dockerMongoAdmin
+      MONGO_INITDB_ROOT_PASSWORD: dockerMongoPassword
+      MONGO_INITDB_DATABASE: dockerdb
+    ports:
+      - 27017:27017
+    volumes:
+      - .docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  storage:
+    image: 'minio/minio'
+    labels:
+      traefik.enable: '1'
+      traefik.port: '9000'
+      traefik.frontend.rule: Host:storage.db.box
+      traefik.docker.network: router
+    networks:
+      - router
+      - default
+    environment:
+      MINIO_ACCESS_KEY: ${STORAGE_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${STORAGE_SECRET_KEY}
+    expose:
+      - 9000
+    volumes:
+      - 'fs_storage:/data'
+    command: minio server /data
