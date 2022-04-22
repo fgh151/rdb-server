@@ -12,11 +12,19 @@ paths:
           type: string
           required: true
           description: Topic name
+        - in: header
+          name: db-key
+          type: string
+          required: true
+          description: Db key
       responses:
         200:
           description: list the topic records
           schema:
             type: array
+        403:
+          description: Not allowed for this key
+
   /find/{topic}:
     post:
       parameters:
@@ -25,11 +33,18 @@ paths:
           type: string
           required: true
           description: Topic name
+        - in: header
+          name: db-key
+          type: string
+          required: true
+          description: Db key
       responses:
         200:
           description: list the topic records
           schema:
             type: array
+        403:
+          description: Not allowed for this key
   /push/{topic}:
     post:
       parameters:
@@ -38,9 +53,16 @@ paths:
           type: string
           required: true
           description: Topic name
+        - in: header
+          name: db-key
+          type: string
+          required: true
+          description: Db key
       responses:
         200:
           description: push message to topic
+        403:
+          description: Not allowed for this key
     patch:
       parameters:
         - in: path
@@ -53,12 +75,81 @@ paths:
           type: string
           required: true
           description: Message id to update
+        - in: header
+          name: db-key
+          type: string
+          required: true
+          description: Db key
       responses:
         200:
           description: update message in topic
+        403:
+          description: Not allowed for this key
+
+  /api/user/auth:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          description: Login user.
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: result
+          schema:
+            type: array
+
+
+  /api/user/register:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          description: Create user.
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: result
+          schema:
+            type: array
+
+
+  /api/user/me:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: list the topic records
+          schema:
+            type: array
 
   /api/storage:
     post:
+      security:
+        - bearerAuth: []
       summary: Uploads a file.
       consumes:
         - multipart/form-data
