@@ -4,7 +4,7 @@ info:
   title: Db Server
   version: 0.1.0
 paths:
-  /list/{topic}:
+  /em/list/{topic}:
     get:
       parameters:
         - in: path
@@ -25,7 +25,7 @@ paths:
         403:
           description: Not allowed for this key
 
-  /find/{topic}:
+  /em/find/{topic}:
     post:
       parameters:
         - in: path
@@ -45,7 +45,7 @@ paths:
             type: array
         403:
           description: Not allowed for this key
-  /push/{topic}:
+  /em/{topic}:
     post:
       parameters:
         - in: path
@@ -63,7 +63,7 @@ paths:
           description: push message to topic
         403:
           description: Not allowed for this key
-  /push/{topic}/{id}:
+  /em/{topic}/{id}:
     patch:
       parameters:
         - in: path
@@ -84,6 +84,28 @@ paths:
       responses:
         200:
           description: update message in topic
+        403:
+          description: Not allowed for this key
+    delete:
+      parameters:
+        - in: path
+          name: topic
+          type: string
+          required: true
+          description: Topic name
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Message id to update
+        - in: header
+          name: db-key
+          type: string
+          required: true
+          description: Db key
+      responses:
+        200:
+          description: delete message in topic
         403:
           description: Not allowed for this key
 

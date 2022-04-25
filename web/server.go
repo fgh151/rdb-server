@@ -35,11 +35,15 @@ func InitServer() {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/push/{topic}", PushHandler).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler
-	r.HandleFunc("/push/{topic}/{id}", UpdateHandler).Methods(http.MethodPatch, http.MethodOptions) // each request calls PushHandler
-	r.HandleFunc("/find/{topic}", FindHandler).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler
-	r.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
-	r.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet)              // each request calls PushHandler
+
+	em := r.PathPrefix("/em").Subrouter()
+
+	em.HandleFunc("/find/{topic}", FindHandler).Methods(http.MethodPost, http.MethodOptions)     // each request calls PushHandler
+	em.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	em.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet)          // each request calls PushHandler
+	em.HandleFunc("/{topic}", PushHandler).Methods(http.MethodPost, http.MethodOptions)          // each request calls PushHandler
+	em.HandleFunc("/{topic}/{id}", UpdateHandler).Methods(http.MethodPatch, http.MethodOptions)  // each request calls PushHandler
+	em.HandleFunc("/{topic}/{id}", DeleteHandler).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 
 	r.HandleFunc("/admin/auth", Auth).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
 

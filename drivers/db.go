@@ -26,6 +26,16 @@ func (s database) Update(dbName string, collectionName string, id interface{}, v
 	return collection.UpdateByID(GetDbInstance().GetContext(), id, value)
 }
 
+func (s database) Delete(dbName string, collectionName string, id interface{}) (*mongo.DeleteResult, error) {
+	client, _ := s.GetConnection()
+
+	db := client.Database(dbName)
+
+	collection := db.Collection(collectionName)
+
+	return collection.DeleteOne(GetDbInstance().GetContext(), bson.M{"_id": id})
+}
+
 func (s database) Insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error) {
 	client, _ := s.GetConnection()
 

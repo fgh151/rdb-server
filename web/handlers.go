@@ -165,6 +165,19 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+	topic := getTopic(r)
+
+	if checkAccess(w, r) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		res, err := drivers.GetDbInstance().Delete(os.Getenv("DB_NAME"), topic, id)
+
+		sendResponse(w, 202, res, err)
+	}
+}
+
 func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}, err error) {
 	if err == nil {
 		w.WriteHeader(statusCode)
