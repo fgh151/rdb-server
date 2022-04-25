@@ -63,6 +63,7 @@ paths:
           description: push message to topic
         403:
           description: Not allowed for this key
+  /push/{topic}/{id}:
     patch:
       parameters:
         - in: path
@@ -70,7 +71,7 @@ paths:
           type: string
           required: true
           description: Topic name
-        - in: query
+        - in: path
           name: id
           type: string
           required: true

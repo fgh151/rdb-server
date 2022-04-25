@@ -156,8 +156,8 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 		requestPayload := getPayload(r)
 
-		id := requestPayload["id"]
-		delete(requestPayload, "id")
+		vars := mux.Vars(r)
+		id := vars["id"]
 
 		res, err := drivers.GetDbInstance().Update(os.Getenv("DB_NAME"), topic, id, requestPayload)
 
