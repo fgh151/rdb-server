@@ -1,19 +1,23 @@
 package web
 
 import (
+	err2 "db-server/err"
 	"db-server/meta"
 	"db-server/models"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
 )
 
 func ListTopics(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
 	listItems(models.Project{}.List(), w)
 }
 
 func ListUsers(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
 	listItems(models.User{}.List(), w)
 }
 
@@ -25,18 +29,22 @@ func listItems(arr []interface{}, w http.ResponseWriter) {
 
 	resp, _ := json.Marshal(arr)
 	w.WriteHeader(200)
-	w.Write(resp)
+	_, err := w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func UserItem(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
 	getItem(models.User{}, w, r)
 }
 
 func TopicItem(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
 	getItem(models.Project{}, w, r)
 }
 
 func UpdateTopic(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
 
 	vars := mux.Vars(r)
 
@@ -52,21 +60,29 @@ func UpdateTopic(w http.ResponseWriter, r *http.Request) {
 
 	resp, _ := json.Marshal(t)
 	w.WriteHeader(200)
-	w.Write(resp)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
+
 	vars := mux.Vars(r)
 	resp, _ := json.Marshal(m.GetById(vars["id"]))
 	w.WriteHeader(200)
-	w.Write(resp)
+	_, err := w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
+
 	deleteItem(models.User{}, w, r)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
+
 	vars := mux.Vars(r)
 
 	var t = models.User{}.GetById(vars["id"]).(models.User)
@@ -81,14 +97,18 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	resp, _ := json.Marshal(t)
 	w.WriteHeader(200)
-	w.Write(resp)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
+
 	deleteItem(models.Project{}, w, r)
 }
 
 func deleteItem(m models.Model, w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
 
 	vars := mux.Vars(r)
 
@@ -101,6 +121,7 @@ func deleteItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateTopic(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
 
 	var t models.Project
 
@@ -114,10 +135,12 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 
 	resp, _ := json.Marshal(t)
 	w.WriteHeader(200)
-	w.Write(resp)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
 
 	var t models.CreateUserForm
 
@@ -130,10 +153,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	user := t.Save()
 	resp, _ := json.Marshal(user)
 	w.WriteHeader(200)
-	w.Write(resp)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func Auth(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
+
 	var l models.LoginForm
 	err := json.NewDecoder(r.Body).Decode(&l)
 	if err != nil {
@@ -150,7 +176,8 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 
 	resp, _ := json.Marshal(user)
 	w.WriteHeader(200)
-	w.Write(resp)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 
 	return
 }

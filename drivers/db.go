@@ -63,7 +63,7 @@ func (s database) Find(dbName string, collectionName string, filter interface{})
 
 		var d bson.D
 		err := cur.Decode(&d)
-		err2.CheckErr(err)
+		err2.PanicErr(err)
 
 		res = append(res, &d)
 	}
@@ -90,7 +90,7 @@ func (s database) List(dbName string, collectionName string) ([]*bson.D, error) 
 
 		var d bson.D
 		err := cur.Decode(&d)
-		err2.CheckErr(err)
+		err2.PanicErr(err)
 
 		res = append(res, &d)
 	}

@@ -2,16 +2,19 @@ package web
 
 import (
 	"context"
+	err2 "db-server/err"
 	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
 
 func StoragePut(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.RequestURI)
+
 	minioClient, err := getClient()
 	ctx := context.Background()
 
@@ -22,17 +25,17 @@ func StoragePut(w http.ResponseWriter, r *http.Request) {
 		// Check to see if we already own this bucket (which happens if you run this twice)
 		exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
 		if errBucketExists == nil && exists {
-			log.Printf("We already own %s\n", bucketName)
+			log.Debug("We already own %s\n", bucketName)
 		} else {
 			sentry.CaptureException(err)
 		}
 	} else {
-		log.Printf("Successfully created %s\n", bucketName)
+		log.Debug("Successfully created %s\n", bucketName)
 	}
 
 	file, fileHeader, err := r.FormFile("file")
 
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	objectName := fileHeader.Filename
 	contentType := fileHeader.Header["Content-Type"][0]
@@ -43,7 +46,7 @@ func StoragePut(w http.ResponseWriter, r *http.Request) {
 		sentry.CaptureException(err)
 	}
 
-	log.Printf("Successfully uploaded %s of size %d\n", objectName, info.Size)
+	log.Debug("Successfully uploaded %s of size %d\n", objectName, info.Size)
 
 	path := os.Getenv("STORAGE_PUBLIC_URL") + "/" + os.Getenv("STORAGE_BUCKET") + "/" + objectName
 
@@ -54,7 +57,8 @@ func StoragePut(w http.ResponseWriter, r *http.Request) {
 	wr, _ := json.Marshal(resp)
 
 	w.WriteHeader(200)
-	w.Write(wr)
+	_, err = w.Write(wr)
+	err2.DebugErr(err)
 }
 
 func getClient() (*minio.Client, error) {

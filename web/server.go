@@ -4,7 +4,7 @@ import (
 	"db-server/auth"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 )
@@ -76,5 +76,7 @@ func InitServer() {
 	s := handlers.ExposedHeaders([]string{"X-Total-Count"})
 
 	http.Handle("/", r)
+
+	log.Debug("Start web server")
 	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADDR")+":"+os.Getenv("SERVER_PORT"), handlers.CORS(originsOk, headersOk, methodsOk, s)(r)))
 }

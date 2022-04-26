@@ -9,5 +9,5 @@ import (
 func Migrate(db *gorm.DB) {
 	err := db.AutoMigrate(&models.Project{}, &models.User{})
 
-	err2.CheckErr(err)
+	err2.PanicErr(err)
 }

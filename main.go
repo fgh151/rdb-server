@@ -7,17 +7,29 @@ import (
 	"db-server/meta"
 	"db-server/migrations"
 	"db-server/web"
+	"flag"
 	"github.com/joho/godotenv"
-	"log"
 	"os"
 	"time"
 
 	"github.com/getsentry/sentry-go"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
+
+	verboseMode := flag.Bool("v", false, "Verbose mode")
+	flag.Parse()
+
+	if *verboseMode {
+		log.SetLevel(log.DebugLevel)
+	}
+
+	log.Debug("Init log system done")
+	log.Debug("Init sentry")
+
 	err := godotenv.Load()
-	err2.CheckErr(err)
+	err2.PanicErr(err)
 
 	err = sentry.Init(sentry.ClientOptions{
 		Dsn: os.Getenv("SENTRY_DSN"),
@@ -27,15 +39,23 @@ func main() {
 	}
 	defer sentry.Flush(2 * time.Second)
 
+	log.Debug("Init mongo db connection")
+
 	client, _ := drivers.GetDbInstance().GetConnection()
+
+	log.Debug("Init meta db connection")
 	db := meta.MetaDb.GetConnection()
+	log.Debug("Try to migrate db")
 	migrations.Migrate(db)
 
 	defer func() {
+		log.Debug("Close mongo db connection")
+
 		if err := client.Disconnect(context.TODO()); err != nil {
 			panic(err)
 		}
 	}()
 
+	log.Debug("Init web server")
 	web.InitServer()
 }

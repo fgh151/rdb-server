@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"strings"
@@ -23,7 +23,7 @@ func getPayload(r *http.Request) map[string]interface{} {
 	var requestPayload map[string]interface{}
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestPayload)
-	err2.CheckErr(err)
+	err2.PanicErr(err)
 
 	return requestPayload
 }
@@ -53,6 +53,8 @@ func validateOrigin(p models.Project, origin string) bool {
 		}
 	}
 
+	log.Debug("Invalid origin")
+
 	return false
 }
 
@@ -61,11 +63,14 @@ func validateKey(k1 string, k2 string) bool {
 }
 
 func send403Error(w http.ResponseWriter, message string) {
+	log.Debug("403 error")
 	payload := map[string]string{"code": "not acceptable", "message": message}
 	sendResponse(w, 403, payload, nil)
 }
 
 func PushHandler(w http.ResponseWriter, r *http.Request) {
+
+	log.Debug(r.RequestURI)
 
 	topic := getTopic(r)
 
@@ -90,6 +95,8 @@ var upgrader = websocket.Upgrader{
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 
+	log.Debug(r.RequestURI)
+
 	topic := getTopic(r)
 
 	vars := mux.Vars(r)
@@ -103,13 +110,13 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 		events.GetInstance().Subscribe(topic, c)
 		defer events.GetInstance().Unsubscribe(topic, c)
 
-		c.WriteMessage(1, []byte("test own message"))
+		err = c.WriteMessage(1, []byte("test own message"))
 
 		if err != nil {
 			log.Print("upgrade:", err)
 			return
 		}
-		defer c.Close()
+		defer func() { _ = c.Close() }()
 		for {
 			mt, message, err := c.ReadMessage()
 			if err != nil {
@@ -127,6 +134,9 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func FindHandler(w http.ResponseWriter, r *http.Request) {
+
+	log.Debug(r.RequestURI)
+
 	topic := getTopic(r)
 	requestPayload := getPayload(r)
 
@@ -139,6 +149,9 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListHandler(w http.ResponseWriter, r *http.Request) {
+
+	log.Debug(r.RequestURI)
+
 	topic := getTopic(r)
 
 	if checkAccess(w, r) {
@@ -150,6 +163,9 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+
+	log.Debug(r.RequestURI)
+
 	topic := getTopic(r)
 
 	if checkAccess(w, r) {
@@ -166,6 +182,9 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+
+	log.Debug(r.RequestURI)
+
 	topic := getTopic(r)
 
 	if checkAccess(w, r) {
@@ -183,10 +202,12 @@ func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}, er
 		w.WriteHeader(statusCode)
 		if payload != nil {
 			resp, _ := json.Marshal(payload)
-			w.Write(resp)
+			_, err = w.Write(resp)
+			err2.DebugErr(err)
 		}
 	} else {
 		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
+		_, err = w.Write([]byte(err.Error()))
+		err2.DebugErr(err)
 	}
 }
