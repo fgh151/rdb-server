@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func StoragePut(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +67,10 @@ func getClient() (*minio.Client, error) {
 	accessKeyID := os.Getenv("STORAGE_ACCESS_KEY")
 	secretAccessKey := os.Getenv("STORAGE_SECRET_KEY")
 	useSSL := true
+
+	if val, err := strconv.ParseBool(os.Getenv("STORAGE_SSL")); err == nil {
+		useSSL = val
+	}
 
 	// Initialize minio client object.
 	minioClient, err := minio.New(endpoint, &minio.Options{
