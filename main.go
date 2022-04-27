@@ -9,12 +9,10 @@ import (
 	"db-server/models"
 	"db-server/web"
 	"flag"
+	"github.com/evalphobia/logrus_sentry"
 	"github.com/joho/godotenv"
-	"os"
-	"time"
-
-	"github.com/getsentry/sentry-go"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 func main() {
@@ -34,13 +32,14 @@ func main() {
 	err := godotenv.Load()
 	err2.PanicErr(err)
 
-	err = sentry.Init(sentry.ClientOptions{
-		Dsn: os.Getenv("SENTRY_DSN"),
+	hook, err := logrus_sentry.NewSentryHook(os.Getenv("SENTRY_DSN"), []log.Level{
+		log.PanicLevel,
+		log.FatalLevel,
+		log.ErrorLevel,
 	})
-	if err != nil {
-		log.Fatalf("sentry.Init: %s", err)
+	if err == nil {
+		log.AddHook(hook)
 	}
-	defer sentry.Flush(2 * time.Second)
 
 	log.Debug("Init mongo db connection")
 
