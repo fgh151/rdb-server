@@ -73,8 +73,8 @@ func InitServer() {
 	api.Use(auth.BearerVerify)
 	api.HandleFunc("/user/me", ApiMe).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
-	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions)    // each request calls PushHandler
-	api.HandleFunc("/config/{id}", ConfigItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions)       // each request calls PushHandler
+	api.HandleFunc("/config/{id}", ApiConfigItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
 	headersOk := handlers.AllowedHeaders(allowedHeaders)
 	originsOk := handlers.AllowedOrigins([]string{"*"})

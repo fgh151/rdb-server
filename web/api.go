@@ -5,6 +5,7 @@ import (
 	err2 "db-server/err"
 	"db-server/models"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -60,5 +61,16 @@ func ApiMe(w http.ResponseWriter, r *http.Request) {
 	resp, _ := json.Marshal(user)
 	w.WriteHeader(200)
 	_, err := w.Write(resp)
+	err2.DebugErr(err)
+}
+
+func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	vars := mux.Vars(r)
+	model := models.Config{}.GetById(vars["id"]).(models.Config)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(200)
+	_, err := w.Write([]byte(model.Body))
 	err2.DebugErr(err)
 }

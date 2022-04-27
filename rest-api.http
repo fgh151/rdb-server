@@ -77,3 +77,8 @@ Content-Type: application/json
 GET http://localhost:9090/admin/users?_end=10&_order=ASC&_sort=id&_start=0
 Accept: */*
 Authorization: Bearer 123
+
+### Config
+GET http://localhost:9090/api/config/0db9a268-c629-11ec-b0ef-acde48001122
+Accept: */*
+Authorization: Bearer 123
