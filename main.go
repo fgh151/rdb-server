@@ -6,6 +6,7 @@ import (
 	err2 "db-server/err"
 	"db-server/meta"
 	"db-server/migrations"
+	"db-server/models"
 	"db-server/web"
 	"flag"
 	"github.com/joho/godotenv"
@@ -19,6 +20,8 @@ import (
 func main() {
 
 	verboseMode := flag.Bool("v", false, "Verbose mode")
+	migrateFlag := flag.Bool("m", false, "Run migrations")
+	demoFlag := flag.Bool("demo", false, "Fill demo data")
 	flag.Parse()
 
 	if *verboseMode {
@@ -45,8 +48,16 @@ func main() {
 
 	log.Debug("Init meta db connection")
 	db := meta.MetaDb.GetConnection()
-	log.Debug("Try to migrate db")
-	migrations.Migrate(db)
+
+	if *migrateFlag {
+		log.Debug("Try to migrate db")
+		migrations.Migrate(db)
+	}
+
+	if *demoFlag {
+		log.Debug("Fill db demo data")
+		models.CreateDemo()
+	}
 
 	defer func() {
 		log.Debug("Close mongo db connection")

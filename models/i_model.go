@@ -7,3 +7,11 @@ type Model interface {
 
 	Delete(id string)
 }
+
+func CreateDemo() {
+	f := CreateUserForm{
+		Email:    "test@example.com",
+		Password: "test",
+	}
+	f.Save()
+}
