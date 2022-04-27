@@ -11,12 +11,12 @@ type Config struct {
 	Body  string    `json:"body"`
 }
 
-func (c Config) List() []interface{} {
+func (c Config) List(limit int, offset int, sort string, order string) []interface{} {
 	var configs []Config
 
 	conn := meta.MetaDb.GetConnection()
 
-	conn.Find(&configs)
+	conn.Find(&configs).Limit(limit).Offset(offset).Order(order + " " + sort)
 
 	y := make([]interface{}, len(configs))
 	for i, v := range configs {
@@ -24,6 +24,15 @@ func (c Config) List() []interface{} {
 	}
 
 	return y
+}
+
+func (p Config) Total() *int64 {
+	conn := meta.MetaDb.GetConnection()
+	var configs []Config
+	var cnt int64
+	conn.Find(&configs).Count(&cnt)
+
+	return &cnt
 }
 
 func (p Config) GetById(id string) interface{} {

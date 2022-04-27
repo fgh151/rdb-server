@@ -17,12 +17,12 @@ type Project struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
-func (p Project) List() []interface{} {
+func (p Project) List(limit int, offset int, sort string, order string) []interface{} {
 	var projects []Project
 
 	conn := meta.MetaDb.GetConnection()
 
-	conn.Find(&projects)
+	conn.Offset(offset).Limit(limit).Order(order + " " + sort).Find(&projects)
 
 	y := make([]interface{}, len(projects))
 	for i, v := range projects {
@@ -30,6 +30,15 @@ func (p Project) List() []interface{} {
 	}
 
 	return y
+}
+
+func (p Project) Total() *int64 {
+	conn := meta.MetaDb.GetConnection()
+	var projects []Project
+	var cnt int64
+	conn.Find(&projects).Count(&cnt)
+
+	return &cnt
 }
 
 func (p Project) GetById(id string) interface{} {

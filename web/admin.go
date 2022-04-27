@@ -12,26 +12,53 @@ import (
 	"strconv"
 )
 
+func getPagination(r *http.Request) (int, int, string, string) {
+
+	v := r.URL.Query()
+
+	limit, err := strconv.Atoi(v.Get("_end"))
+	if err != nil {
+		limit = 10
+	}
+
+	offset, err := strconv.Atoi(v.Get("_start"))
+	if err != nil {
+		offset = 0
+	}
+
+	order := v.Get("_order")
+	if order == "" {
+		order = "id"
+	}
+	sort := v.Get("_sort")
+	if sort == "" {
+		sort = "ASC"
+	}
+
+	return limit - offset, offset, order, sort
+}
+
 func ListTopics(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	listItems(models.Project{}.List(), w)
+	listItems(models.Project{}, r, w)
 }
 
 func ListUsers(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	listItems(models.User{}.List(), w)
+	listItems(models.User{}, r, w)
 }
 
 func ListConfig(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	listItems(models.Config{}.List(), w)
+	listItems(models.Config{}, r, w)
 }
 
-func listItems(arr []interface{}, w http.ResponseWriter) {
+func listItems(model models.Model, r *http.Request, w http.ResponseWriter) {
+	arr := model.List(getPagination(r))
+	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json")
-
-	w.Header().Add("X-Total-Count", strconv.Itoa(len(arr)))
+	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
 
 	resp, _ := json.Marshal(arr)
 	w.WriteHeader(200)
@@ -87,13 +114,11 @@ func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-
 	deleteItem(models.User{}, w, r)
 }
 
 func DeleteConfig(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-
 	deleteItem(models.Config{}, w, r)
 }
 
@@ -141,7 +166,6 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-
 	deleteItem(models.Project{}, w, r)
 }
 
@@ -162,6 +186,7 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	var t models.Project
+	t.Id, _ = uuid.NewUUID()
 
 	err := json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {

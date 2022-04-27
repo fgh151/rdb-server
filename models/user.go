@@ -22,12 +22,12 @@ type User struct {
 	LastLogin    *time.Time     `json:"lastLogin,omitempty"`
 }
 
-func (p User) List() []interface{} {
+func (p User) List(limit int, offset int, sort string, order string) []interface{} {
 	var users []User
 
 	conn := meta.MetaDb.GetConnection()
 
-	conn.Find(&users)
+	conn.Find(&users).Limit(limit).Offset(offset).Order(order + " " + sort)
 
 	y := make([]interface{}, len(users))
 	for i, v := range users {
@@ -35,6 +35,15 @@ func (p User) List() []interface{} {
 	}
 
 	return y
+}
+
+func (p User) Total() *int64 {
+	conn := meta.MetaDb.GetConnection()
+	var users []User
+	var cnt int64
+	conn.Find(&users).Count(&cnt)
+
+	return &cnt
 }
 
 func (p User) GetById(id string) interface{} {
