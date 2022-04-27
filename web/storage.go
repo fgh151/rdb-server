@@ -14,7 +14,7 @@ import (
 )
 
 func StoragePut(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	minioClient, err := getClient()
 	ctx := context.Background()

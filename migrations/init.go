@@ -7,7 +7,7 @@ import (
 )
 
 func Migrate(db *gorm.DB) {
-	err := db.AutoMigrate(&models.Project{}, &models.User{})
+	err := db.AutoMigrate(&models.Project{}, &models.User{}, &models.Config{})
 
 	err2.PanicErr(err)
 }

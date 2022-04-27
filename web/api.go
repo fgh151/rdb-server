@@ -10,7 +10,7 @@ import (
 )
 
 func ApiAuth(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	var l models.LoginForm
 	err := json.NewDecoder(r.Body).Decode(&l)
@@ -36,7 +36,7 @@ func ApiAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiRegister(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	var t models.CreateUserForm
 
@@ -54,7 +54,7 @@ func ApiRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiMe(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	user := auth.GetUserFromRequest(r)
 	resp, _ := json.Marshal(user)

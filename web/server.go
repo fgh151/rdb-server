@@ -61,13 +61,20 @@ func InitServer() {
 	admin.HandleFunc("/topics/{id}", DeleteUser).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/topics/{id}", UpdateUser).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
+	admin.HandleFunc("/config", ListConfig).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/config", CreateConfig).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	admin.HandleFunc("/config/{id}", ConfigItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/config/{id}", DeleteConfig).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/config/{id}", UpdateConfig).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+
 	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler
 	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
 	api := r.PathPrefix("/api").Subrouter()
 	api.Use(auth.BearerVerify)
 	api.HandleFunc("/user/me", ApiMe).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
-	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions)    // each request calls PushHandler
+	api.HandleFunc("/config/{id}", ConfigItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
 	headersOk := handlers.AllowedHeaders(allowedHeaders)
 	originsOk := handlers.AllowedOrigins([]string{"*"})

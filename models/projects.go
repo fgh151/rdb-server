@@ -2,12 +2,13 @@ package models
 
 import (
 	"db-server/meta"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
 )
 
 type Project struct {
-	Id        uint           `gorm:"primarykey" json:"id"`
+	Id        uuid.UUID      `gorm:"primarykey" json:"id"`
 	Topic     string         `json:"topic"`
 	Key       string         `json:"key"`
 	Origins   string         `json:"origins"`

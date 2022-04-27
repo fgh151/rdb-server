@@ -4,12 +4,13 @@ import (
 	"db-server/meta"
 	"db-server/security"
 	"errors"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
 )
 
 type User struct {
-	Id           uint           `gorm:"primarykey" json:"id"`
+	Id           uuid.UUID      `gorm:"primarykey" json:"id"`
 	Email        string         `gorm:"index" json:"email"`
 	Token        string         `gorm:"index" json:"token"`
 	PasswordHash string         `json:"-"`
@@ -66,6 +67,8 @@ func (f CreateUserForm) Save() User {
 		PasswordHash: security.HashPassword(f.Password),
 		Token:        security.GenerateRandomString(15),
 	}
+
+	u.Id, _ = uuid.NewUUID()
 
 	meta.MetaDb.GetConnection().Create(&u)
 

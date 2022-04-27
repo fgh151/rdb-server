@@ -70,7 +70,7 @@ func send403Error(w http.ResponseWriter, message string) {
 
 func PushHandler(w http.ResponseWriter, r *http.Request) {
 
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	topic := getTopic(r)
 
@@ -95,7 +95,7 @@ var upgrader = websocket.Upgrader{
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	topic := getTopic(r)
 
@@ -135,7 +135,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 
 func FindHandler(w http.ResponseWriter, r *http.Request) {
 
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	topic := getTopic(r)
 	requestPayload := getPayload(r)
@@ -150,7 +150,7 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 
 func ListHandler(w http.ResponseWriter, r *http.Request) {
 
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	topic := getTopic(r)
 
@@ -164,7 +164,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	topic := getTopic(r)
 
@@ -183,7 +183,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
-	log.Debug(r.RequestURI)
+	log.Debug(r.Method, r.RequestURI)
 
 	topic := getTopic(r)
 
