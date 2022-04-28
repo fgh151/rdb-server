@@ -39,21 +39,23 @@ func getPagination(r *http.Request) (int, int, string, string) {
 }
 
 func ListTopics(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	listItems(models.Project{}, r, w)
 }
 
 func ListUsers(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	listItems(models.User{}, r, w)
 }
 
 func ListConfig(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	listItems(models.Config{}, r, w)
 }
 
+func ListDs(w http.ResponseWriter, r *http.Request) {
+	listItems(models.DataSource{}, r, w)
+}
+
 func listItems(model models.Model, r *http.Request, w http.ResponseWriter) {
+	log.Debug(r.Method, r.RequestURI)
 	arr := model.List(getPagination(r))
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
@@ -67,17 +69,18 @@ func listItems(model models.Model, r *http.Request, w http.ResponseWriter) {
 }
 
 func UserItem(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	getItem(models.User{}, w, r)
 }
 
 func ConfigItem(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	getItem(models.Config{}, w, r)
 }
 
+func DsItem(w http.ResponseWriter, r *http.Request) {
+	getItem(models.DataSource{}, w, r)
+}
+
 func TopicItem(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	getItem(models.Project{}, w, r)
 }
 
@@ -113,43 +116,34 @@ func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	deleteItem(models.User{}, w, r)
 }
 
 func DeleteConfig(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	deleteItem(models.Config{}, w, r)
 }
 
+func DeleteDs(w http.ResponseWriter, r *http.Request) {
+	deleteItem(models.DataSource{}, w, r)
+}
+
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-
-	vars := mux.Vars(r)
-
-	var t = models.User{}.GetById(vars["id"]).(models.User)
-
-	err := json.NewDecoder(r.Body).Decode(&t)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	meta.MetaDb.GetConnection().Save(&t)
-
-	resp, _ := json.Marshal(t)
-	w.WriteHeader(200)
-	_, err = w.Write(resp)
-	err2.DebugErr(err)
+	updateItem(models.User{}, w, r)
 }
 
 func UpdateConfig(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
+	updateItem(models.Config{}, w, r)
+}
 
+func UpdateDs(w http.ResponseWriter, r *http.Request) {
+	updateItem(models.DataSource{}, w, r)
+}
+
+func updateItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	var t = m.GetById(vars["id"]).(models.Config)
 
-	var t = models.Config{}.GetById(vars["id"]).(models.Config)
-
+	log.Debug(r.Method, r.RequestURI)
 	err := json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
@@ -165,7 +159,6 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
 	deleteItem(models.Project{}, w, r)
 }
 
@@ -221,20 +214,43 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateConfig(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
+	model := models.Config{}
 
-	var t models.Config
-	t.Id, _ = uuid.NewUUID()
+	err := json.NewDecoder(r.Body).Decode(&model)
+	err2.DebugErr(err)
+	model.Id, err = uuid.NewUUID()
+	err2.DebugErr(err)
 
-	err := json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
+		log.Error(err)
 		http.Error(w, err.Error(), 400)
 		return
 	}
+	meta.MetaDb.GetConnection().Create(&model)
 
-	meta.MetaDb.GetConnection().Create(&t)
+	resp, _ := json.Marshal(model)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 
-	resp, _ := json.Marshal(t)
+}
+
+func CreateDs(w http.ResponseWriter, r *http.Request) {
+	model := models.DataSource{}
+
+	err := json.NewDecoder(r.Body).Decode(&model)
+	err2.DebugErr(err)
+	model.Id, err = uuid.NewUUID()
+	err2.DebugErr(err)
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	meta.MetaDb.GetConnection().Create(&model)
+
+	resp, _ := json.Marshal(model)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)

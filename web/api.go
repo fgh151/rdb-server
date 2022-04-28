@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 func ApiAuth(w http.ResponseWriter, r *http.Request) {
@@ -80,4 +81,22 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte(model.Body))
 		err2.DebugErr(err)
 	}
+}
+
+func DSEItem(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	vars := mux.Vars(r)
+	model := models.DataSourceEndpoint{}.GetById(vars["id"]).(models.DataSourceEndpoint)
+
+	arr := model.List(10, 0, "id", "ASC")
+	total := model.Total()
+	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
+
+	resp, _ := json.Marshal(arr)
+	w.WriteHeader(200)
+	_, err := w.Write(resp)
+	err2.DebugErr(err)
 }

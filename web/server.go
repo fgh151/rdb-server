@@ -46,6 +46,7 @@ func InitServer() {
 	em.HandleFunc("/{topic}/{id}", DeleteHandler).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 
 	r.HandleFunc("/config/{id}", ApiConfigItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/dse/{id}", DSEItem).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
 	r.HandleFunc("/admin/auth", Auth).Methods(http.MethodPost, http.MethodOptions)          // each request calls PushHandler
 
 	admin := r.PathPrefix("/admin").Subrouter()
@@ -67,6 +68,18 @@ func InitServer() {
 	admin.HandleFunc("/config/{id}", ConfigItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
 	admin.HandleFunc("/config/{id}", DeleteConfig).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/config/{id}", UpdateConfig).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+
+	//admin.HandleFunc("/ds/e", ListDs).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	//admin.HandleFunc("/ds/e", CreateDs).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	//admin.HandleFunc("/ds/{id}/e", DsItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	//admin.HandleFunc("/ds/{id}/e", DeleteDs).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	//admin.HandleFunc("/ds/{id}/e", UpdateDs).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+
+	admin.HandleFunc("/ds", ListDs).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/ds", CreateDs).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	admin.HandleFunc("/ds/{id}", DsItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/ds/{id}", DeleteDs).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/ds/{id}", UpdateDs).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
 	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler
 	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler

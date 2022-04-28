@@ -1,5 +1,11 @@
 package models
 
+import (
+	"db-server/meta"
+	"db-server/security"
+	"github.com/google/uuid"
+)
+
 type Model interface {
 	List(limit int, offset int, sort string, order string) []interface{}
 
@@ -11,9 +17,15 @@ type Model interface {
 }
 
 func CreateDemo() {
-	f := CreateUserForm{
-		Email:    "test@example.com",
-		Password: "test",
+	var u = User{
+		Email:        "test@example.com",
+		PasswordHash: security.HashPassword("test"),
+		Token:        "123",
+		Active:       true,
+		Admin:        true,
 	}
-	f.Save()
+
+	u.Id, _ = uuid.NewUUID()
+
+	meta.MetaDb.GetConnection().Create(&u)
 }

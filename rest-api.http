@@ -82,3 +82,8 @@ Authorization: Bearer 123
 GET http://localhost:9090/api/config/0db9a268-c629-11ec-b0ef-acde48001122
 Accept: */*
 db-key: 123
+
+### Data source endpoint
+GET http://localhost:9090/dse/e518bbf8-4128-4976-92a4-7bd48cc7dfda
+Accept: */*
+db-key: 123
