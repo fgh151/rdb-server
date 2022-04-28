@@ -6,9 +6,11 @@ import (
 )
 
 type Config struct {
-	Id    uuid.UUID `gorm:"column:id;primary_key" json:"id"`
-	Title string    `json:"title"`
-	Body  string    `json:"body"`
+	Id        uuid.UUID `gorm:"column:id;primary_key" json:"id"`
+	Title     string    `json:"title"`
+	Body      string    `json:"body"`
+	ProjectId uuid.UUID
+	Project   Project
 }
 
 func (c Config) List(limit int, offset int, sort string, order string) []interface{} {
@@ -40,7 +42,7 @@ func (p Config) GetById(id string) interface{} {
 
 	conn := meta.MetaDb.GetConnection()
 
-	conn.First(&config, "id = ?", id)
+	conn.Preload("Project").First(&config, "id = ?", id)
 
 	return config
 }

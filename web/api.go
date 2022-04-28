@@ -69,8 +69,15 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	model := models.Config{}.GetById(vars["id"]).(models.Config)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(200)
-	_, err := w.Write([]byte(model.Body))
-	err2.DebugErr(err)
+
+	rKey := r.Header.Get("db-key")
+
+	if !validateKey(model.Project.Key, rKey) {
+		send403Error(w, "db-key not Valid")
+	} else {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(200)
+		_, err := w.Write([]byte(model.Body))
+		err2.DebugErr(err)
+	}
 }

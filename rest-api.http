@@ -81,4 +81,4 @@ Authorization: Bearer 123
 ### Config
 GET http://localhost:9090/api/config/0db9a268-c629-11ec-b0ef-acde48001122
 Accept: */*
-Authorization: Bearer 123
+db-key: 123

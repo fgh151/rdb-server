@@ -45,7 +45,8 @@ func InitServer() {
 	em.HandleFunc("/{topic}/{id}", UpdateHandler).Methods(http.MethodPatch, http.MethodOptions)  // each request calls PushHandler
 	em.HandleFunc("/{topic}/{id}", DeleteHandler).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 
-	r.HandleFunc("/admin/auth", Auth).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/config/{id}", ApiConfigItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/admin/auth", Auth).Methods(http.MethodPost, http.MethodOptions)          // each request calls PushHandler
 
 	admin := r.PathPrefix("/admin").Subrouter()
 	admin.Use(auth.AdminVerify)
@@ -73,8 +74,7 @@ func InitServer() {
 	api.Use(auth.BearerVerify)
 	api.HandleFunc("/user/me", ApiMe).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
-	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions)       // each request calls PushHandler
-	api.HandleFunc("/config/{id}", ApiConfigItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
 
 	headersOk := handlers.AllowedHeaders(allowedHeaders)
 	originsOk := handlers.AllowedOrigins([]string{"*"})
