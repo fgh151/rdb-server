@@ -84,7 +84,7 @@ type DataSourceEndpoint struct {
 func (e DataSourceEndpoint) List(limit int, offset int, order string, sort string) []interface{} {
 	arr := []interface{}{}
 
-	conn, err := e.connect()
+	conn, err := e.getConnection()
 
 	if err != nil {
 		err2.DebugErr(err)
@@ -96,13 +96,14 @@ func (e DataSourceEndpoint) List(limit int, offset int, order string, sort strin
 
 	defer func() { _ = rows.Close() }()
 
-	cols, _ := rows.Columns()
-	data := make(map[string]string)
-
 	for rows.Next() {
+
+		cols, _ := rows.Columns()
+		data := make(map[string]string)
 
 		columns := make([]string, len(cols))
 		columnPointers := make([]interface{}, len(cols))
+
 		for i := range columns {
 			columnPointers[i] = &columns[i]
 		}
@@ -120,10 +121,21 @@ func (e DataSourceEndpoint) List(limit int, offset int, order string, sort strin
 	return arr
 }
 
-func (e DataSourceEndpoint) connect() (*gorm.DB, error) {
+var dsConnections = make(map[string]*gorm.DB)
+
+func (e DataSourceEndpoint) getConnection() (*gorm.DB, error) {
+	if conn, ok := dsConnections[e.DataSource.Id.String()]; ok {
+		return conn, nil
+	}
+
 	switch e.DataSource.Type {
 	case DSTypeMysql:
-		return gorm.Open(mysql.Open(e.DataSource.Dsn), &gorm.Config{})
+		conn, err := gorm.Open(mysql.Open(e.DataSource.Dsn), &gorm.Config{})
+		if err != nil {
+			return nil, err
+		}
+		dsConnections[e.DataSource.Id.String()] = conn
+		return conn, nil
 	}
 
 	return nil, nil
@@ -141,7 +153,7 @@ func (e DataSourceEndpoint) GetById(id string) interface{} {
 
 func (e DataSourceEndpoint) Total() *int64 {
 
-	conn, err := e.connect()
+	conn, err := e.getConnection()
 
 	var cnt int64 = 0
 

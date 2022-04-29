@@ -92,10 +92,11 @@ func DSEItem(w http.ResponseWriter, r *http.Request) {
 	arr := model.List(10, 0, "id", "ASC")
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
 
 	resp, _ := json.Marshal(arr)
+
 	w.WriteHeader(200)
 	_, err := w.Write(resp)
 	err2.DebugErr(err)
