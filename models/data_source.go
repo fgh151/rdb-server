@@ -5,6 +5,8 @@ import (
 	"db-server/meta"
 	"github.com/google/uuid"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"time"
 )
@@ -14,6 +16,7 @@ type DsType string
 const (
 	DSTypeMysql    DsType = "Mysql"
 	DSTypePostgres DsType = "Postgres"
+	DSTypeSqlite   DsType = "Sqlite"
 )
 
 type DataSource struct {
@@ -131,14 +134,26 @@ func (e DataSourceEndpoint) getConnection() (*gorm.DB, error) {
 	switch e.DataSource.Type {
 	case DSTypeMysql:
 		conn, err := gorm.Open(mysql.Open(e.DataSource.Dsn), &gorm.Config{})
-		if err != nil {
-			return nil, err
-		}
-		dsConnections[e.DataSource.Id.String()] = conn
-		return conn, nil
+		return e.attachConnectionToPool(conn, err)
+
+	case DSTypePostgres:
+		conn, err := gorm.Open(postgres.Open(e.DataSource.Dsn), &gorm.Config{})
+		return e.attachConnectionToPool(conn, err)
+
+	case DSTypeSqlite:
+		conn, err := gorm.Open(sqlite.Open(e.DataSource.Dsn), &gorm.Config{})
+		return e.attachConnectionToPool(conn, err)
 	}
 
 	return nil, nil
+}
+
+func (e DataSourceEndpoint) attachConnectionToPool(conn *gorm.DB, err error) (*gorm.DB, error) {
+	if err != nil {
+		return nil, err
+	}
+	dsConnections[e.DataSource.Id.String()] = conn
+	return conn, nil
 }
 
 func (e DataSourceEndpoint) GetById(id string) interface{} {
