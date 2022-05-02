@@ -85,7 +85,7 @@ type DataSourceEndpoint struct {
 }
 
 func (e DataSourceEndpoint) List(limit int, offset int, order string, sort string) []interface{} {
-	arr := []interface{}{}
+	var arr []interface{}
 
 	conn, err := e.getConnection()
 

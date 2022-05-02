@@ -13,7 +13,7 @@ type Config struct {
 	Project   Project
 }
 
-func (c Config) List(limit int, offset int, sort string, order string) []interface{} {
+func (p Config) List(limit int, offset int, sort string, order string) []interface{} {
 	var configs []Config
 
 	conn := meta.MetaDb.GetConnection()

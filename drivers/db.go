@@ -57,7 +57,8 @@ func (s database) Find(dbName string, collectionName string, filter interface{})
 	var res []*bson.D
 
 	cur, err := collection.Find(ctx, filter)
-	defer cur.Close(ctx)
+
+	defer func() { _ = cur.Close(ctx) }()
 
 	for cur.Next(ctx) {
 
@@ -84,7 +85,8 @@ func (s database) List(dbName string, collectionName string) ([]*bson.D, error) 
 	var res []*bson.D
 
 	cur, err := collection.Find(ctx, bson.D{{}}, findOptions)
-	defer cur.Close(ctx)
+
+	defer func() { _ = cur.Close(ctx) }()
 
 	for cur.Next(ctx) {
 
@@ -98,9 +100,7 @@ func (s database) List(dbName string, collectionName string) ([]*bson.D, error) 
 	return res, err
 }
 
-// defined type with interface
 type Db interface {
-	// here will be methods
 	GetConnection() (*mongo.Client, error)
 
 	GetContext() context.Context
@@ -117,7 +117,6 @@ type Db interface {
 // declare variable
 var instance *database = nil
 
-// Get only one object
 func GetDbInstance() *database {
 	if instance == nil {
 		instance = new(database)

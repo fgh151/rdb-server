@@ -1,6 +1,7 @@
 package events
 
 import (
+	err2 "db-server/err"
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"sync"
@@ -53,7 +54,8 @@ func (e *EventHandler) RegisterNewMessage(topic string, content interface{}) {
 	if currentList, ok := e.subscribers.list[topic]; ok {
 		for _, listener := range currentList {
 			msg, _ := json.Marshal(content)
-			listener.WriteMessage(1, msg)
+			err := listener.WriteMessage(1, msg)
+			err2.DebugErr(err)
 		}
 	}
 }
