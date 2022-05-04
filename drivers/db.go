@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
-	"time"
 )
 
 type database struct {
@@ -136,7 +135,7 @@ func (s database) GetConnection() (*mongo.Client, error) {
 
 	dbUri := os.Getenv("DB_URI")
 
-	s.ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
+	s.ctx = context.TODO()
 
 	var err error
 
