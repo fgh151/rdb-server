@@ -9,8 +9,8 @@ type Config struct {
 	Id        uuid.UUID `gorm:"column:id;primary_key" json:"id"`
 	Title     string    `json:"title"`
 	Body      string    `json:"body"`
-	ProjectId uuid.UUID
-	Project   Project
+	ProjectId uuid.UUID `json:"project_id"`
+	Project   Project   `json:"project"`
 }
 
 func (p Config) List(limit int, offset int, sort string, order string) []interface{} {
