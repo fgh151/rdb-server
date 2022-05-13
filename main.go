@@ -32,11 +32,14 @@ func main() {
 	err := godotenv.Load()
 	err2.PanicErr(err)
 
-	hook, err := logrus_sentry.NewSentryHook(os.Getenv("SENTRY_DSN"), []log.Level{
-		log.PanicLevel,
-		log.FatalLevel,
-		log.ErrorLevel,
-	})
+	hook, err := logrus_sentry.NewWithTagsSentryHook(
+		os.Getenv("SENTRY_DSN"),
+		map[string]string{"ENVIRONMENT": os.Getenv("SENTRY_ENVIRONMENT")},
+		[]log.Level{
+			log.PanicLevel,
+			log.FatalLevel,
+			log.ErrorLevel,
+		})
 	if err == nil {
 		log.AddHook(hook)
 	}
