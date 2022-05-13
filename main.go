@@ -51,11 +51,13 @@ func main() {
 	if *migrateFlag {
 		log.Debug("Try to migrate db")
 		migrations.Migrate(db)
+		os.Exit(0)
 	}
 
 	if *demoFlag {
 		log.Debug("Fill db demo data")
 		models.CreateDemo()
+		os.Exit(0)
 	}
 
 	defer func() {
