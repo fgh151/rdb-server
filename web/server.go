@@ -81,6 +81,12 @@ func InitServer() {
 	admin.HandleFunc("/ds/{id}", DeleteDs).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/ds/{id}", UpdateDs).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
+	admin.HandleFunc("/cf", ListCf).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/cf", CreateCf).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	admin.HandleFunc("/cf/{id}", CfItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/cf/{id}", DeleteCf).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/cf/{id}", UpdateCf).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+
 	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler
 	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
 	api := r.PathPrefix("/api").Subrouter()

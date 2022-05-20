@@ -54,6 +54,10 @@ func ListDs(w http.ResponseWriter, r *http.Request) {
 	listItems(models.DataSource{}, r, w)
 }
 
+func ListCf(w http.ResponseWriter, r *http.Request) {
+	listItems(models.CloudFunction{}, r, w)
+}
+
 func listItems(model models.Model, r *http.Request, w http.ResponseWriter) {
 	log.Debug(r.Method, r.RequestURI)
 	arr := model.List(getPagination(r))
@@ -78,6 +82,10 @@ func ConfigItem(w http.ResponseWriter, r *http.Request) {
 
 func DsItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.DataSource{}, w, r)
+}
+
+func CfItem(w http.ResponseWriter, r *http.Request) {
+	getItem(models.CloudFunction{}, w, r)
 }
 
 func TopicItem(w http.ResponseWriter, r *http.Request) {
@@ -127,6 +135,10 @@ func DeleteDs(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.DataSource{}, w, r)
 }
 
+func DeleteCf(w http.ResponseWriter, r *http.Request) {
+	deleteItem(models.CloudFunction{}, w, r)
+}
+
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	updateItem(models.User{}, w, r)
 }
@@ -137,6 +149,10 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 
 func UpdateDs(w http.ResponseWriter, r *http.Request) {
 	updateItem(models.DataSource{}, w, r)
+}
+
+func UpdateCf(w http.ResponseWriter, r *http.Request) {
+	updateItem(models.CloudFunction{}, w, r)
 }
 
 func updateItem(m models.Model, w http.ResponseWriter, r *http.Request) {
@@ -237,6 +253,27 @@ func CreateConfig(w http.ResponseWriter, r *http.Request) {
 
 func CreateDs(w http.ResponseWriter, r *http.Request) {
 	model := models.DataSource{}
+
+	err := json.NewDecoder(r.Body).Decode(&model)
+	err2.DebugErr(err)
+	model.Id, err = uuid.NewUUID()
+	err2.DebugErr(err)
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	meta.MetaDb.GetConnection().Create(&model)
+
+	resp, _ := json.Marshal(model)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
+}
+
+func CreateCf(w http.ResponseWriter, r *http.Request) {
+	model := models.CloudFunction{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
