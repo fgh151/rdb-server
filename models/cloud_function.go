@@ -8,9 +8,11 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"io"
 	"os"
 	"strings"
+	"time"
 )
 
 //  cf := models.CloudFunction{
@@ -21,10 +23,15 @@ import (
 //	cf.Run()
 
 type CloudFunction struct {
-	Id        uuid.UUID `gorm:"primarykey" json:"id"`
-	Title     string    `json:"title"`
-	Container string    `json:"container"`
-	Params    []string  `json:"params"`
+	Id        uuid.UUID      `gorm:"primarykey" json:"id"`
+	ProjectId uuid.UUID      `json:"project_id"`
+	Title     string         `json:"title"`
+	Container string         `json:"container"`
+	Params    []string       `json:"params"`
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Project   Project
 }
 
 type containerUri struct {

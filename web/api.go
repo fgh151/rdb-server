@@ -101,3 +101,10 @@ func DSEItem(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write(resp)
 	err2.DebugErr(err)
 }
+
+func CfRun(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	cf := models.CloudFunction{}.GetById(vars["id"]).(models.CloudFunction)
+	cf.Run()
+	w.WriteHeader(200)
+}

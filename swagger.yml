@@ -24,7 +24,6 @@ paths:
             type: array
         403:
           description: Not allowed for this key
-
   /em/find/{topic}:
     post:
       parameters:
@@ -108,7 +107,6 @@ paths:
           description: delete message in topic
         403:
           description: Not allowed for this key
-
   /api/user/auth:
     post:
       consumes:
@@ -132,8 +130,6 @@ paths:
           description: result
           schema:
             type: array
-
-
   /api/user/register:
     post:
       consumes:
@@ -157,8 +153,6 @@ paths:
           description: result
           schema:
             type: array
-
-
   /api/user/me:
     get:
       security:
@@ -168,7 +162,6 @@ paths:
           description: list the topic records
           schema:
             type: array
-
   /api/storage:
     post:
       security:
@@ -186,6 +179,21 @@ paths:
           description: result and path
           schema:
             type: array
+
+  /api/cf/{id}/run:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Run cloud function by id.
+      parameters:
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Function Id
+      responses:
+        200:
+          description: Start function
 
 produces:
 - application/json

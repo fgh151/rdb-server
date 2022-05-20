@@ -94,6 +94,7 @@ func InitServer() {
 	api.HandleFunc("/user/me", ApiMe).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
 	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	api.HandleFunc("/cf/{id}/run", CfRun).Methods(http.MethodGet, http.MethodOptions)   // each request calls PushHandler
 
 	headersOk := handlers.AllowedHeaders(allowedHeaders)
 	originsOk := handlers.AllowedOrigins([]string{"*"})
