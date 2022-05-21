@@ -7,7 +7,15 @@ import (
 )
 
 func Migrate(db *gorm.DB) {
-	err := db.AutoMigrate(&models.Project{}, &models.User{}, &models.Config{}, &models.DataSource{}, &models.DataSourceEndpoint{}, models.CloudFunction{})
+	err := db.AutoMigrate(
+		&models.Project{},
+		&models.User{},
+		&models.Config{},
+		&models.DataSource{},
+		&models.DataSourceEndpoint{},
+		&models.CloudFunction{},
+		&models.CloudFunctionLog{},
+	)
 
 	err2.PanicErr(err)
 }

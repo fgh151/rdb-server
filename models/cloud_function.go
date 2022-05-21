@@ -2,15 +2,15 @@ package models
 
 import (
 	"context"
+	err2 "db-server/err"
 	"db-server/meta"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"io"
-	"os"
 	"strings"
 	"time"
 )
@@ -111,59 +111,63 @@ func (p CloudFunction) Run() {
 
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		panic(err)
-	}
+	p.checkErr(err)
 
 	path := uri.Host + "/" + uri.Vendor + "/" + uri.Image
 
 	// Делаем docker pull
 	reader, err := cli.ImagePull(ctx, path, types.ImagePullOptions{})
-	if err != nil {
-		panic(err)
-	}
+	p.checkErr(err)
 
-	if err != nil {
-		panic(err)
-	}
-	io.Copy(os.Stdout, reader)
+	buf := new(strings.Builder)
+	_, err = io.Copy(buf, reader)
+	log.Debug(buf.String())
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: uri.Image,
 		Cmd:   strings.Split(p.Params, "\\"),
 	}, nil, nil, nil, "")
-	if err != nil {
-		panic(err)
-	}
+	p.checkErr(err)
 
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
+		err2.DebugErr(err)
+		p.log("error " + err.Error())
+		return
 	}
 
 	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
-		if err != nil {
-			panic(err)
-		}
+		p.checkErr(err)
 	case <-statusCh:
 	}
 
-	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
-	if err != nil {
-		panic(err)
-	}
+	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: log.GetLevel() >= log.InfoLevel})
+	p.checkErr(err)
 
-	stdcopy.StdCopy(os.Stdout, os.Stderr, out)
+	buf = new(strings.Builder)
+	_, err = io.Copy(buf, out)
+	p.checkErr(err)
 
-	p.log(err)
+	p.log(buf.String())
 }
 
-func (p CloudFunction) log(err error) {
-	log := CloudFunctionLog{
+func (p CloudFunction) checkErr(err error) {
+	if err != nil {
+		err2.DebugErr(err)
+		p.log("error " + err.Error())
+		return
+	}
+}
+
+func (p CloudFunction) log(result string) {
+	flog := CloudFunctionLog{
 		FunctionId: p.Id,
 		RunAt:      time.Now(),
+		Result:     result,
 	}
-	log.Id, err = uuid.NewUUID()
-	meta.MetaDb.GetConnection().Create(&log)
+	var err error
+	flog.Id, err = uuid.NewUUID()
+	err2.DebugErr(err)
+	meta.MetaDb.GetConnection().Create(&flog)
 }
