@@ -34,6 +34,13 @@ type CloudFunction struct {
 	Project   Project
 }
 
+type CloudFunctionLog struct {
+	Id         uuid.UUID `gorm:"primarykey" json:"id"`
+	FunctionId uuid.UUID `json:"function_id"`
+	RunAt      time.Time `json:"run_at"`
+	Result     string    `json:"result"`
+}
+
 type containerUri struct {
 	Host    string
 	Vendor  string
@@ -149,4 +156,14 @@ func (p CloudFunction) Run() {
 
 	stdcopy.StdCopy(os.Stdout, os.Stderr, out)
 
+	p.log(err)
+}
+
+func (p CloudFunction) log(err error) {
+	log := CloudFunctionLog{
+		FunctionId: p.Id,
+		RunAt:      time.Now(),
+	}
+	log.Id, err = uuid.NewUUID()
+	meta.MetaDb.GetConnection().Create(&log)
 }
