@@ -27,7 +27,7 @@ type CloudFunction struct {
 	ProjectId uuid.UUID      `json:"project_id"`
 	Title     string         `json:"title"`
 	Container string         `json:"container"`
-	Params    []string       `json:"params"`
+	Params    string         `json:"params"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
@@ -123,7 +123,7 @@ func (p CloudFunction) Run() {
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: uri.Image,
-		Cmd:   p.Params,
+		Cmd:   strings.Split(p.Params, "\\"),
 	}, nil, nil, nil, "")
 	if err != nil {
 		panic(err)
