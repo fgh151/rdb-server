@@ -44,10 +44,6 @@ func main() {
 		log.AddHook(hook)
 	}
 
-	log.Debug("Init mongo db connection")
-
-	client, _ := drivers.GetDbInstance().GetConnection()
-
 	log.Debug("Init meta db connection")
 	db := meta.MetaDb.GetConnection()
 
@@ -62,6 +58,10 @@ func main() {
 		models.CreateDemo()
 		os.Exit(0)
 	}
+
+	log.Debug("Init mongo db connection")
+
+	client, _ := drivers.GetDbInstance().GetConnection()
 
 	defer func() {
 		log.Debug("Close mongo db connection")
