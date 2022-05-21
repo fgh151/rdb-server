@@ -84,6 +84,7 @@ func InitServer() {
 	admin.HandleFunc("/cf", ListCf).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
 	admin.HandleFunc("/cf", CreateCf).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
 	admin.HandleFunc("/cf/{id}", CfItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/cf/{id}/log", CfLog).Methods(http.MethodGet, http.MethodOptions)   // each request calls PushHandler
 	admin.HandleFunc("/cf/{id}", DeleteCf).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/cf/{id}", UpdateCf).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 

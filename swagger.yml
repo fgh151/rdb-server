@@ -194,6 +194,27 @@ paths:
       responses:
         200:
           description: Start function
+          schema:
+            type: array
+        403:
+          description: Not allowed for this key
+
+  /api/cf/{id}/log:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Logs cloud function.
+      parameters:
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Function Id
+      responses:
+        200:
+          description: Start function
+        403:
+          description: Not allowed for this key
 
 produces:
 - application/json

@@ -41,6 +41,30 @@ type CloudFunctionLog struct {
 	Result     string    `json:"result"`
 }
 
+func ListCfLog(fId uuid.UUID, limit int, offset int, sort string, order string) []interface{} {
+	var sources []CloudFunctionLog
+
+	conn := meta.MetaDb.GetConnection()
+
+	conn.Find(&sources, CloudFunctionLog{FunctionId: fId}).Limit(limit).Offset(offset).Order(order + " " + sort)
+
+	y := make([]interface{}, len(sources))
+	for i, v := range sources {
+		y[i] = v
+	}
+
+	return y
+}
+
+func LogsTotal(fId uuid.UUID) *int64 {
+	conn := meta.MetaDb.GetConnection()
+	var sources []CloudFunctionLog
+	var cnt int64
+	conn.Find(&sources, CloudFunctionLog{FunctionId: fId}).Count(&cnt)
+
+	return &cnt
+}
+
 type containerUri struct {
 	Host    string
 	Vendor  string

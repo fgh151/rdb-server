@@ -88,6 +88,24 @@ func CfItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.CloudFunction{}, w, r)
 }
 
+func CfLog(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	vars := mux.Vars(r)
+	f := models.CloudFunction{}.GetById(vars["id"]).(models.CloudFunction)
+
+	l, o, s, or := getPagination(r)
+	arr := models.ListCfLog(f.Id, l, o, s, or)
+	total := models.LogsTotal(f.Id)
+	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
+
+	resp, _ := json.Marshal(arr)
+	w.WriteHeader(200)
+	_, err := w.Write(resp)
+	err2.DebugErr(err)
+}
+
 func TopicItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.Project{}, w, r)
 }
