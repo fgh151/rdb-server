@@ -3,8 +3,10 @@ package web
 import (
 	"db-server/auth"
 	err2 "db-server/err"
+	"db-server/meta"
 	"db-server/models"
 	"encoding/json"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -103,8 +105,36 @@ func DSEItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func CfRun(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
 	vars := mux.Vars(r)
 	cf := models.CloudFunction{}.GetById(vars["id"]).(models.CloudFunction)
-	cf.Run()
+
+	id, _ := uuid.NewUUID()
+
+	cf.Run(id)
+	m := make(map[string]string)
+	m["id"] = id.String()
+
+	resp, _ := json.Marshal(m)
 	w.WriteHeader(200)
+	_, err := w.Write(resp)
+	err2.DebugErr(err)
+}
+
+func CfRunLog(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	vars := mux.Vars(r)
+
+	var logModel models.CloudFunctionLog
+
+	conn := meta.MetaDb.GetConnection()
+
+	conn.First(&logModel, "id = ? AND function_id = ?", vars["rid"], vars["id"])
+
+	resp, _ := json.Marshal(logModel)
+	w.WriteHeader(200)
+	_, err := w.Write(resp)
+	err2.DebugErr(err)
 }

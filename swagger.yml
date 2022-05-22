@@ -216,6 +216,28 @@ paths:
         403:
           description: Not allowed for this key
 
+  /api/cf/{id}/run/{rid}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Run result.
+      parameters:
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Function Id
+        - in: path
+          name: rid
+          type: string
+          required: true
+          description: Run Id
+      responses:
+        200:
+          description: Run result
+        403:
+          description: Not allowed for this key
+
 produces:
 - application/json
 schemes:

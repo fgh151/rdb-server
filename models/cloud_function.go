@@ -129,19 +129,19 @@ func (p CloudFunction) Delete(id string) {
 	conn.Where("id = ?", id).Delete(&p)
 }
 
-func (p CloudFunction) Run() {
+func (p CloudFunction) Run(runId uuid.UUID) {
 
 	uri := getContainerUri(p.Container)
 
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	p.checkErr(err)
+	p.checkErr(runId, err)
 
 	path := uri.Host + "/" + uri.Vendor + "/" + uri.Image
 
 	// Делаем docker pull
 	reader, err := cli.ImagePull(ctx, path, types.ImagePullOptions{})
-	p.checkErr(err)
+	p.checkErr(runId, err)
 
 	buf := new(strings.Builder)
 	_, err = io.Copy(buf, reader)
@@ -151,47 +151,47 @@ func (p CloudFunction) Run() {
 		Image: uri.Image,
 		Cmd:   strings.Split(p.Params, "\\"),
 	}, nil, nil, nil, "")
-	p.checkErr(err)
+	p.checkErr(runId, err)
 
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		err2.DebugErr(err)
-		p.log("error " + err.Error())
+		p.log(runId, "error "+err.Error())
 		return
 	}
 
 	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
-		p.checkErr(err)
+		p.checkErr(runId, err)
 	case <-statusCh:
 	}
 
 	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: log.GetLevel() >= log.InfoLevel})
-	p.checkErr(err)
+	p.checkErr(runId, err)
 
 	buf = new(strings.Builder)
 	_, err = io.Copy(buf, out)
-	p.checkErr(err)
+	p.checkErr(runId, err)
 
-	p.log(buf.String())
+	p.log(runId, buf.String())
 }
 
-func (p CloudFunction) checkErr(err error) {
+func (p CloudFunction) checkErr(id uuid.UUID, err error) {
 	if err != nil {
 		err2.DebugErr(err)
-		p.log("error " + err.Error())
+		p.log(id, "error "+err.Error())
 		return
 	}
 }
 
-func (p CloudFunction) log(result string) {
+func (p CloudFunction) log(id uuid.UUID, result string) {
 	flog := CloudFunctionLog{
 		FunctionId: p.Id,
 		RunAt:      time.Now(),
 		Result:     result,
+		Id:         id,
 	}
 	var err error
-	flog.Id, err = uuid.NewUUID()
 	err2.DebugErr(err)
 	meta.MetaDb.GetConnection().Create(&flog)
 }
