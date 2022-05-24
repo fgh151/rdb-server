@@ -4,6 +4,8 @@ import (
 	err2 "db-server/err"
 	"encoding/json"
 	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
+	"strconv"
 	"sync"
 )
 
@@ -29,6 +31,8 @@ func (e *EventHandler) Subscribe(topic string, listener *websocket.Conn) {
 	defer e.Unlock()
 
 	currentList = append(currentList, listener)
+
+	log.Debug("Topic " + topic + " subscribers " + strconv.Itoa(len(currentList)))
 
 	e.subscribers.list[topic] = currentList
 }
