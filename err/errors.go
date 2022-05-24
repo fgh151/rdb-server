@@ -14,3 +14,9 @@ func DebugErr(err error) {
 		log.Debug("Err " + err.Error())
 	}
 }
+
+func WarnErr(err error) {
+	if err != nil {
+		log.Warn("Err " + err.Error())
+	}
+}

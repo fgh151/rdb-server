@@ -4,6 +4,7 @@ import (
 	"context"
 	err2 "db-server/err"
 	"db-server/meta"
+	"errors"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -72,8 +73,9 @@ type containerUri struct {
 	Version string
 }
 
-func getContainerUri(source string) containerUri {
+func getContainerUri(source string) (containerUri, error) {
 
+	log.Debug("Parse uri " + source)
 	uri := containerUri{}
 	parts := strings.Split(source, ":")
 
@@ -83,11 +85,15 @@ func getContainerUri(source string) containerUri {
 
 	pathParts := strings.Split(parts[0], "/")
 
+	if len(pathParts) < 3 {
+		return containerUri{}, errors.New("Wrong source " + source)
+	}
+
 	uri.Host = pathParts[0]
 	uri.Vendor = pathParts[1]
 	uri.Image = pathParts[2]
 
-	return uri
+	return uri, nil
 }
 
 func (p CloudFunction) List(limit int, offset int, sort string, order string) []interface{} {
@@ -129,9 +135,19 @@ func (p CloudFunction) Delete(id string) {
 	conn.Where("id = ?", id).Delete(&p)
 }
 
+func prepareDockerParams(raw string) []string {
+	parts := strings.Split(raw, "\\")
+	for i := range parts {
+		parts[i] = strings.TrimSpace(parts[i])
+	}
+	return parts
+}
+
 func (p CloudFunction) Run(runId uuid.UUID) {
 
-	uri := getContainerUri(p.Container)
+	uri, err := getContainerUri(p.Container)
+
+	err2.WarnErr(err)
 
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -149,7 +165,7 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: uri.Image,
-		Cmd:   strings.Split(p.Params, "\\"),
+		Cmd:   prepareDockerParams(p.Params),
 	}, nil, nil, nil, "")
 	p.checkErr(runId, err)
 
@@ -169,11 +185,30 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: log.GetLevel() >= log.InfoLevel})
 	p.checkErr(runId, err)
 
-	buf = new(strings.Builder)
-	_, err = io.Copy(buf, out)
+	result, err := makeResultFromStream(out)
 	p.checkErr(runId, err)
 
-	p.log(runId, buf.String())
+	log.Debug("Cf run result " + runId.String() + " " + result)
+
+	p.log(runId, result)
+}
+
+func makeResultFromStream(stream io.Reader) (string, error) {
+	buf := new(strings.Builder)
+	_, err := io.Copy(buf, stream)
+
+	if err != nil {
+		return "", err
+	}
+
+	result := strings.TrimSpace(buf.String())
+
+	//see https://pkg.go.dev/github.com/pborman/ansi#pkg-constants
+	result = strings.ReplaceAll(result, "\001", "")
+	result = strings.ReplaceAll(result, "\000", "")
+	result = strings.ReplaceAll(result, "\005", "")
+
+	return result, nil
 }
 
 func (p CloudFunction) checkErr(id uuid.UUID, err error) {

@@ -112,7 +112,7 @@ func CfRun(w http.ResponseWriter, r *http.Request) {
 
 	id, _ := uuid.NewUUID()
 
-	cf.Run(id)
+	go cf.Run(id)
 	m := make(map[string]string)
 	m["id"] = id.String()
 

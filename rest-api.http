@@ -87,3 +87,8 @@ db-key: 123
 GET http://localhost:9090/dse/e518bbf8-4128-4976-92a4-7bd48cc7dfda
 Accept: */*
 db-key: 123
+
+### Run function
+GET http://localhost:9090/api/cf/62e6c3ac-d8bb-11ec-b095-acde48001122/run
+Accept: */*
+Authorization: Bearer 123

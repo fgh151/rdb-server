@@ -106,6 +106,7 @@ func InitServer() {
 
 	http.Handle("/", r)
 
-	log.Debug("Start web server")
-	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_ADDR")+":"+os.Getenv("SERVER_PORT"), handlers.CORS(originsOk, headersOk, methodsOk, s)(r)))
+	server := os.Getenv("SERVER_ADDR") + ":" + os.Getenv("SERVER_PORT")
+	log.Debug("Start web server " + server)
+	log.Fatal(http.ListenAndServe(server, handlers.CORS(originsOk, headersOk, methodsOk, s)(r)))
 }
