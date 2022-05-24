@@ -33,6 +33,8 @@ type CloudFunction struct {
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 	Project   Project
+
+	RunCount int64 `gorm:"-:migration" json:"run_count"`
 }
 
 type CloudFunctionLog struct {
@@ -105,6 +107,7 @@ func (p CloudFunction) List(limit int, offset int, sort string, order string) []
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {
+		v.RunCount = *LogsTotal(v.Id)
 		y[i] = v
 	}
 
@@ -126,6 +129,10 @@ func (p CloudFunction) GetById(id string) interface{} {
 	conn := meta.MetaDb.GetConnection()
 
 	conn.First(&source, "id = ?", id)
+
+	uid, _ := uuid.Parse(id)
+
+	source.RunCount = *LogsTotal(uid)
 
 	return source
 }
