@@ -6,7 +6,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"os"
 )
 
@@ -14,43 +13,36 @@ type Connection struct {
 	db *gorm.DB
 }
 
-func (c Connection) connect() (*gorm.DB, error) {
+func (c Connection) connect() *gorm.DB {
 	log.Debug("Set meta db driver " + os.Getenv("META_DB_TYPE"))
+
+	var db *gorm.DB
+	var err error
+
 	switch os.Getenv("META_DB_TYPE") {
 	case "sqlite":
-		return gorm.Open(sqlite.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
 	case "mysql":
-		return gorm.Open(mysql.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
+		db, err = gorm.Open(mysql.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
 	case "postgres":
-		return gorm.Open(postgres.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
 	}
-	panic("failed to connect database")
+
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	if log.GetLevel() >= log.DebugLevel {
+		return db.Debug()
+	}
+
+	return db
 }
 
 func (c Connection) GetConnection() *gorm.DB {
 
 	if c.db == nil {
-		c.db, _ = c.connect()
-
-		switch log.GetLevel() {
-		case log.PanicLevel:
-			c.db.Logger.LogMode(logger.Silent)
-			break
-		case log.FatalLevel:
-			c.db.Logger.LogMode(logger.Silent)
-			break
-		case log.ErrorLevel:
-			c.db.Logger.LogMode(logger.Error)
-			break
-		case log.WarnLevel:
-			c.db.Logger.LogMode(logger.Warn)
-			break
-		case log.InfoLevel:
-		case log.DebugLevel:
-		case log.TraceLevel:
-			c.db.Logger.LogMode(logger.Info)
-			break
-		}
+		c.db = c.connect()
 	}
 
 	return c.db
