@@ -158,35 +158,69 @@ func DeleteCf(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	updateItem(models.User{}, w, r)
+	log.Debug(r.Method, r.RequestURI)
+	vars := mux.Vars(r)
+	var exist = models.User{}.GetById(vars["id"]).(models.User)
+	newm := models.User{}
+
+	err := json.NewDecoder(r.Body).Decode(&newm)
+
+	newm.CreatedAt = exist.CreatedAt
+	newm.LastLogin = exist.LastLogin
+	newm.PasswordHash = exist.PasswordHash
+
+	meta.MetaDb.GetConnection().Save(&newm)
+
+	resp, _ := json.Marshal(newm)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func UpdateConfig(w http.ResponseWriter, r *http.Request) {
-	updateItem(models.Config{}, w, r)
+	log.Debug(r.Method, r.RequestURI)
+	newm := models.Config{}
+
+	err := json.NewDecoder(r.Body).Decode(&newm)
+	meta.MetaDb.GetConnection().Save(&newm)
+
+	resp, _ := json.Marshal(newm)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func UpdateDs(w http.ResponseWriter, r *http.Request) {
-	updateItem(models.DataSource{}, w, r)
+	log.Debug(r.Method, r.RequestURI)
+	vars := mux.Vars(r)
+	var exist = models.DataSource{}.GetById(vars["id"]).(models.DataSource)
+	newm := models.DataSource{}
+
+	err := json.NewDecoder(r.Body).Decode(&newm)
+
+	newm.CreatedAt = exist.CreatedAt
+
+	meta.MetaDb.GetConnection().Save(&newm)
+
+	resp, _ := json.Marshal(newm)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func UpdateCf(w http.ResponseWriter, r *http.Request) {
-	updateItem(models.CloudFunction{}, w, r)
-}
-
-func updateItem(m models.Model, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	var t = m.GetById(vars["id"]).(models.Config)
-
 	log.Debug(r.Method, r.RequestURI)
-	err := json.NewDecoder(r.Body).Decode(&t)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
+	vars := mux.Vars(r)
+	var exist = models.CloudFunction{}.GetById(vars["id"]).(models.CloudFunction)
+	newm := models.CloudFunction{}
 
-	meta.MetaDb.GetConnection().Save(&t)
+	err := json.NewDecoder(r.Body).Decode(&newm)
 
-	resp, _ := json.Marshal(t)
+	newm.CreatedAt = exist.CreatedAt
+
+	meta.MetaDb.GetConnection().Save(&newm)
+
+	resp, _ := json.Marshal(newm)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
@@ -295,7 +329,9 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
-	model.Id, err = uuid.NewUUID()
+	id, err := uuid.NewUUID()
+	model.Id = id
+
 	err2.DebugErr(err)
 
 	if err != nil {

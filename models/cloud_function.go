@@ -34,7 +34,7 @@ type CloudFunction struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 	Project   Project
 
-	RunCount int64 `gorm:"-:migration" json:"run_count"`
+	RunCount int64 `gorm:"-:all" json:"run_count"`
 }
 
 type CloudFunctionLog struct {
