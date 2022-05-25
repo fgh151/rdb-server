@@ -6,6 +6,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"os"
 )
 
@@ -30,6 +31,26 @@ func (c Connection) GetConnection() *gorm.DB {
 
 	if c.db == nil {
 		c.db, _ = c.connect()
+
+		switch log.GetLevel() {
+		case log.PanicLevel:
+			c.db.Logger.LogMode(logger.Silent)
+			break
+		case log.FatalLevel:
+			c.db.Logger.LogMode(logger.Silent)
+			break
+		case log.ErrorLevel:
+			c.db.Logger.LogMode(logger.Error)
+			break
+		case log.WarnLevel:
+			c.db.Logger.LogMode(logger.Warn)
+			break
+		case log.InfoLevel:
+		case log.DebugLevel:
+		case log.TraceLevel:
+			c.db.Logger.LogMode(logger.Info)
+			break
+		}
 	}
 
 	return c.db
