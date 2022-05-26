@@ -2,6 +2,7 @@ package web
 
 import (
 	err2 "db-server/err"
+	"db-server/messages"
 	"db-server/meta"
 	"db-server/models"
 	"encoding/json"
@@ -59,7 +60,7 @@ func ListCf(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListPush(w http.ResponseWriter, r *http.Request) {
-	listItems(models.PushMessage{}, r, w)
+	listItems(messages.PushMessage{}, r, w)
 }
 
 func listItems(model models.Model, r *http.Request, w http.ResponseWriter) {
@@ -93,7 +94,7 @@ func CfItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func PushItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.PushMessage{}, w, r)
+	getItem(messages.PushMessage{}, w, r)
 }
 
 func CfLog(w http.ResponseWriter, r *http.Request) {
@@ -166,7 +167,7 @@ func DeleteCf(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeletePush(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.PushMessage{}, w, r)
+	deleteItem(messages.PushMessage{}, w, r)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -241,8 +242,8 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 func UpdatePush(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
-	newm := models.PushMessage{}
+	var exist = messages.PushMessage{}.GetById(vars["id"]).(messages.PushMessage)
+	newm := messages.PushMessage{}
 
 	err := json.NewDecoder(r.Body).Decode(&newm)
 
@@ -382,7 +383,7 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 
 func CreatePush(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	model := models.PushMessage{}
+	model := messages.PushMessage{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)

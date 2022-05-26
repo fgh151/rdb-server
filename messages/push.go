@@ -1,10 +1,9 @@
-package models
+package messages
 
 import (
-	"db-server/messages"
 	"db-server/meta"
+	"db-server/models"
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"time"
 )
@@ -21,6 +20,10 @@ type PushMessage struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 
 	Receivers []UserDevice `gorm:"many2many:push_receiver;"`
+}
+
+type Sender interface {
+	SendPush(message PushMessage, device UserDevice)
 }
 
 func (p PushMessage) List(limit int, offset int, sort string, order string) []interface{} {
@@ -67,14 +70,13 @@ func (p PushMessage) Total() *int64 {
 func (p PushMessage) Send() {
 
 	for _, receiver := range p.Receivers {
-		log.Debug("Send push " + p.Id.String() + " to " + receiver.Id.String())
 		switch receiver.Device {
 		case "ios":
-			messages.Ios{}.SendPush()
+			Ios{}.SendPush(p, receiver)
 			break
 
 		case "android":
-			messages.Android{}.SendPush()
+			Android{}.SendPush(p, receiver)
 			break
 		}
 	}
@@ -84,12 +86,13 @@ func (p PushMessage) Send() {
 }
 
 type UserDevice struct {
-	Id        uuid.UUID      `gorm:"primarykey" json:"id"`
-	UserId    uuid.UUID      `json:"user_id"`
-	User      User           `json:"-"`
-	Device    string         `json:"device"`
-	DeviceId  string         `json:"device_id"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Id          uuid.UUID      `gorm:"primarykey" json:"id"`
+	UserId      uuid.UUID      `json:"user_id"`
+	User        models.User    `json:"-"`
+	Device      string         `json:"device"`
+	DeviceToken string         `json:"device_token"`
+	DeviceId    string         `json:"device_id"`
+	CreatedAt   time.Time      `json:"-"`
+	UpdatedAt   time.Time      `json:"-"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
 }

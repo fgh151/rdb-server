@@ -1,35 +1,36 @@
 package messages
 
 import (
+	err2 "db-server/err"
 	"fmt"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
-	"log"
+	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 type Ios struct {
 }
 
-func (p Ios) SendPush() {
-	cert, pemErr := certificate.FromPemFile("../cert.pem", "")
-	if pemErr != nil {
-		log.Println("Cert Error:", pemErr)
-	}
+func (p Ios) SendPush(message PushMessage, device UserDevice) {
+
+	log.Debug("Send push " + message.Id.String() + " to " + device.Id.String())
+
+	cert, pemErr := certificate.FromPemFile(os.Getenv("PUSH_APNS_PEM_FILE"), os.Getenv("PUSH_APNS_PEM_FILE_PASSWORD"))
+	err2.DebugErr(pemErr)
 
 	//payload := NewPayload().Alert("hello").Badge(1).Custom("key", "val")
 
 	notification := &apns.Notification{}
-	notification.DeviceToken = "11aa01229f15f0f0c52029d8cf8cd0aeaf2365fe4cebc4af26cd6d76b7919ef7"
-	notification.Topic = "com.sideshow.Apns2"
-	notification.Payload = []byte(`{"aps":{"alert":"Hello!"}}`) // See Payload section below
+	notification.DeviceToken = device.DeviceToken
+	notification.Topic = message.Topic
+	notification.Payload = []byte(message.Payload) // See Payload section below
 
 	client := apns.NewClient(cert).Development()
-	res, err := client.Push(notification)
+	response, err := client.Push(notification)
+	err2.DebugErr(err)
 
-	if err != nil {
-		log.Println("Error:", err)
-		return
-	}
+	fmt.Println(response)
 
-	fmt.Println(res)
+	log.Debug(fmt.Sprintf("%#v\n", response))
 }
