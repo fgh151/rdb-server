@@ -89,6 +89,12 @@ Accept: */*
 db-key: 123
 
 ### Run function
-GET http://localhost:9090/api/cf/62e6c3ac-d8bb-11ec-b095-acde48001122/run
+GET http://localhost:9090/api/cf/62e6c3ac-d8bb-11ec-b095-acde48001122/run/d5f4bdae-db27-11ec-8350-acde48001122
+Accept: */*
+Authorization: Bearer 123
+
+
+### Register device
+POST http://localhost:9090/api/device/register
 Accept: */*
 Authorization: Bearer 123
