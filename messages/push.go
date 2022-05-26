@@ -15,6 +15,7 @@ type PushMessage struct {
 	Payload   string         `json:"payload"`
 	Topic     string         `json:"topic"`
 	Sent      bool           `json:"sent"`
+	SentAt    time.Time      `json:"sent_at"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
@@ -82,6 +83,7 @@ func (p PushMessage) Send() {
 	}
 
 	p.Sent = true
+	p.SentAt = time.Now()
 	meta.MetaDb.GetConnection().Save(&p)
 }
 
