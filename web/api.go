@@ -122,6 +122,14 @@ func CfRun(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+func PushRun(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	vars := mux.Vars(r)
+	message := models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
+	go message.Send()
+	w.WriteHeader(200)
+}
+
 func CfRunLog(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -136,5 +144,29 @@ func CfRunLog(w http.ResponseWriter, r *http.Request) {
 	resp, _ := json.Marshal(logModel)
 	w.WriteHeader(200)
 	_, err := w.Write(resp)
+	err2.DebugErr(err)
+}
+
+func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	model := models.UserDevice{}
+
+	err := json.NewDecoder(r.Body).Decode(&model)
+	err2.DebugErr(err)
+	id, err := uuid.NewUUID()
+	model.Id = id
+
+	err2.DebugErr(err)
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	meta.MetaDb.GetConnection().Create(&model)
+
+	resp, _ := json.Marshal(model)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }

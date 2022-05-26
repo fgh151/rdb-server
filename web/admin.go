@@ -58,6 +58,10 @@ func ListCf(w http.ResponseWriter, r *http.Request) {
 	listItems(models.CloudFunction{}, r, w)
 }
 
+func ListPush(w http.ResponseWriter, r *http.Request) {
+	listItems(models.PushMessage{}, r, w)
+}
+
 func listItems(model models.Model, r *http.Request, w http.ResponseWriter) {
 	log.Debug(r.Method, r.RequestURI)
 	arr := model.List(getPagination(r))
@@ -86,6 +90,10 @@ func DsItem(w http.ResponseWriter, r *http.Request) {
 
 func CfItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.CloudFunction{}, w, r)
+}
+
+func PushItem(w http.ResponseWriter, r *http.Request) {
+	getItem(models.PushMessage{}, w, r)
 }
 
 func CfLog(w http.ResponseWriter, r *http.Request) {
@@ -157,6 +165,10 @@ func DeleteCf(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.CloudFunction{}, w, r)
 }
 
+func DeletePush(w http.ResponseWriter, r *http.Request) {
+	deleteItem(models.PushMessage{}, w, r)
+}
+
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
@@ -226,6 +238,24 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+func UpdatePush(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	vars := mux.Vars(r)
+	var exist = models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
+	newm := models.PushMessage{}
+
+	err := json.NewDecoder(r.Body).Decode(&newm)
+
+	newm.CreatedAt = exist.CreatedAt
+
+	meta.MetaDb.GetConnection().Save(&newm)
+
+	resp, _ := json.Marshal(newm)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
+}
+
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.Project{}, w, r)
 }
@@ -282,6 +312,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateConfig(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
 	model := models.Config{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
@@ -304,6 +335,7 @@ func CreateConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateDs(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
 	model := models.DataSource{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
@@ -325,12 +357,38 @@ func CreateDs(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateCf(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
 	model := models.CloudFunction{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
 	id, err := uuid.NewUUID()
 	model.Id = id
+
+	err2.DebugErr(err)
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	meta.MetaDb.GetConnection().Create(&model)
+
+	resp, _ := json.Marshal(model)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
+}
+
+func CreatePush(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	model := models.PushMessage{}
+
+	err := json.NewDecoder(r.Body).Decode(&model)
+	err2.DebugErr(err)
+	id, err := uuid.NewUUID()
+	model.Id = id
+	model.Sent = false
 
 	err2.DebugErr(err)
 
