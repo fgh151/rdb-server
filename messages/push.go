@@ -91,7 +91,6 @@ type UserDevice struct {
 	User        models.User    `json:"-"`
 	Device      string         `json:"device"`
 	DeviceToken string         `json:"device_token"`
-	DeviceId    string         `json:"device_id"`
 	CreatedAt   time.Time      `json:"-"`
 	UpdatedAt   time.Time      `json:"-"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
