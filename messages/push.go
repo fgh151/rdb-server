@@ -3,7 +3,9 @@ package messages
 import (
 	"db-server/meta"
 	"db-server/models"
+	"errors"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"time"
 )
@@ -23,8 +25,17 @@ type PushMessage struct {
 	Receivers []UserDevice `gorm:"many2many:push_receiver;"`
 }
 
+type PushLog struct {
+	Id            uuid.UUID `gorm:"primarykey"`
+	PushMessageId uuid.UUID
+	UserDeviceId  uuid.UUID
+	Success       bool
+	Error         string
+	SentAt        time.Time
+}
+
 type Sender interface {
-	SendPush(message PushMessage, device UserDevice)
+	SendPush(message PushMessage, device UserDevice) error
 }
 
 func (p PushMessage) List(limit int, offset int, sort string, order string) []interface{} {
@@ -73,18 +84,45 @@ func (p PushMessage) Send() {
 	for _, receiver := range p.Receivers {
 		switch receiver.Device {
 		case "ios":
-			Ios{}.SendPush(p, receiver)
+			createPushLog(
+				p,
+				receiver,
+				Ios{}.SendPush(p, receiver),
+			)
 			break
 
 		case "android":
-			Android{}.SendPush(p, receiver)
+			createPushLog(
+				p,
+				receiver,
+				Android{}.SendPush(p, receiver),
+			)
 			break
+		default:
+			msg := "Unknown push device: name: " + receiver.Device + " id: " + receiver.Id.String()
+			createPushLog(p, receiver, errors.New(msg))
+			logrus.Warn(msg)
 		}
 	}
 
 	p.Sent = true
 	p.SentAt = time.Now()
 	meta.MetaDb.GetConnection().Save(&p)
+}
+
+func createPushLog(message PushMessage, device UserDevice, err error) {
+
+	id, _ := uuid.NewUUID()
+	log := PushLog{
+		Id:            id,
+		PushMessageId: message.Id,
+		UserDeviceId:  device.Id,
+		Success:       err == nil,
+		Error:         err.Error(),
+		SentAt:        time.Now(),
+	}
+
+	meta.MetaDb.GetConnection().Create(&log)
 }
 
 type UserDevice struct {

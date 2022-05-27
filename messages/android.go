@@ -12,13 +12,17 @@ import (
 type Android struct {
 }
 
-func (p Android) SendPush(message PushMessage, device UserDevice) {
+func (p Android) SendPush(message PushMessage, device UserDevice) error {
 
 	log.Debug("Send push " + message.Id.String() + " to " + device.Id.String())
 
 	var data map[string]interface{}
 
 	err := json.Unmarshal([]byte(message.Body), &data)
+	err2.DebugErr(err)
+	if err != nil {
+		return err
+	}
 
 	msg := &fcm.Message{
 		To:   device.DeviceToken,
@@ -32,10 +36,17 @@ func (p Android) SendPush(message PushMessage, device UserDevice) {
 	// Create a FCM client to send the message.
 	client, err := fcm.NewClient(os.Getenv("PUSH_FCM_API_KEY"))
 	err2.DebugErr(err)
+	if err != nil {
+		return err
+	}
 
 	// Send the message and receive the response without retries.
 	response, err := client.Send(msg)
 	err2.DebugErr(err)
+	if err != nil {
+		return err
+	}
 
 	log.Debug(fmt.Sprintf("%#v\n", response))
+	return nil
 }

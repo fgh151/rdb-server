@@ -12,12 +12,15 @@ import (
 type Ios struct {
 }
 
-func (p Ios) SendPush(message PushMessage, device UserDevice) {
+func (p Ios) SendPush(message PushMessage, device UserDevice) error {
 
 	log.Debug("Send push " + message.Id.String() + " to " + device.Id.String())
 
 	cert, pemErr := certificate.FromPemFile(os.Getenv("PUSH_APNS_PEM_FILE"), os.Getenv("PUSH_APNS_PEM_FILE_PASSWORD"))
 	err2.DebugErr(pemErr)
+	if pemErr != nil {
+		return pemErr
+	}
 
 	//payload := NewPayload().Alert("hello").Badge(1).Custom("key", "val")
 
@@ -29,8 +32,10 @@ func (p Ios) SendPush(message PushMessage, device UserDevice) {
 	client := apns.NewClient(cert).Development()
 	response, err := client.Push(notification)
 	err2.DebugErr(err)
-
-	fmt.Println(response)
+	if err != nil {
+		return err
+	}
 
 	log.Debug(fmt.Sprintf("%#v\n", response))
+	return nil
 }
