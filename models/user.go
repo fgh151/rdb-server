@@ -27,7 +27,7 @@ func (p User) List(limit int, offset int, sort string, order string) []interface
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Find(&users).Limit(limit).Offset(offset).Order(order + " " + sort)
+	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Find(&users)
 
 	y := make([]interface{}, len(users))
 	for i, v := range users {

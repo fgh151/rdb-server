@@ -104,7 +104,7 @@ func (p CloudFunction) List(limit int, offset int, sort string, order string) []
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Find(&sources).Limit(limit).Offset(offset).Order(order + " " + sort)
+	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Find(&sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

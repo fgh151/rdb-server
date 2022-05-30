@@ -26,7 +26,7 @@ func (j CronJob) List(limit int, offset int, sort string, order string) []interf
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Find(&jobs).Limit(limit).Offset(offset).Order(order + " " + sort)
+	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Find(&jobs)
 
 	y := make([]interface{}, len(jobs))
 	for i, v := range jobs {
@@ -89,7 +89,7 @@ func InitCron() {
 	batchSize := 200
 	var jobs []interface{}
 
-	jobs = CronJob{}.List(batchSize, offset, "id", "ASC")
+	jobs = CronJob{}.List(batchSize, offset, "ASC", "id")
 
 	for _, job := range jobs {
 		log.Debug("Add cron Job " + job.(CronJob).Id.String())

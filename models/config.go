@@ -18,7 +18,7 @@ func (p Config) List(limit int, offset int, sort string, order string) []interfa
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Find(&configs).Limit(limit).Offset(offset).Order(order + " " + sort)
+	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Find(&configs)
 
 	y := make([]interface{}, len(configs))
 	for i, v := range configs {
