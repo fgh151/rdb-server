@@ -5,6 +5,7 @@ import (
 	err2 "db-server/err"
 	"db-server/server"
 	"errors"
+	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -198,6 +199,35 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 	log.Debug("Cf run result " + runId.String() + " " + result)
 
 	p.log(runId, result)
+}
+
+func BuildImage(tar io.Reader) error {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	err2.DebugErr(err)
+
+	ctx := context.Background()
+
+	//tar, err := archive.TarWithOptions("node-hello/", &archive.TarOptions{})
+	opts := types.ImageBuildOptions{
+		Dockerfile: "Dockerfile",
+		Tags:       []string{"fgh151/node-hello"},
+		Remove:     true,
+	}
+
+	res, err := cli.ImageBuild(ctx, tar, opts)
+
+	defer res.Body.Close()
+
+	buf := new(strings.Builder)
+	_, err = io.Copy(buf, res.Body)
+	// check errors
+	fmt.Println(buf.String())
+
+	if buf.String() != "" {
+		return errors.New(buf.String())
+	}
+
+	return nil
 }
 
 func makeResultFromStream(stream io.Reader) (string, error) {

@@ -171,3 +171,26 @@ func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }
+
+func UploadDockerFIle(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	file, _, err := r.FormFile("file")
+	err2.DebugErr(err)
+	err = models.BuildImage(file)
+	err2.DebugErr(err)
+
+	if err == nil {
+		w.WriteHeader(500)
+
+		m := make(map[string]string)
+		m["error"] = err.Error()
+
+		resp, _ := json.Marshal(m)
+		_, err := w.Write(resp)
+		err2.DebugErr(err)
+
+		return
+	}
+
+	w.WriteHeader(200)
+}
