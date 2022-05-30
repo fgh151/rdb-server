@@ -86,15 +86,21 @@ func InitCron() {
 	}()
 
 	offset := 0
-	batchSize := 200
+	batchSize := 20
 	var jobs []interface{}
 
-	jobs = CronJob{}.List(batchSize, offset, "ASC", "id")
+	for {
+		jobs = CronJob{}.List(batchSize, offset, "ASC", "id")
 
-	for _, job := range jobs {
-		log.Debug("Add cron Job " + job.(CronJob).Id.String())
-		job.(CronJob).Schedule(c)
+		if len(jobs) <= 0 {
+			break
+		}
+
+		for _, job := range jobs {
+			log.Debug("Add cron Job " + job.(CronJob).Id.String())
+			job.(CronJob).Schedule(c)
+		}
+
+		offset += batchSize
 	}
-
-	offset += batchSize
 }
