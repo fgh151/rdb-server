@@ -3,7 +3,7 @@ package models
 import (
 	"context"
 	err2 "db-server/err"
-	"db-server/meta"
+	"db-server/server"
 	"errors"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -47,7 +47,7 @@ type CloudFunctionLog struct {
 func ListCfLog(fId uuid.UUID, limit int, offset int, sort string, order string) []interface{} {
 	var sources []CloudFunctionLog
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.Find(&sources, CloudFunctionLog{FunctionId: fId}).Limit(limit).Offset(offset).Order(order + " " + sort)
 
@@ -60,7 +60,7 @@ func ListCfLog(fId uuid.UUID, limit int, offset int, sort string, order string) 
 }
 
 func LogsTotal(fId uuid.UUID) *int64 {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	var sources []CloudFunctionLog
 	var cnt int64
 	conn.Find(&sources, CloudFunctionLog{FunctionId: fId}).Count(&cnt)
@@ -101,7 +101,7 @@ func getContainerUri(source string) (containerUri, error) {
 func (p CloudFunction) List(limit int, offset int, sort string, order string) []interface{} {
 	var sources []CloudFunction
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.Find(&sources).Limit(limit).Offset(offset).Order(order + " " + sort)
 
@@ -115,7 +115,7 @@ func (p CloudFunction) List(limit int, offset int, sort string, order string) []
 }
 
 func (p CloudFunction) Total() *int64 {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	var sources []CloudFunction
 	var cnt int64
 	conn.Find(&sources).Count(&cnt)
@@ -126,7 +126,7 @@ func (p CloudFunction) Total() *int64 {
 func (p CloudFunction) GetById(id string) interface{} {
 	var source CloudFunction
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.First(&source, "id = ?", id)
 
@@ -138,7 +138,7 @@ func (p CloudFunction) GetById(id string) interface{} {
 }
 
 func (p CloudFunction) Delete(id string) {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
@@ -235,5 +235,5 @@ func (p CloudFunction) log(id uuid.UUID, result string) {
 	}
 	var err error
 	err2.DebugErr(err)
-	meta.MetaDb.GetConnection().Create(&flog)
+	server.MetaDb.GetConnection().Create(&flog)
 }

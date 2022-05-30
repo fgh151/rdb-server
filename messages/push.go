@@ -1,8 +1,8 @@
 package messages
 
 import (
-	"db-server/meta"
 	"db-server/models"
+	"db-server/server"
 	"errors"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -41,7 +41,7 @@ type Sender interface {
 func (p PushMessage) List(limit int, offset int, sort string, order string) []interface{} {
 	var pushMessages []PushMessage
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.Offset(offset).Limit(limit).Order(order + " " + sort).Find(&pushMessages)
 
@@ -56,7 +56,7 @@ func (p PushMessage) List(limit int, offset int, sort string, order string) []in
 func (p PushMessage) GetById(id string) interface{} {
 	var pushMessage PushMessage
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.First(&pushMessage, "id = ?", id)
 
@@ -65,13 +65,13 @@ func (p PushMessage) GetById(id string) interface{} {
 
 func (p PushMessage) Delete(id string) {
 	if p.Sent == false {
-		conn := meta.MetaDb.GetConnection()
+		conn := server.MetaDb.GetConnection()
 		conn.Where("id = ?", id).Delete(&p)
 	}
 }
 
 func (p PushMessage) Total() *int64 {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	var pushMessages []PushMessage
 	var cnt int64
 	conn.Find(&pushMessages).Count(&cnt)
@@ -107,7 +107,7 @@ func (p PushMessage) Send() {
 
 	p.Sent = true
 	p.SentAt = time.Now()
-	meta.MetaDb.GetConnection().Save(&p)
+	server.MetaDb.GetConnection().Save(&p)
 }
 
 func createPushLog(message PushMessage, device UserDevice, err error) {
@@ -122,7 +122,7 @@ func createPushLog(message PushMessage, device UserDevice, err error) {
 		SentAt:        time.Now(),
 	}
 
-	meta.MetaDb.GetConnection().Create(&log)
+	server.MetaDb.GetConnection().Create(&log)
 }
 
 type UserDevice struct {

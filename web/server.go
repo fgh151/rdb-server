@@ -89,6 +89,12 @@ func InitServer() {
 	admin.HandleFunc("/push/{id}", DeletePush).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/push/{id}", UpdatePush).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
+	admin.HandleFunc("/cron", ListCron).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/cron", CreateCron).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	admin.HandleFunc("/cron/{id}", CronItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/cron/{id}", DeleteCron).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/cron/{id}", UpdateCron).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+
 	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)                  // each request calls PushHandler
 	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions)          // each request calls PushHandler
 	r.HandleFunc("/api/device/register", PushDeviceRegister).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler

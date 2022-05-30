@@ -13,6 +13,7 @@ require (
 	github.com/gorilla/websocket v1.4.1
 	github.com/joho/godotenv v1.4.0
 	github.com/minio/minio-go/v7 v7.0.24
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/sideshow/apns2 v0.23.0
 	github.com/sirupsen/logrus v1.8.1
 	go.mongodb.org/mongo-driver v1.8.3

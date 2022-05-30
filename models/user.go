@@ -1,8 +1,8 @@
 package models
 
 import (
-	"db-server/meta"
 	"db-server/security"
+	"db-server/server"
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -25,7 +25,7 @@ type User struct {
 func (p User) List(limit int, offset int, sort string, order string) []interface{} {
 	var users []User
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.Find(&users).Limit(limit).Offset(offset).Order(order + " " + sort)
 
@@ -38,7 +38,7 @@ func (p User) List(limit int, offset int, sort string, order string) []interface
 }
 
 func (p User) Total() *int64 {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	var users []User
 	var cnt int64
 	conn.Find(&users).Count(&cnt)
@@ -49,7 +49,7 @@ func (p User) Total() *int64 {
 func (p User) GetById(id string) interface{} {
 	var user User
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.First(&user, "id = ?", id)
 
@@ -57,7 +57,7 @@ func (p User) GetById(id string) interface{} {
 }
 
 func (p User) Delete(id string) {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
@@ -79,7 +79,7 @@ func (f CreateUserForm) Save() User {
 
 	u.Id, _ = uuid.NewUUID()
 
-	meta.MetaDb.GetConnection().Create(&u)
+	server.MetaDb.GetConnection().Create(&u)
 
 	return u
 }
@@ -100,7 +100,7 @@ func (f LoginForm) ApiLogin() (User, error) {
 func (f LoginForm) login(condition *User) (User, error) {
 	var login User
 
-	meta.MetaDb.GetConnection().Where(condition).First(&login)
+	server.MetaDb.GetConnection().Where(condition).First(&login)
 
 	if !login.ValidatePassword(f.Password) {
 		return login, errors.New("invalid login or password")
@@ -109,7 +109,7 @@ func (f LoginForm) login(condition *User) (User, error) {
 	now := time.Now()
 
 	login.LastLogin = &now
-	meta.MetaDb.GetConnection().Save(&login)
+	server.MetaDb.GetConnection().Save(&login)
 
 	return login, nil
 }

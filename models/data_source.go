@@ -2,7 +2,7 @@ package models
 
 import (
 	err2 "db-server/err"
-	"db-server/meta"
+	"db-server/server"
 	"github.com/google/uuid"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -35,7 +35,7 @@ type DataSource struct {
 func (p DataSource) List(limit int, offset int, sort string, order string) []interface{} {
 	var sources []DataSource
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.Find(&sources).Limit(limit).Offset(offset).Order(order + " " + sort)
 
@@ -48,7 +48,7 @@ func (p DataSource) List(limit int, offset int, sort string, order string) []int
 }
 
 func (p DataSource) Total() *int64 {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	var sources []DataSource
 	var cnt int64
 	conn.Find(&sources).Count(&cnt)
@@ -59,7 +59,7 @@ func (p DataSource) Total() *int64 {
 func (p DataSource) GetById(id string) interface{} {
 	var source DataSource
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.First(&source, "id = ?", id)
 
@@ -67,7 +67,7 @@ func (p DataSource) GetById(id string) interface{} {
 }
 
 func (p DataSource) Delete(id string) {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
@@ -159,7 +159,7 @@ func (e DataSourceEndpoint) attachConnectionToPool(conn *gorm.DB, err error) (*g
 func (e DataSourceEndpoint) GetById(id string) interface{} {
 	var source DataSourceEndpoint
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.Preload("DataSource").First(&source, "id = ?", id)
 

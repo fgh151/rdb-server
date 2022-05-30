@@ -1,8 +1,9 @@
 package auth
 
 import (
-	"db-server/meta"
+	err2 "db-server/err"
 	"db-server/models"
+	"db-server/server"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -15,7 +16,8 @@ func BearerVerify(next http.Handler) http.Handler {
 
 		if user == nil {
 			w.WriteHeader(http.StatusForbidden)
-			json.NewEncoder(w).Encode("Wrong auth token")
+			err := json.NewEncoder(w).Encode("Wrong auth token")
+			err2.DebugErr(err)
 			return
 		}
 
@@ -34,7 +36,7 @@ func GetUserFromRequest(r *http.Request) *models.User {
 	reqToken = splitToken[1]
 
 	var user *models.User
-	meta.MetaDb.GetConnection().Find(&user, "token = ? ", reqToken)
+	server.MetaDb.GetConnection().Find(&user, "token = ? ", reqToken)
 
 	return user
 }

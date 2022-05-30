@@ -1,4 +1,4 @@
-package meta
+package server
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -9,11 +9,11 @@ import (
 	"os"
 )
 
-type Connection struct {
+type connection struct {
 	db *gorm.DB
 }
 
-func (c Connection) connect() *gorm.DB {
+func (c connection) connect() *gorm.DB {
 	log.Debug("Set meta db driver " + os.Getenv("META_DB_TYPE"))
 
 	var db *gorm.DB
@@ -39,7 +39,7 @@ func (c Connection) connect() *gorm.DB {
 	return db
 }
 
-func (c Connection) GetConnection() *gorm.DB {
+func (c connection) GetConnection() *gorm.DB {
 
 	if c.db == nil {
 		c.db = c.connect()
@@ -48,4 +48,4 @@ func (c Connection) GetConnection() *gorm.DB {
 	return c.db
 }
 
-var MetaDb = Connection{}
+var MetaDb = connection{}

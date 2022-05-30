@@ -1,8 +1,8 @@
 package models
 
 import (
-	"db-server/meta"
 	"db-server/security"
+	"db-server/server"
 	"github.com/google/uuid"
 )
 
@@ -27,5 +27,5 @@ func CreateDemo() {
 
 	u.Id, _ = uuid.NewUUID()
 
-	meta.MetaDb.GetConnection().Create(&u)
+	server.MetaDb.GetConnection().Create(&u)
 }

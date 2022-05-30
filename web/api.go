@@ -4,8 +4,8 @@ import (
 	"db-server/auth"
 	err2 "db-server/err"
 	"db-server/messages"
-	"db-server/meta"
 	"db-server/models"
+	"db-server/server"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -138,7 +138,7 @@ func CfRunLog(w http.ResponseWriter, r *http.Request) {
 
 	var logModel models.CloudFunctionLog
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.First(&logModel, "id = ? AND function_id = ?", vars["rid"], vars["id"])
 
@@ -164,7 +164,7 @@ func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	meta.MetaDb.GetConnection().Create(&model)
+	server.MetaDb.GetConnection().Create(&model)
 
 	resp, _ := json.Marshal(model)
 	w.WriteHeader(200)

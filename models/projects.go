@@ -1,7 +1,7 @@
 package models
 
 import (
-	"db-server/meta"
+	"db-server/server"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
@@ -20,7 +20,7 @@ type Project struct {
 func (p Project) List(limit int, offset int, sort string, order string) []interface{} {
 	var projects []Project
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.Offset(offset).Limit(limit).Order(order + " " + sort).Find(&projects)
 
@@ -33,7 +33,7 @@ func (p Project) List(limit int, offset int, sort string, order string) []interf
 }
 
 func (p Project) Total() *int64 {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	var projects []Project
 	var cnt int64
 	conn.Find(&projects).Count(&cnt)
@@ -44,7 +44,7 @@ func (p Project) Total() *int64 {
 func (p Project) GetById(id string) interface{} {
 	var project Project
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.First(&project, "id = ?", id)
 
@@ -54,7 +54,7 @@ func (p Project) GetById(id string) interface{} {
 func (p Project) GetByTopic(topic string) interface{} {
 	var project Project
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.First(&project, "topic = ?", topic)
 
@@ -62,14 +62,14 @@ func (p Project) GetByTopic(topic string) interface{} {
 }
 
 func (p Project) Delete(id string) {
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
 func (c Project) GetKey(topic string) string {
 	var project Project
 
-	conn := meta.MetaDb.GetConnection()
+	conn := server.MetaDb.GetConnection()
 
 	conn.First(&project, "topic = ?", topic)
 

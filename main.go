@@ -4,9 +4,9 @@ import (
 	"context"
 	"db-server/drivers"
 	err2 "db-server/err"
-	"db-server/meta"
 	"db-server/migrations"
 	"db-server/models"
+	"db-server/server"
 	"db-server/web"
 	"flag"
 	"github.com/evalphobia/logrus_sentry"
@@ -45,7 +45,7 @@ func main() {
 	}
 
 	log.Debug("Init meta db connection")
-	db := meta.MetaDb.GetConnection()
+	db := server.MetaDb.GetConnection()
 
 	if *migrateFlag {
 		log.Debug("Try to migrate db")
@@ -70,6 +70,9 @@ func main() {
 			panic(err)
 		}
 	}()
+
+	log.Debug("Start cron")
+	models.InitCron()
 
 	log.Debug("Init web server")
 	web.InitServer()

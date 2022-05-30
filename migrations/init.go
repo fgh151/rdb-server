@@ -19,6 +19,8 @@ func Migrate(db *gorm.DB) {
 		&messages.PushMessage{},
 		&messages.UserDevice{},
 		&messages.PushLog{},
+
+		&models.CronJob{},
 	)
 
 	err2.PanicErr(err)
