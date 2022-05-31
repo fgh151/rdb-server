@@ -33,12 +33,7 @@ func (p Project) List(limit int, offset int, sort string, order string) []interf
 }
 
 func (p Project) Total() *int64 {
-	conn := server.MetaDb.GetConnection()
-	var projects []Project
-	var cnt int64
-	conn.Find(&projects).Count(&cnt)
-
-	return &cnt
+	return TotalRecords(&Project{})
 }
 
 func (p Project) GetById(id string) interface{} {

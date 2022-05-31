@@ -29,3 +29,10 @@ func CreateDemo() {
 
 	server.MetaDb.GetConnection().Create(&u)
 }
+
+func TotalRecords(m Model) *int64 {
+	conn := server.MetaDb.GetConnection()
+	var cnt int64
+	conn.Model(&m).Count(&cnt)
+	return &cnt
+}

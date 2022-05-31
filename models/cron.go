@@ -52,12 +52,7 @@ func (j CronJob) Delete(id string) {
 }
 
 func (j CronJob) Total() *int64 {
-	conn := server.MetaDb.GetConnection()
-	var jobs []CronJob
-	var cnt int64
-	conn.Find(&jobs).Count(&cnt)
-
-	return &cnt
+	return TotalRecords(&CronJob{})
 }
 
 func (j CronJob) Schedule(cron *cron.Cron) {

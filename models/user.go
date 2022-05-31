@@ -38,12 +38,7 @@ func (p User) List(limit int, offset int, sort string, order string) []interface
 }
 
 func (p User) Total() *int64 {
-	conn := server.MetaDb.GetConnection()
-	var users []User
-	var cnt int64
-	conn.Find(&users).Count(&cnt)
-
-	return &cnt
+	return TotalRecords(&User{})
 }
 
 func (p User) GetById(id string) interface{} {

@@ -29,12 +29,7 @@ func (p Config) List(limit int, offset int, sort string, order string) []interfa
 }
 
 func (p Config) Total() *int64 {
-	conn := server.MetaDb.GetConnection()
-	var configs []Config
-	var cnt int64
-	conn.Find(&configs).Count(&cnt)
-
-	return &cnt
+	return TotalRecords(&Config{})
 }
 
 func (p Config) GetById(id string) interface{} {

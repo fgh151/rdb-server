@@ -48,12 +48,7 @@ func (p DataSource) List(limit int, offset int, sort string, order string) []int
 }
 
 func (p DataSource) Total() *int64 {
-	conn := server.MetaDb.GetConnection()
-	var sources []DataSource
-	var cnt int64
-	conn.Find(&sources).Count(&cnt)
-
-	return &cnt
+	return TotalRecords(&DataSource{})
 }
 
 func (p DataSource) GetById(id string) interface{} {

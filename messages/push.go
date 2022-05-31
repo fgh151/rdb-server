@@ -71,12 +71,7 @@ func (p PushMessage) Delete(id string) {
 }
 
 func (p PushMessage) Total() *int64 {
-	conn := server.MetaDb.GetConnection()
-	var pushMessages []PushMessage
-	var cnt int64
-	conn.Find(&pushMessages).Count(&cnt)
-
-	return &cnt
+	return models.TotalRecords(&PushMessage{})
 }
 
 func (p PushMessage) Send() {

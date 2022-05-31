@@ -64,7 +64,7 @@ func LogsTotal(fId uuid.UUID) *int64 {
 	conn := server.MetaDb.GetConnection()
 	var sources []CloudFunctionLog
 	var cnt int64
-	conn.Find(&sources, CloudFunctionLog{FunctionId: fId}).Count(&cnt)
+	conn.Count(&cnt).Find(&sources, CloudFunctionLog{FunctionId: fId})
 
 	return &cnt
 }
@@ -116,12 +116,7 @@ func (p CloudFunction) List(limit int, offset int, sort string, order string) []
 }
 
 func (p CloudFunction) Total() *int64 {
-	conn := server.MetaDb.GetConnection()
-	var sources []CloudFunction
-	var cnt int64
-	conn.Find(&sources).Count(&cnt)
-
-	return &cnt
+	return TotalRecords(&CloudFunction{})
 }
 
 func (p CloudFunction) GetById(id string) interface{} {
@@ -216,7 +211,10 @@ func BuildImage(tar io.Reader, uri ContainerUri) error {
 
 	res, err := cli.ImageBuild(ctx, tar, opts)
 
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		err2.DebugErr(err)
+	}()
 
 	buf := new(strings.Builder)
 	_, err = io.Copy(buf, res.Body)
