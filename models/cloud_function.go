@@ -218,6 +218,12 @@ func BuildImage(tar io.Reader, uri ContainerUri) error {
 
 	buf := new(strings.Builder)
 	_, err = io.Copy(buf, res.Body)
+
+	if err != nil {
+		log.Debug(err)
+		return err
+	}
+
 	// check errors
 	fmt.Println(buf.String())
 
