@@ -243,6 +243,17 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 
 	newm.CreatedAt = exist.CreatedAt
 
+	file, _, err := r.FormFile("dockerarc")
+	if err == nil {
+		uri, err := models.GetContainerUri(newm.Container)
+		err2.DebugErr(err)
+
+		go func() {
+			err := models.BuildImage(file, uri)
+			err2.DebugErr(err)
+		}()
+	}
+
 	server.MetaDb.GetConnection().Save(&newm)
 
 	resp, _ := json.Marshal(newm)
@@ -406,6 +417,18 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
+
+	file, _, err := r.FormFile("dockerarc")
+	if err == nil {
+		uri, err := models.GetContainerUri(model.Container)
+		err2.DebugErr(err)
+
+		go func() {
+			err := models.BuildImage(file, uri)
+			err2.DebugErr(err)
+		}()
+	}
+
 	server.MetaDb.GetConnection().Create(&model)
 
 	resp, _ := json.Marshal(model)

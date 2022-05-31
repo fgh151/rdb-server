@@ -69,17 +69,17 @@ func LogsTotal(fId uuid.UUID) *int64 {
 	return &cnt
 }
 
-type containerUri struct {
+type ContainerUri struct {
 	Host    string
 	Vendor  string
 	Image   string
 	Version string
 }
 
-func getContainerUri(source string) (containerUri, error) {
+func GetContainerUri(source string) (ContainerUri, error) {
 
 	log.Debug("Parse uri " + source)
-	uri := containerUri{}
+	uri := ContainerUri{}
 	parts := strings.Split(source, ":")
 
 	if len(parts) == 2 {
@@ -89,7 +89,7 @@ func getContainerUri(source string) (containerUri, error) {
 	pathParts := strings.Split(parts[0], "/")
 
 	if len(pathParts) < 3 {
-		return containerUri{}, errors.New("Wrong source " + source)
+		return ContainerUri{}, errors.New("Wrong source " + source)
 	}
 
 	uri.Host = pathParts[0]
@@ -153,7 +153,7 @@ func prepareDockerParams(raw string) []string {
 
 func (p CloudFunction) Run(runId uuid.UUID) {
 
-	uri, err := getContainerUri(p.Container)
+	uri, err := GetContainerUri(p.Container)
 
 	err2.WarnErr(err)
 
@@ -201,7 +201,7 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 	p.log(runId, result)
 }
 
-func BuildImage(tar io.Reader) error {
+func BuildImage(tar io.Reader, uri ContainerUri) error {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	err2.DebugErr(err)
 
@@ -210,7 +210,7 @@ func BuildImage(tar io.Reader) error {
 	//tar, err := archive.TarWithOptions("node-hello/", &archive.TarOptions{})
 	opts := types.ImageBuildOptions{
 		Dockerfile: "Dockerfile",
-		Tags:       []string{"fgh151/node-hello"},
+		Tags:       []string{uri.Vendor + "/" + uri.Image},
 		Remove:     true,
 	}
 
