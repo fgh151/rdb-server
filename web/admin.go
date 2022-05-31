@@ -236,29 +236,27 @@ func UpdateDs(w http.ResponseWriter, r *http.Request) {
 func UpdateCf(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = models.CloudFunction{}.GetById(vars["id"]).(models.CloudFunction)
-	newm := models.CloudFunction{}
 
-	err := json.NewDecoder(r.Body).Decode(&newm)
-
-	newm.CreatedAt = exist.CreatedAt
+	var projectId, _ = uuid.Parse(r.FormValue("project_id"))
 
 	file, _, err := r.FormFile("dockerarc")
 	if err == nil {
-		uri, err := models.GetContainerUri(newm.Container)
+		uri, err := models.GetContainerUri(r.FormValue("container"))
 		err2.DebugErr(err)
 
 		go func() {
 			err := models.BuildImage(file, uri)
 			err2.DebugErr(err)
 		}()
+	} else {
+		log.Debug(err)
 	}
 
-	server.MetaDb.GetConnection().Save(&newm)
+	server.MetaDb.GetConnection().Table("cloud_functions").Where("id = ?", vars["id"]).Updates(
+		map[string]interface{}{"title": r.FormValue("title"), "project_id": projectId, "container": r.FormValue("container"), "params": r.FormValue("params")},
+	)
 
-	resp, _ := json.Marshal(newm)
 	w.WriteHeader(200)
-	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }
 
