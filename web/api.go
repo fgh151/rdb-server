@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func ApiAuth(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +52,10 @@ func ApiRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := t.Save()
+	now := time.Now()
+	user.LastLogin = &now
+	server.MetaDb.GetConnection().Save(&user)
+
 	resp, _ := json.Marshal(user)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
