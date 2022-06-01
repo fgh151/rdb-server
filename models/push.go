@@ -1,7 +1,6 @@
-package messages
+package models
 
 import (
-	"db-server/models"
 	"db-server/server"
 	"errors"
 	"github.com/google/uuid"
@@ -71,7 +70,7 @@ func (p PushMessage) Delete(id string) {
 }
 
 func (p PushMessage) Total() *int64 {
-	return models.TotalRecords(&PushMessage{})
+	return TotalRecords(&PushMessage{})
 }
 
 func (p PushMessage) Send() {
@@ -123,7 +122,7 @@ func createPushLog(message PushMessage, device UserDevice, err error) {
 type UserDevice struct {
 	Id          uuid.UUID      `gorm:"primarykey" json:"id"`
 	UserId      uuid.UUID      `json:"user_id"`
-	User        models.User    `json:"-"`
+	User        User           `json:"-"`
 	Device      string         `json:"device"`
 	DeviceToken string         `json:"device_token"`
 	CreatedAt   time.Time      `json:"-"`

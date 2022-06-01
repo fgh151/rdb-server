@@ -3,7 +3,6 @@ package web
 import (
 	"db-server/auth"
 	err2 "db-server/err"
-	"db-server/messages"
 	"db-server/models"
 	"db-server/server"
 	"encoding/json"
@@ -126,7 +125,7 @@ func CfRun(w http.ResponseWriter, r *http.Request) {
 func PushRun(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	message := messages.PushMessage{}.GetById(vars["id"]).(messages.PushMessage)
+	message := models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
 	go message.Send()
 	w.WriteHeader(200)
 }
@@ -158,7 +157,7 @@ func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 
 	err2.DebugErr(err)
 
-	var device messages.UserDevice
+	var device models.UserDevice
 	conn := server.MetaDb.GetConnection()
 	res := conn.First(&device, "device_token = ?", result["device_token"])
 
@@ -171,7 +170,7 @@ func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 		userId, err := uuid.Parse(result["user_id"])
 		err2.DebugErr(err)
 
-		device = messages.UserDevice{
+		device = models.UserDevice{
 			Id:          id,
 			DeviceToken: result["device_token"],
 			UserId:      userId,

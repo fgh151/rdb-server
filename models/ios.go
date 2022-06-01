@@ -1,4 +1,4 @@
-package messages
+package models
 
 import (
 	err2 "db-server/err"

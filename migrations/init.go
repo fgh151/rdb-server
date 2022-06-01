@@ -2,7 +2,6 @@ package migrations
 
 import (
 	err2 "db-server/err"
-	"db-server/messages"
 	"db-server/models"
 	"gorm.io/gorm"
 )
@@ -16,9 +15,9 @@ func Migrate(db *gorm.DB) {
 		&models.DataSourceEndpoint{},
 		&models.CloudFunction{},
 		&models.CloudFunctionLog{},
-		&messages.PushMessage{},
-		&messages.UserDevice{},
-		&messages.PushLog{},
+		&models.PushMessage{},
+		&models.UserDevice{},
+		&models.PushLog{},
 
 		&models.CronJob{},
 	)
