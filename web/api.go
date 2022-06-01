@@ -150,23 +150,46 @@ func CfRunLog(w http.ResponseWriter, r *http.Request) {
 
 func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	model := messages.UserDevice{}
 
-	err := json.NewDecoder(r.Body).Decode(&model)
+	var result map[string]string
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&result)
+
 	err2.DebugErr(err)
-	id, err := uuid.NewUUID()
-	model.Id = id
 
-	err2.DebugErr(err)
+	var device messages.UserDevice
+	conn := server.MetaDb.GetConnection()
+	res := conn.First(&device, "device_token = ?", result["device_token"])
 
-	if err != nil {
-		log.Error(err)
-		http.Error(w, err.Error(), 400)
-		return
+	log.Debug(res.RowsAffected)
+
+	if res.RowsAffected == 0 {
+
+		id, err := uuid.NewUUID()
+		err2.DebugErr(err)
+		userId, err := uuid.Parse(result["user_id"])
+		err2.DebugErr(err)
+
+		device = messages.UserDevice{
+			Id:          id,
+			DeviceToken: result["device_token"],
+			UserId:      userId,
+			Device:      result["device"],
+		}
+
+		log.Debug("Create user device " + device.Id.String())
+		conn.Create(&device)
+
+	} else {
+		log.Debug("Update user device " + device.Id.String())
+		device.Device = result["device"]
+		device.UserId, _ = uuid.Parse(result["user_id"])
+		device.DeviceToken = result["device_token"]
+		conn.Save(&device)
 	}
-	server.MetaDb.GetConnection().Create(&model)
 
-	resp, _ := json.Marshal(model)
+	resp, _ := json.Marshal(device)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
