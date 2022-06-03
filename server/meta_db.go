@@ -1,6 +1,7 @@
 package server
 
 import (
+	"db-server/drivers"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -23,9 +24,11 @@ func (c connection) connect() *gorm.DB {
 	case "sqlite":
 		db, err = gorm.Open(sqlite.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
 	case "mysql":
-		db, err = gorm.Open(mysql.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
+		conn := drivers.NewMysqlConnectionFromEnv()
+		db, err = gorm.Open(mysql.Open(conn.GetGormDsn()), &gorm.Config{})
 	case "postgres":
-		db, err = gorm.Open(postgres.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
+		conn := drivers.NewPostgresConnectionFromEnv()
+		db, err = gorm.Open(postgres.Open(conn.GetGormDsn()), &gorm.Config{})
 	}
 
 	if err != nil {
