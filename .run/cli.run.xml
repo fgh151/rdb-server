@@ -1,12 +1,13 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="run db-server verbose" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="cli backup" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="db-server" />
+    <target name="mongodb" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="-v" />
+    <parameters value="backup" />
     <kind value="FILE" />
     <package value="db-server" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="$PROJECT_DIR$/main.go" />
+    <filePath value="$PROJECT_DIR$/cli.go" />
     <method v="2" />
   </configuration>
 </component>
