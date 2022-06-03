@@ -3,6 +3,7 @@ package drivers
 import (
 	"context"
 	err2 "db-server/err"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -133,13 +134,13 @@ func (s database) GetConnection() (*mongo.Client, error) {
 		return s.client, nil
 	}
 
-	dbUri := os.Getenv("DB_URI")
+	conn := NewMongoConnectionFromEnv()
 
 	s.ctx = context.TODO()
 
 	var err error
 
-	s.client, err = mongo.Connect(s.ctx, options.Client().ApplyURI(dbUri))
+	s.client, err = mongo.Connect(s.ctx, options.Client().ApplyURI(conn.GetDsn()))
 
 	// Ping the primary
 	if err := s.client.Ping(context.TODO(), readpref.Primary()); err != nil {
@@ -147,4 +148,32 @@ func (s database) GetConnection() (*mongo.Client, error) {
 	}
 
 	return s.client, err
+}
+
+type MongoConnection struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+	DbName   string
+}
+
+func NewMongoConnectionFromEnv() MongoConnection {
+	return MongoConnection{
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		DbName:   os.Getenv("DB_DBNAME"),
+	}
+}
+
+func (c MongoConnection) GetDsn() string {
+	return fmt.Sprintf(
+		"mongodb://%s:%s@%s:%s/?maxPoolSize=20&w=majority",
+		c.User,
+		c.Password,
+		c.Host,
+		c.Port,
+	)
 }

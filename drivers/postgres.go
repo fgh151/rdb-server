@@ -31,7 +31,7 @@ func NewPostgresConnectionFromEnv() PostgresConnection {
 	}
 }
 
-func (c PostgresConnection) GetGormDsn() string {
+func (c PostgresConnection) GetDsn() string {
 	return fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai",
 		c.Host,

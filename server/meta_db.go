@@ -25,10 +25,10 @@ func (c connection) connect() *gorm.DB {
 		db, err = gorm.Open(sqlite.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
 	case "mysql":
 		conn := drivers.NewMysqlConnectionFromEnv()
-		db, err = gorm.Open(mysql.Open(conn.GetGormDsn()), &gorm.Config{})
+		db, err = gorm.Open(mysql.Open(conn.GetDsn()), &gorm.Config{})
 	case "postgres":
 		conn := drivers.NewPostgresConnectionFromEnv()
-		db, err = gorm.Open(postgres.Open(conn.GetGormDsn()), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(conn.GetDsn()), &gorm.Config{})
 	}
 
 	if err != nil {

@@ -23,7 +23,7 @@ func NewMysqlConnectionFromEnv() MysqlConnection {
 	}
 }
 
-func (c MysqlConnection) GetGormDsn() string {
+func (c MysqlConnection) GetDsn() string {
 	return fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		c.User,
