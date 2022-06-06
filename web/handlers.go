@@ -141,8 +141,9 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 	requestPayload := getPayload(r)
 
 	if checkAccess(w, r) {
+		limit, offset, _, _ := GetPagination(r)
 
-		res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload)
+		res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload, int64(limit), int64(offset))
 
 		sendResponse(w, 200, res, err)
 	}

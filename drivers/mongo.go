@@ -46,7 +46,7 @@ func (s database) Insert(dbName string, collectionName string, value interface{}
 	return collection.InsertOne(GetDbInstance().GetContext(), value)
 }
 
-func (s database) Find(dbName string, collectionName string, filter interface{}) ([]*bson.D, error) {
+func (s database) Find(dbName string, collectionName string, filter interface{}, limit int64, skip int64) ([]*bson.D, error) {
 	client, _ := s.GetConnection()
 
 	db := client.Database(dbName)
@@ -56,7 +56,12 @@ func (s database) Find(dbName string, collectionName string, filter interface{})
 	var ctx = GetDbInstance().GetContext()
 	var res []*bson.D
 
-	cur, err := collection.Find(ctx, filter)
+	findOptions := options.Find()
+
+	findOptions.Limit = &limit
+	findOptions.Skip = &skip
+
+	cur, err := collection.Find(ctx, filter, findOptions)
 
 	defer func() { _ = cur.Close(ctx) }()
 
