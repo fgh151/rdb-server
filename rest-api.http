@@ -98,3 +98,11 @@ Authorization: Bearer 123
 POST http://localhost:9090/api/device/register
 Accept: */*
 Authorization: Bearer 123
+
+
+
+### Get em list
+GET http://localhost:9090/em/list/logbook?_start=0&_end=20
+Origin: app
+Accept: */*
+db-key: 123
