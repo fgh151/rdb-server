@@ -67,4 +67,9 @@ services:
       - ./db.db:/db.db
     links:
       - mongodb
+  
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 ```
