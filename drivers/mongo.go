@@ -77,7 +77,7 @@ func (s database) Find(dbName string, collectionName string, filter interface{},
 	return res, err
 }
 
-func (s database) List(dbName string, collectionName string, limit int64, skip int64) ([]*bson.D, error) {
+func (s database) List(dbName string, collectionName string, limit int64, skip int64, order string, sort string) ([]*bson.D, error) {
 
 	client, _ := s.GetConnection()
 
@@ -89,6 +89,7 @@ func (s database) List(dbName string, collectionName string, limit int64, skip i
 
 	findOptions.Limit = &limit
 	findOptions.Skip = &skip
+	findOptions.SetSort(bson.D{{sort, order}})
 
 	var ctx = GetDbInstance().GetContext()
 	var res []*bson.D

@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -157,9 +158,11 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 
-		limit, offset, _, _ := GetPagination(r)
+		limit, offset, order, sort := GetPagination(r)
 
-		res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic, int64(limit), int64(offset))
+		log.Debug("Mongo limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset) + " order " + order + " sort " + sort)
+
+		res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic, int64(limit), int64(offset), order, sort)
 
 		sendResponse(w, 200, res, err)
 	}
