@@ -156,7 +156,9 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 
-		res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic)
+		limit, offset, _, _ := GetPagination(r)
+
+		res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic, int64(limit), int64(offset))
 
 		sendResponse(w, 200, res, err)
 	}

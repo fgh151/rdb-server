@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-func getPagination(r *http.Request) (int, int, string, string) {
+func GetPagination(r *http.Request) (int, int, string, string) {
 
 	v := r.URL.Query()
 
@@ -68,7 +68,7 @@ func ListCron(w http.ResponseWriter, r *http.Request) {
 
 func listItems(model models.Model, r *http.Request, w http.ResponseWriter) {
 	log.Debug(r.Method, r.RequestURI)
-	arr := model.List(getPagination(r))
+	arr := model.List(GetPagination(r))
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json")
@@ -109,7 +109,7 @@ func CfLog(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	f := models.CloudFunction{}.GetById(vars["id"]).(models.CloudFunction)
 
-	l, o, s, or := getPagination(r)
+	l, o, s, or := GetPagination(r)
 	arr := models.ListCfLog(f.Id, l, o, s, or)
 	total := models.LogsTotal(f.Id)
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
