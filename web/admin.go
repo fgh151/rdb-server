@@ -47,7 +47,42 @@ func ListTopics(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListUsers(w http.ResponseWriter, r *http.Request) {
-	listItems(models.User{}, r, w)
+	log.Debug(r.Method, r.RequestURI)
+
+	filter := make(map[string]interface{})
+
+	v := r.URL.Query()
+
+	id := v.Get("id")
+	if id != "" {
+		filter["id"] = id
+	}
+	email := v.Get("email")
+	if email != "" {
+		filter["email"] = email
+	}
+
+	admin := v.Get("admin")
+	if admin != "" {
+		filter["admin"] = admin == "true"
+	}
+	active := v.Get("active")
+	if admin != "" {
+		filter["active"] = active == "active"
+	}
+
+	l, o, or, so := GetPagination(r)
+
+	arr := models.User{}.ListWithFilter(l, o, or, so, filter)
+	total := models.User{}.Total()
+	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
+
+	resp, _ := json.Marshal(arr)
+	w.WriteHeader(200)
+	_, err := w.Write(resp)
+	err2.DebugErr(err)
 }
 
 func ListConfig(w http.ResponseWriter, r *http.Request) {

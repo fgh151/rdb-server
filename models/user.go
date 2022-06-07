@@ -19,7 +19,7 @@ type User struct {
 	CreatedAt    time.Time      `json:"-"`
 	UpdatedAt    time.Time      `json:"-"`
 	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
-	LastLogin    *time.Time     `json:"lastLogin,omitempty"`
+	LastLogin    *time.Time     `gorm:"last_login" json:"last_login,omitempty"`
 
 	Devices []UserDevice `gorm:"foreignKey:user_id" json:"devices"`
 }
@@ -30,6 +30,25 @@ func (p User) List(limit int, offset int, sort string, order string) []interface
 	conn := server.MetaDb.GetConnection()
 
 	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Preload("Devices").Find(&users)
+
+	y := make([]interface{}, len(users))
+	for i, v := range users {
+		y[i] = v
+	}
+
+	return y
+}
+
+func (p User) ListWithFilter(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+	var users []User
+
+	conn := server.MetaDb.GetConnection()
+
+	query := conn.Limit(limit).Offset(offset).Order(order + " " + sort)
+
+	query.Where(filter)
+
+	query.Preload("Devices").Find(&users)
 
 	y := make([]interface{}, len(users))
 	for i, v := range users {
