@@ -16,7 +16,7 @@ type User struct {
 	PasswordHash string         `json:"-"`
 	Admin        bool           `gorm:"index;default:false;type:bool" json:"admin"`
 	Active       bool           `gorm:"index;default:true;type:bool" json:"active"`
-	CreatedAt    time.Time      `json:"-"`
+	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"-"`
 	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
 	LastLogin    *time.Time     `gorm:"last_login" json:"last_login,omitempty"`
