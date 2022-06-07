@@ -51,11 +51,12 @@ func InitServer() {
 
 	admin := r.PathPrefix("/admin").Subrouter()
 	admin.Use(auth.AdminVerify)
-	admin.HandleFunc("/topics", ListTopics).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
-	admin.HandleFunc("/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/topics/{id}", UpdateTopic).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/topics", ListTopics).Methods(http.MethodGet, http.MethodOptions)             // each request calls PushHandler
+	admin.HandleFunc("/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/topics/{topic}/data", TopicData).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet, http.MethodOptions)         // each request calls PushHandler
+	admin.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/topics/{id}", UpdateTopic).Methods(http.MethodPut, http.MethodOptions)       // each request calls PushHandler
 
 	admin.HandleFunc("/users", ListUsers).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
 	admin.HandleFunc("/users", CreateUser).Methods(http.MethodPost, http.MethodOptions)         // each request calls PushHandler

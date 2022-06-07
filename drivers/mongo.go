@@ -77,7 +77,7 @@ func (s database) Find(dbName string, collectionName string, filter interface{},
 	return res, err
 }
 
-func (s database) List(dbName string, collectionName string, limit int64, skip int64, order string, sort string) ([]*bson.D, error) {
+func (s database) List(dbName string, collectionName string, limit int64, skip int64, order int, sort string) ([]*bson.D, int64, error) {
 
 	client, _ := s.GetConnection()
 
@@ -107,7 +107,9 @@ func (s database) List(dbName string, collectionName string, limit int64, skip i
 		res = append(res, &d)
 	}
 
-	return res, err
+	count, err := collection.CountDocuments(ctx, bson.D{{}})
+
+	return res, count, err
 }
 
 type Db interface {
@@ -186,4 +188,19 @@ func (c MongoConnection) GetDsn() string {
 		c.Host,
 		c.Port,
 	)
+}
+
+func GetMongoSort(sqlSort string, sqlOrder string) (int, string) {
+	var sort int
+	var order = sqlOrder
+	if sqlSort == "ASC" {
+		sort = 1
+	} else {
+		sort = -1
+	}
+	if sqlOrder == "id" {
+		order = "_id"
+	}
+
+	return sort, order
 }

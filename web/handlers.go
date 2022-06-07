@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-func getTopic(r *http.Request) string {
+func GetTopic(r *http.Request) string {
 	vars := mux.Vars(r)
 	return vars["topic"]
 }
@@ -30,7 +30,7 @@ func getPayload(r *http.Request) map[string]interface{} {
 }
 
 func checkAccess(w http.ResponseWriter, r *http.Request) bool {
-	topic := getTopic(r)
+	topic := GetTopic(r)
 	p := models.Project{}.GetByTopic(topic).(models.Project)
 
 	if !validateOrigin(p, r.Header.Get("Origin")) {
@@ -73,7 +73,7 @@ func PushHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := getTopic(r)
+	topic := GetTopic(r)
 
 	if checkAccess(w, r) {
 		requestPayload := getPayload(r)
@@ -98,7 +98,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := getTopic(r)
+	topic := GetTopic(r)
 
 	vars := mux.Vars(r)
 	rkey := vars["key"]
@@ -138,7 +138,7 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := getTopic(r)
+	topic := GetTopic(r)
 	requestPayload := getPayload(r)
 
 	if checkAccess(w, r) {
@@ -154,15 +154,19 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := getTopic(r)
+	topic := GetTopic(r)
 
 	if checkAccess(w, r) {
 
-		limit, offset, order, sort := GetPagination(r)
+		limit, offset, rorder, sort := GetPagination(r)
 
-		log.Debug("Mongo limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset) + " order " + order + " sort " + sort)
+		log.Debug("Mongo limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset) + " order " + rorder + " sort " + sort)
 
-		res, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic, int64(limit), int64(offset), order, sort)
+		order, sort := drivers.GetMongoSort(sort, rorder)
+
+		res, count, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic, int64(limit), int64(offset), order, sort)
+
+		w.Header().Add("X-Total-Count", strconv.FormatInt(count, 10))
 
 		sendResponse(w, 200, res, err)
 	}
@@ -172,7 +176,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := getTopic(r)
+	topic := GetTopic(r)
 
 	if checkAccess(w, r) {
 
@@ -191,7 +195,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := getTopic(r)
+	topic := GetTopic(r)
 
 	if checkAccess(w, r) {
 		vars := mux.Vars(r)

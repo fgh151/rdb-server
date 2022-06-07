@@ -1,15 +1,19 @@
 package web
 
 import (
+	"db-server/drivers"
 	err2 "db-server/err"
 	"db-server/models"
 	"db-server/server"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 )
 
 func GetPagination(r *http.Request) (int, int, string, string) {
@@ -124,6 +128,39 @@ func CfLog(w http.ResponseWriter, r *http.Request) {
 
 func TopicItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.Project{}, w, r)
+}
+
+func TopicData(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	topic := GetTopic(r)
+
+	limit, offset, rorder, sort := GetPagination(r)
+
+	order, sort := drivers.GetMongoSort(sort, rorder)
+
+	log.Debug("Mongo limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset) + " order " + rorder + " sort " + sort)
+
+	res, count, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic, int64(limit), int64(offset), order, sort)
+
+	var result []map[string]string
+
+	for _, resArray := range res {
+		record := make(map[string]string)
+		for key, obj := range resArray.Map() {
+
+			if key == "_id" {
+				key = "id"
+				obj = strings.ReplaceAll(strings.ReplaceAll(fmt.Sprintf("%v", obj), "bjectID(\"", ""), "\")", "")
+			}
+			record[key] = fmt.Sprintf("%v", obj)
+		}
+		result = append(result, record)
+	}
+
+	w.Header().Add("X-Total-Count", strconv.FormatInt(count, 10))
+
+	sendResponse(w, 200, result, err)
 }
 
 func UpdateTopic(w http.ResponseWriter, r *http.Request) {
