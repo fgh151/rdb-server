@@ -37,12 +37,12 @@ type Sender interface {
 	SendPush(message PushMessage, device UserDevice) error
 }
 
-func (p PushMessage) List(limit int, offset int, sort string, order string) []interface{} {
+func (p PushMessage) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var pushMessages []PushMessage
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Offset(offset).Limit(limit).Order(order + " " + sort).Find(&pushMessages)
+	conn.Offset(offset).Limit(limit).Order(order + " " + sort).Where(filter).Find(&pushMessages)
 
 	y := make([]interface{}, len(pushMessages))
 	for i, v := range pushMessages {

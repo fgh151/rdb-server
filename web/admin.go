@@ -42,72 +42,61 @@ func GetPagination(r *http.Request) (int, int, string, string) {
 	return limit - offset, offset, order, sort
 }
 
+func formatQuery(r *http.Request, params []string) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	if len(params) < 1 {
+		return result
+	}
+
+	v := r.URL.Query()
+	for _, param := range params {
+		if v.Has(param) {
+			val := v.Get(param)
+			if val != "" {
+				result[param] = val
+			}
+		}
+	}
+
+	return result
+}
+
 func ListTopics(w http.ResponseWriter, r *http.Request) {
-	listItems(models.Project{}, r, w)
+	listItems(models.Project{}, []string{}, r, w)
 }
 
 func ListUsers(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-
-	filter := make(map[string]interface{})
-
-	v := r.URL.Query()
-
-	id := v.Get("id")
-	if id != "" {
-		filter["id"] = id
-	}
-	email := v.Get("email")
-	if email != "" {
-		filter["email"] = email
-	}
-
-	admin := v.Get("admin")
-	if admin != "" {
-		filter["admin"] = admin == "true"
-	}
-	active := v.Get("active")
-	if admin != "" {
-		filter["active"] = active == "active"
-	}
-
-	l, o, or, so := GetPagination(r)
-
-	arr := models.User{}.ListWithFilter(l, o, or, so, filter)
-	total := models.User{}.Total()
-	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
-
-	resp, _ := json.Marshal(arr)
-	w.WriteHeader(200)
-	_, err := w.Write(resp)
-	err2.DebugErr(err)
+	listItems(models.User{}, []string{"id", "email", "admin", "active"}, r, w)
 }
 
 func ListConfig(w http.ResponseWriter, r *http.Request) {
-	listItems(models.Config{}, r, w)
+	listItems(models.Config{}, []string{}, r, w)
 }
 
 func ListDs(w http.ResponseWriter, r *http.Request) {
-	listItems(models.DataSource{}, r, w)
+	listItems(models.DataSource{}, []string{}, r, w)
 }
 
 func ListCf(w http.ResponseWriter, r *http.Request) {
-	listItems(models.CloudFunction{}, r, w)
+	listItems(models.CloudFunction{}, []string{}, r, w)
 }
 
 func ListPush(w http.ResponseWriter, r *http.Request) {
-	listItems(models.PushMessage{}, r, w)
+	listItems(models.PushMessage{}, []string{}, r, w)
 }
 
 func ListCron(w http.ResponseWriter, r *http.Request) {
-	listItems(models.CronJob{}, r, w)
+	listItems(models.CronJob{}, []string{}, r, w)
 }
 
-func listItems(model models.Model, r *http.Request, w http.ResponseWriter) {
+func listItems(model models.Model, filter []string, r *http.Request, w http.ResponseWriter) {
 	log.Debug(r.Method, r.RequestURI)
-	arr := model.List(GetPagination(r))
+
+	l, o, or, so := GetPagination(r)
+	f := formatQuery(r, filter)
+
+	arr := model.List(l, o, or, so, f)
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json")

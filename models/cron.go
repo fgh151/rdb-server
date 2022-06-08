@@ -21,12 +21,12 @@ type CronJob struct {
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
-func (j CronJob) List(limit int, offset int, sort string, order string) []interface{} {
+func (j CronJob) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var jobs []CronJob
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Find(&jobs)
+	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Where(filter).Find(&jobs)
 
 	y := make([]interface{}, len(jobs))
 	for i, v := range jobs {
@@ -85,7 +85,7 @@ func InitCron() {
 	var jobs []interface{}
 
 	for {
-		jobs = CronJob{}.List(batchSize, offset, "ASC", "id")
+		jobs = CronJob{}.List(batchSize, offset, "ASC", "id", nil)
 
 		if len(jobs) <= 0 {
 			break

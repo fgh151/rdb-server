@@ -24,29 +24,16 @@ type User struct {
 	Devices []UserDevice `gorm:"foreignKey:user_id" json:"devices"`
 }
 
-func (p User) List(limit int, offset int, sort string, order string) []interface{} {
-	var users []User
-
-	conn := server.MetaDb.GetConnection()
-
-	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Preload("Devices").Find(&users)
-
-	y := make([]interface{}, len(users))
-	for i, v := range users {
-		y[i] = v
-	}
-
-	return y
-}
-
-func (p User) ListWithFilter(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (p User) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var users []User
 
 	conn := server.MetaDb.GetConnection()
 
 	query := conn.Limit(limit).Offset(offset).Order(order + " " + sort)
 
-	query.Where(filter)
+	if len(filter) > 0 {
+		query.Where(filter)
+	}
 
 	query.Preload("Devices").Find(&users)
 

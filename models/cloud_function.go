@@ -99,12 +99,12 @@ func GetContainerUri(source string) (ContainerUri, error) {
 	return uri, nil
 }
 
-func (p CloudFunction) List(limit int, offset int, sort string, order string) []interface{} {
+func (p CloudFunction) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var sources []CloudFunction
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Find(&sources)
+	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Where(filter).Find(&sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

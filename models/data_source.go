@@ -32,12 +32,12 @@ type DataSource struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
-func (p DataSource) List(limit int, offset int, sort string, order string) []interface{} {
+func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var sources []DataSource
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Find(&sources)
+	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Where(filter).Find(&sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

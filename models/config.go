@@ -13,12 +13,12 @@ type Config struct {
 	Project   Project   `json:"project"`
 }
 
-func (p Config) List(limit int, offset int, sort string, order string) []interface{} {
+func (p Config) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var configs []Config
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Find(&configs)
+	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Where(filter).Find(&configs)
 
 	y := make([]interface{}, len(configs))
 	for i, v := range configs {
