@@ -3,6 +3,7 @@ package events
 import (
 	err2 "db-server/err"
 	"encoding/json"
+	"errors"
 	"github.com/gorilla/websocket"
 	"sync"
 )
@@ -35,6 +36,24 @@ func (e *PushHandler) RegisterNewMessage(content interface{}) {
 		err := listener.WriteMessage(websocket.TextMessage, msg)
 		err2.DebugErr(err)
 	}
+}
+
+func (e *PushHandler) Send(deviceId string, payload interface{}) error {
+
+	if conn, ok := e.subscribers.list[deviceId]; ok {
+
+		b, err := json.Marshal(payload)
+
+		err2.DebugErr(err)
+
+		if err == nil {
+			err = conn.WriteMessage(websocket.TextMessage, b)
+			err2.DebugErr(err)
+		}
+
+		return err
+	}
+	return errors.New("Disconected device")
 }
 
 var pushInstance *PushHandler = nil

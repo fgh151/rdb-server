@@ -2,9 +2,7 @@ package models
 
 import (
 	"db-server/server"
-	"errors"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"time"
 )
@@ -93,9 +91,7 @@ func (p PushMessage) Send() {
 			)
 			break
 		default:
-			msg := "Unknown push device: name: " + receiver.Device + " id: " + receiver.Id.String()
-			createPushLog(p, receiver, errors.New(msg))
-			logrus.Warn(msg)
+			createPushLog(p, receiver, InnerPush{}.SendPush(p, receiver))
 		}
 	}
 

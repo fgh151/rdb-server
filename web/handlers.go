@@ -97,6 +97,45 @@ var upgrader = websocket.Upgrader{
 } // use default options
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	topic := GetTopic(r)
+
+	vars := mux.Vars(r)
+	rkey := vars["key"]
+
+	if !validateKey(models.Project{}.GetKey(topic), rkey) {
+		send403Error(w, "db-key not Valid")
+	} else {
+		c, err := upgrader.Upgrade(w, r, nil)
+
+		events.GetInstance().Subscribe(topic, c)
+		defer events.GetInstance().Unsubscribe(topic, c)
+
+		err = c.WriteMessage(1, []byte("test own message"))
+
+		if err != nil {
+			log.Print("upgrade:", err)
+			return
+		}
+		defer func() { _ = c.Close() }()
+		for {
+			mt, message, err := c.ReadMessage()
+			if err != nil {
+				log.Println("read:", err)
+				break
+			}
+			log.Printf("recv: %s", message)
+			err = c.WriteMessage(mt, message)
+			if err != nil {
+				log.Println("write:", err)
+				break
+			}
+		}
+	}
+}
+
+func SubscribePushHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 

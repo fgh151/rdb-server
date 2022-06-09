@@ -96,10 +96,10 @@ func InitServer() {
 	admin.HandleFunc("/cron/{id}", DeleteCron).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/cron/{id}", UpdateCron).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
-	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)                         // each request calls PushHandler
-	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions)                 // each request calls PushHandler
-	r.HandleFunc("/api/device/register", PushDeviceRegister).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	r.HandleFunc("/api/push/subscribe/{deviceId}", SubscribeHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)                             // each request calls PushHandler
+	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions)                     // each request calls PushHandler
+	r.HandleFunc("/api/device/register", PushDeviceRegister).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	r.HandleFunc("/api/push/subscribe/{deviceId}", SubscribePushHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
 	api := r.PathPrefix("/api").Subrouter()
 	api.Use(auth.BearerVerify)
