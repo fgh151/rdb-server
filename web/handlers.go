@@ -100,40 +100,34 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
-
 	vars := mux.Vars(r)
-	rkey := vars["key"]
+	deviceId := vars["deviceId"]
+	c, err := upgrader.Upgrade(w, r, nil)
 
-	if !validateKey(models.Project{}.GetKey(topic), rkey) {
-		send403Error(w, "db-key not Valid")
-	} else {
-		c, err := upgrader.Upgrade(w, r, nil)
+	events.GetPush().Subscribe(deviceId, c)
+	defer events.GetPush().Unsubscribe(deviceId)
 
-		events.GetInstance().Subscribe(topic, c)
-		defer events.GetInstance().Unsubscribe(topic, c)
+	err = c.WriteMessage(websocket.TextMessage, []byte("test own message"))
 
-		err = c.WriteMessage(1, []byte("test own message"))
-
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer func() { _ = c.Close() }()
+	for {
+		mt, message, err := c.ReadMessage()
 		if err != nil {
-			log.Print("upgrade:", err)
-			return
+			log.Println("read:", err)
+			break
 		}
-		defer func() { _ = c.Close() }()
-		for {
-			mt, message, err := c.ReadMessage()
-			if err != nil {
-				log.Println("read:", err)
-				break
-			}
-			log.Printf("recv: %s", message)
-			err = c.WriteMessage(mt, message)
-			if err != nil {
-				log.Println("write:", err)
-				break
-			}
+		log.Printf("recv: %s", message)
+		err = c.WriteMessage(mt, message)
+		if err != nil {
+			log.Println("write:", err)
+			break
 		}
 	}
+
 }
 
 func FindHandler(w http.ResponseWriter, r *http.Request) {

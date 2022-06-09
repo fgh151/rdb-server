@@ -38,12 +38,12 @@ func InitServer() {
 
 	em := r.PathPrefix("/em").Subrouter()
 
-	em.HandleFunc("/find/{topic}", FindHandler).Methods(http.MethodPost, http.MethodOptions)     // each request calls PushHandler
-	em.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	em.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet)          // each request calls PushHandler
-	em.HandleFunc("/{topic}", PushHandler).Methods(http.MethodPost, http.MethodOptions)          // each request calls PushHandler
-	em.HandleFunc("/{topic}/{id}", UpdateHandler).Methods(http.MethodPatch, http.MethodOptions)  // each request calls PushHandler
-	em.HandleFunc("/{topic}/{id}", DeleteHandler).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	em.HandleFunc("/find/{topic}", FindHandler).Methods(http.MethodPost, http.MethodOptions)                // each request calls PushHandler
+	em.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet, http.MethodOptions)                 // each request calls PushHandler
+	em.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	em.HandleFunc("/{topic}", PushHandler).Methods(http.MethodPost, http.MethodOptions)                     // each request calls PushHandler
+	em.HandleFunc("/{topic}/{id}", UpdateHandler).Methods(http.MethodPatch, http.MethodOptions)             // each request calls PushHandler
+	em.HandleFunc("/{topic}/{id}", DeleteHandler).Methods(http.MethodDelete, http.MethodOptions)            // each request calls PushHandler
 
 	r.HandleFunc("/config/{id}", ApiConfigItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 	r.HandleFunc("/dse/{id}", DSEItem).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
@@ -96,9 +96,10 @@ func InitServer() {
 	admin.HandleFunc("/cron/{id}", DeleteCron).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/cron/{id}", UpdateCron).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
-	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)                  // each request calls PushHandler
-	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions)          // each request calls PushHandler
-	r.HandleFunc("/api/device/register", PushDeviceRegister).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)                         // each request calls PushHandler
+	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions)                 // each request calls PushHandler
+	r.HandleFunc("/api/device/register", PushDeviceRegister).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	r.HandleFunc("/api/push/subscribe/{deviceId}", SubscribeHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
 	api := r.PathPrefix("/api").Subrouter()
 	api.Use(auth.BearerVerify)
