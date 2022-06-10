@@ -20,6 +20,8 @@ func main() {
 	verboseMode := flag.Bool("v", false, "Verbose mode")
 	migrateFlag := flag.Bool("m", false, "Run migrations")
 	demoFlag := flag.Bool("demo", false, "Fill demo data")
+	docsFlag := flag.Bool("docs", true, "Disable public docs")
+
 	flag.Parse()
 
 	if *verboseMode {
@@ -75,5 +77,5 @@ func main() {
 	models.InitCron()
 
 	log.Debug("Init web server")
-	web.InitServer()
+	web.InitServer(docsFlag)
 }

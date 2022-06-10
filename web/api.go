@@ -72,6 +72,16 @@ func ApiMe(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// ApiConfigItem godoc
+// @Summary      Config
+// @Description  Get config by id
+// @Tags         Config manager
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  false  "Config id" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /config/{id} [get]
 func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -90,6 +100,16 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DSEItem godoc
+// @Summary      Get item
+// @Description  Get data source by id
+// @Tags         Data source
+// @Accept       json
+// @Produce      json
+// @Param        db-key    header     string  false  "Auth key" gg
+// @Success      200  {object}   models.Project
+//
+// @Router       /dse/{id} [get]
 func DSEItem(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 

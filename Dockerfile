@@ -3,6 +3,8 @@ WORKDIR /db-server
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
+RUN go get -u github.com/swaggo/swag/cmd/swag
+RUN swag init
 RUN go build -o /db-server main.go && go build -o /db-server/cli cli.go
 # Финальный этап, копируем собранное приложение
 FROM debian:buster-slim

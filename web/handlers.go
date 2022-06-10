@@ -71,6 +71,16 @@ func send403Error(w http.ResponseWriter, message string) {
 	sendResponse(w, 403, payload, nil)
 }
 
+// PushHandler godoc
+// @Summary      Create
+// @Description  Create topic record
+// @Tags         Entity manager
+// @Accept       json
+// @Produce      json
+// @Param        topic    path     string  false  "Topic name" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /em/{topic} [post]
 func PushHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
@@ -96,6 +106,17 @@ var upgrader = websocket.Upgrader{
 	},
 } // use default options
 
+// SubscribeHandler godoc
+// @Summary      Subscribe
+// @Description  Socket subscribe to topic
+// @Tags         Entity manager
+// @Accept       json
+// @Produce      json
+// @Param        topic    path     string  false  "Topic name" gg
+// @Param        key    path     string  false  "Db key" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /em/subscribe/{topic}/{key} [get]
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -169,6 +190,16 @@ func SubscribePushHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// FindHandler godoc
+// @Summary      Search
+// @Description  Search in topic
+// @Tags         Entity manager
+// @Accept       json
+// @Produce      json
+// @Param        topic    path     string  false  "Topic name" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /em/find/{topic} [get]
 func FindHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
@@ -185,6 +216,16 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ListHandler godoc
+// @Summary      List
+// @Description  List topic records
+// @Tags         Entity manager
+// @Accept       json
+// @Produce      json
+// @Param        topic    path     string  false  "Topic name" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /em/list/{topic} [get]
 func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
@@ -218,6 +259,17 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// UpdateHandler godoc
+// @Summary      Update
+// @Description  Update entity record
+// @Tags         Entity manager
+// @Accept       json
+// @Produce      json
+// @Param        topic    path     string  false  "Topic name" gg
+// @Param        id    path     string  false  "Topic record id" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /em/{topic}/{id} [patch]
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
@@ -237,6 +289,17 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DeleteHandler godoc
+// @Summary      Delete
+// @Description  Delete entity record
+// @Tags         Entity manager
+// @Accept       json
+// @Produce      json
+// @Param        topic    path     string  false  "Topic name" gg
+// @Param        id    path     string  false  "Topic record id" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /em/{topic}/{id} [delete]
 func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)

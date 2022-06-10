@@ -63,30 +63,105 @@ func formatQuery(r *http.Request, params []string) map[string]interface{} {
 	return result
 }
 
+// ListTopics godoc
+// @Summary      List topics
+// @Description  List topics
+// @Tags         Topic
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.Project
+//
+// @Router       /admin/topics [get]
 func ListTopics(w http.ResponseWriter, r *http.Request) {
 	listItems(models.Project{}, []string{}, r, w)
 }
 
+// ListUsers godoc
+// @Summary      List users
+// @Description  List users
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.User
+//
+// @Router       /admin/users [get]
 func ListUsers(w http.ResponseWriter, r *http.Request) {
 	listItems(models.User{}, []string{"id", "email", "admin", "active"}, r, w)
 }
 
+// ListConfig godoc
+// @Summary      List configs
+// @Description  List configs
+// @Tags         Config manager
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.Config
+//
+// @Router       /admin/config [get]
 func ListConfig(w http.ResponseWriter, r *http.Request) {
 	listItems(models.Config{}, []string{}, r, w)
 }
 
+// ListDs godoc
+// @Summary      List data sources
+// @Description  List data sources
+// @Tags         Data source
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.DataSource
+//
+// @Router       /admin/ds [get]
 func ListDs(w http.ResponseWriter, r *http.Request) {
 	listItems(models.DataSource{}, []string{}, r, w)
 }
 
+// ListCf godoc
+// @Summary      List cloud functions
+// @Description  List cloud functions
+// @Tags         Cloud functions
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.CloudFunction
+//
+// @Router       /admin/cf [get]
 func ListCf(w http.ResponseWriter, r *http.Request) {
 	listItems(models.CloudFunction{}, []string{}, r, w)
 }
 
+// ListPush godoc
+// @Summary      List push messages
+// @Description  List push messages
+// @Tags         Push messages
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.PushMessage
+//
+// @Router       /admin/push [get]
 func ListPush(w http.ResponseWriter, r *http.Request) {
 	listItems(models.PushMessage{}, []string{}, r, w)
 }
 
+// ListCron godoc
+// @Summary      List cron jobs
+// @Description  List cron jobs
+// @Tags         Cron
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.CronJob
+//
+// @Router       /admin/cron [get]
 func ListCron(w http.ResponseWriter, r *http.Request) {
 	listItems(models.CronJob{}, []string{}, r, w)
 }
@@ -547,6 +622,17 @@ func CreateCron(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// Auth godoc
+// @Summary      Login
+// @Description  Authenticate in admin
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        email    query     string  false  "Email for login" gg
+// @Param        password    query     string  false  "Password for login" gg
+// @Success      200  {object}   models.User
+//
+// @Router       /admin/auth [post]
 func Auth(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 

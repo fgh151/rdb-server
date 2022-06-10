@@ -1,0 +1,476 @@
+definitions:
+  models.CloudFunction:
+    properties:
+      container:
+        type: string
+      id:
+        type: string
+      params:
+        type: string
+      project:
+        $ref: '#/definitions/models.Project'
+      project_id:
+        type: string
+      run_count:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.Config:
+    properties:
+      body:
+        type: string
+      id:
+        type: string
+      project:
+        $ref: '#/definitions/models.Project'
+      project_id:
+        type: string
+      title:
+        type: string
+    type: object
+  models.CronJob:
+    properties:
+      function:
+        $ref: '#/definitions/models.CloudFunction'
+      function_id:
+        type: string
+      id:
+        type: string
+      time_params:
+        type: string
+      title:
+        type: string
+    type: object
+  models.DataSource:
+    properties:
+      cache:
+        type: boolean
+      dsn:
+        type: string
+      id:
+        type: string
+      project:
+        $ref: '#/definitions/models.Project'
+      project_id:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  models.Project:
+    properties:
+      id:
+        type: string
+      key:
+        type: string
+      origins:
+        type: string
+      topic:
+        type: string
+    type: object
+  models.PushMessage:
+    properties:
+      body:
+        type: string
+      id:
+        type: string
+      payload:
+        type: string
+      receivers:
+        items:
+          $ref: '#/definitions/models.UserDevice'
+        type: array
+      sent:
+        type: boolean
+      sent_at:
+        type: string
+      title:
+        type: string
+      topic:
+        type: string
+    type: object
+  models.User:
+    properties:
+      active:
+        type: boolean
+      admin:
+        type: boolean
+      created_at:
+        type: string
+      devices:
+        items:
+          $ref: '#/definitions/models.UserDevice'
+        type: array
+      email:
+        type: string
+      id:
+        type: string
+      last_login:
+        type: string
+      token:
+        type: string
+    type: object
+  models.UserDevice:
+    properties:
+      device:
+        type: string
+      device_token:
+        type: string
+      id:
+        type: string
+      user_id:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /admin/auth:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate in admin
+      parameters:
+      - description: Email for login
+        in: query
+        name: email
+        type: string
+      - description: Password for login
+        in: query
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Login
+      tags:
+      - Admin
+  /admin/cf:
+    get:
+      consumes:
+      - application/json
+      description: List cloud functions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CloudFunction'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List cloud functions
+      tags:
+      - Cloud functions
+      - Admin
+  /admin/config:
+    get:
+      consumes:
+      - application/json
+      description: List configs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Config'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List configs
+      tags:
+      - Config manager
+      - Admin
+  /admin/cron:
+    get:
+      consumes:
+      - application/json
+      description: List cron jobs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CronJob'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List cron jobs
+      tags:
+      - Cron
+      - Admin
+  /admin/ds:
+    get:
+      consumes:
+      - application/json
+      description: List data sources
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.DataSource'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List data sources
+      tags:
+      - Data source
+      - Admin
+  /admin/push:
+    get:
+      consumes:
+      - application/json
+      description: List push messages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.PushMessage'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List push messages
+      tags:
+      - Push messages
+      - Admin
+  /admin/topics:
+    get:
+      consumes:
+      - application/json
+      description: List topics
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Project'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List topics
+      tags:
+      - Topic
+  /admin/users:
+    get:
+      consumes:
+      - application/json
+      description: List users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List users
+      tags:
+      - User
+  /config/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get config by id
+      parameters:
+      - description: Config id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: Config
+      tags:
+      - Config manager
+  /dse/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get data source by id
+      parameters:
+      - description: Auth key
+        in: header
+        name: db-key
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+      summary: Get item
+      tags:
+      - Data source
+  /em/{topic}:
+    post:
+      consumes:
+      - application/json
+      description: Create topic record
+      parameters:
+      - description: Topic name
+        in: path
+        name: topic
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: Create
+      tags:
+      - Entity manager
+  /em/{topic}/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete entity record
+      parameters:
+      - description: Topic name
+        in: path
+        name: topic
+        type: string
+      - description: Topic record id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: Delete
+      tags:
+      - Entity manager
+    patch:
+      consumes:
+      - application/json
+      description: Update entity record
+      parameters:
+      - description: Topic name
+        in: path
+        name: topic
+        type: string
+      - description: Topic record id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: Update
+      tags:
+      - Entity manager
+  /em/find/{topic}:
+    get:
+      consumes:
+      - application/json
+      description: Search in topic
+      parameters:
+      - description: Topic name
+        in: path
+        name: topic
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: Search
+      tags:
+      - Entity manager
+  /em/list/{topic}:
+    get:
+      consumes:
+      - application/json
+      description: List topic records
+      parameters:
+      - description: Topic name
+        in: path
+        name: topic
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: List
+      tags:
+      - Entity manager
+  /em/subscribe/{topic}/{key}:
+    get:
+      consumes:
+      - application/json
+      description: Socket subscribe to topic
+      parameters:
+      - description: Topic name
+        in: path
+        name: topic
+        type: string
+      - description: Db key
+        in: path
+        name: key
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: Subscribe
+      tags:
+      - Entity manager
+swagger: "2.0"

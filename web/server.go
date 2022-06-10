@@ -2,14 +2,19 @@ package web
 
 import (
 	"db-server/auth"
+	"db-server/docs"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"net/http"
 	"os"
 )
 
-func InitServer() {
+func InitServer(enableDocs *bool) {
+
+	server := os.Getenv("SERVER_ADDR") + ":" + os.Getenv("SERVER_PORT")
+	fullServer := os.Getenv("SERVER_SCHEME") + "://" + server
 
 	allowedHeaders := []string{
 		"Access-Control-Allow-Origin",
@@ -35,6 +40,22 @@ func InitServer() {
 	}
 
 	r := mux.NewRouter()
+
+	if *enableDocs {
+		docs.SwaggerInfo.Title = "Db server API"
+		docs.SwaggerInfo.Description = "Db server API description."
+		docs.SwaggerInfo.Version = "1.0"
+		docs.SwaggerInfo.Host = fullServer
+		docs.SwaggerInfo.BasePath = "/"
+		docs.SwaggerInfo.Schemes = []string{os.Getenv("SERVER_SCHEME")}
+
+		r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
+			httpSwagger.URL(fullServer+"/swagger/doc.json"), //The url pointing to API definition
+			httpSwagger.DeepLinking(true),
+			httpSwagger.DocExpansion("none"),
+			httpSwagger.DomID("swagger-ui"),
+		)).Methods(http.MethodGet)
+	}
 
 	em := r.PathPrefix("/em").Subrouter()
 
@@ -118,7 +139,6 @@ func InitServer() {
 
 	http.Handle("/", r)
 
-	server := os.Getenv("SERVER_ADDR") + ":" + os.Getenv("SERVER_PORT")
-	log.Debug("Start web server " + server)
+	log.Debug("Start web server " + fullServer)
 	log.Fatal(http.ListenAndServe(server, handlers.CORS(originsOk, headersOk, methodsOk, s)(r)))
 }
