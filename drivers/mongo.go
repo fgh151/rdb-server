@@ -11,12 +11,12 @@ import (
 	"os"
 )
 
-type database struct {
+type Database struct {
 	ctx    context.Context
 	client *mongo.Client
 }
 
-func (s database) Update(dbName string, collectionName string, id interface{}, value interface{}) (*mongo.UpdateResult, error) {
+func (s Database) Update(dbName string, collectionName string, id interface{}, value interface{}) (*mongo.UpdateResult, error) {
 	client, _ := s.GetConnection()
 
 	db := client.Database(dbName)
@@ -26,7 +26,7 @@ func (s database) Update(dbName string, collectionName string, id interface{}, v
 	return collection.UpdateByID(GetDbInstance().GetContext(), id, value)
 }
 
-func (s database) Delete(dbName string, collectionName string, id interface{}) (*mongo.DeleteResult, error) {
+func (s Database) Delete(dbName string, collectionName string, id interface{}) (*mongo.DeleteResult, error) {
 	client, _ := s.GetConnection()
 
 	db := client.Database(dbName)
@@ -36,7 +36,7 @@ func (s database) Delete(dbName string, collectionName string, id interface{}) (
 	return collection.DeleteOne(GetDbInstance().GetContext(), bson.M{"_id": id})
 }
 
-func (s database) Insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error) {
+func (s Database) Insert(dbName string, collectionName string, value interface{}) (*mongo.InsertOneResult, error) {
 	client, _ := s.GetConnection()
 
 	db := client.Database(dbName)
@@ -46,7 +46,7 @@ func (s database) Insert(dbName string, collectionName string, value interface{}
 	return collection.InsertOne(GetDbInstance().GetContext(), value)
 }
 
-func (s database) Find(dbName string, collectionName string, filter interface{}, limit int64, skip int64) ([]*bson.D, error) {
+func (s Database) Find(dbName string, collectionName string, filter interface{}, limit int64, skip int64) ([]*bson.D, error) {
 	client, _ := s.GetConnection()
 
 	db := client.Database(dbName)
@@ -77,7 +77,7 @@ func (s database) Find(dbName string, collectionName string, filter interface{},
 	return res, err
 }
 
-func (s database) List(dbName string, collectionName string, limit int64, skip int64, order int, sort string, filter bson.D) ([]*bson.D, int64, error) {
+func (s Database) List(dbName string, collectionName string, limit int64, skip int64, order int, sort string, filter bson.D) ([]*bson.D, int64, error) {
 
 	client, _ := s.GetConnection()
 
@@ -114,6 +114,7 @@ func (s database) List(dbName string, collectionName string, limit int64, skip i
 	return res, count, err
 }
 
+// Db Document oriented data base interface
 type Db interface {
 	GetConnection() (*mongo.Client, error)
 
@@ -129,20 +130,21 @@ type Db interface {
 }
 
 // declare variable
-var instance *database = nil
+var instance *Database
 
-func GetDbInstance() *database {
+// GetDbInstance Db get Document oriented data base
+func GetDbInstance() *Database {
 	if instance == nil {
-		instance = new(database)
+		instance = new(Database)
 	}
 	return instance
 }
 
-func (s database) GetContext() context.Context {
+func (s Database) GetContext() context.Context {
 	return s.ctx
 }
 
-func (s database) GetConnection() (*mongo.Client, error) {
+func (s Database) GetConnection() (*mongo.Client, error) {
 
 	if s.client != nil {
 		return s.client, nil
@@ -164,6 +166,7 @@ func (s database) GetConnection() (*mongo.Client, error) {
 	return s.client, err
 }
 
+// MongoConnection Struect to connect to mongo db
 type MongoConnection struct {
 	Host     string
 	Port     string
@@ -172,6 +175,7 @@ type MongoConnection struct {
 	DbName   string
 }
 
+// NewMongoConnectionFromEnv Create new mongo connection
 func NewMongoConnectionFromEnv() MongoConnection {
 	return MongoConnection{
 		Host:     os.Getenv("DB_HOST"),
@@ -182,6 +186,7 @@ func NewMongoConnectionFromEnv() MongoConnection {
 	}
 }
 
+// GetDsn Get mongo db dsn
 func (c MongoConnection) GetDsn() string {
 	return fmt.Sprintf(
 		"mongodb://%s:%s@%s:%s/?maxPoolSize=20&w=majority",
@@ -192,6 +197,7 @@ func (c MongoConnection) GetDsn() string {
 	)
 }
 
+// GetMongoSort Convert sort order from sql db to mongo syntax
 func GetMongoSort(sqlSort string, sqlOrder string) (int, string) {
 	var sort int
 	var order = sqlOrder

@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// MysqlConnection Mysql connection description
 type MysqlConnection struct {
 	Host     string
 	Port     string
@@ -13,6 +14,7 @@ type MysqlConnection struct {
 	DbName   string
 }
 
+// NewMysqlConnectionFromEnv Create Mysql connection from env
 func NewMysqlConnectionFromEnv() MysqlConnection {
 	return MysqlConnection{
 		Host:     os.Getenv("META_DB_HOST"),
@@ -23,6 +25,7 @@ func NewMysqlConnectionFromEnv() MysqlConnection {
 	}
 }
 
+// GetDsn Get mysql connection DSN
 func (c MysqlConnection) GetDsn() string {
 	return fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",

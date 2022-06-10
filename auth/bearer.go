@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// BearerVerify Function check bearer token
 func BearerVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -25,6 +26,7 @@ func BearerVerify(next http.Handler) http.Handler {
 	})
 }
 
+// GetUserFromRequest Fetch user model from request
 func GetUserFromRequest(r *http.Request) *models.User {
 	reqToken := r.Header.Get("Authorization")
 	splitToken := strings.Split(reqToken, "Bearer ")

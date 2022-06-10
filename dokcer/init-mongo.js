@@ -1,3 +1,5 @@
+/*eslint no-undef: "error"*/
+// noinspection JSUnresolvedVariable,JSUnresolvedFunction
 db.createUser(
         {
             user: "dockerMongoUser",
@@ -5,8 +7,8 @@ db.createUser(
             roles: [
                 {
                     role: "readWrite",
-                    db: "dockerdb"
-                }
-            ]
-        }
+                    db: "dockerdb",
+                },
+            ],
+        },
 );
