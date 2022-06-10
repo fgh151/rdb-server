@@ -259,6 +259,47 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AdminListHandler godoc
+// @Summary      List
+// @Description  List topic records for admin access
+// @Tags         Entity manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        topic    path     string  false  "Topic name" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /admin/em/list/{topic} [get]
+func AdminListHandler(w http.ResponseWriter, r *http.Request) {
+
+	log.Debug(r.Method, r.RequestURI)
+
+	topic := GetTopic(r)
+
+	limit, offset, rorder, sort := GetPagination(r)
+
+	v := r.URL.Query()
+	filter := bson.D{{}}
+	for _, param := range []string{"userId"} {
+		if v.Has(param) {
+			val := v.Get(param)
+			if val != "" {
+				filter = append(filter, primitive.E{Key: "userId", Value: val})
+			}
+		}
+	}
+
+	log.Debug("Mongo limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset) + " order " + rorder + " sort " + sort)
+
+	order, sort := drivers.GetMongoSort(sort, rorder)
+
+	res, count, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic, int64(limit), int64(offset), order, sort, filter)
+
+	w.Header().Add("X-Total-Count", strconv.FormatInt(count, 10))
+
+	sendResponse(w, 200, res, err)
+}
+
 // UpdateHandler godoc
 // @Summary      Update
 // @Description  Update entity record

@@ -230,6 +230,29 @@ paths:
       tags:
       - Data source
       - Admin
+  /admin/em/list/{topic}:
+    get:
+      consumes:
+      - application/json
+      description: List topic records for admin access
+      parameters:
+      - description: Topic name
+        in: path
+        name: topic
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: List
+      tags:
+      - Entity manager
+      - Admin
   /admin/push:
     get:
       consumes:
