@@ -184,26 +184,98 @@ func listItems(model models.Model, filter []string, r *http.Request, w http.Resp
 	err2.DebugErr(err)
 }
 
+// UserItem godoc
+// @Summary      User info
+// @Description  User detail info
+// @Tags         User
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  false  "User id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.User
+//
+// @Router       /admin/users/{id} [get]
 func UserItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.User{}, w, r)
 }
 
+// ConfigItem godoc
+// @Summary      Config info
+// @Description  Config detail info
+// @Tags         Config manager
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  false  "Config id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.Config
+//
+// @Router       /admin/config/{id} [get]
 func ConfigItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.Config{}, w, r)
 }
 
+// DsItem godoc
+// @Summary      Data source info
+// @Description  Data source detail info
+// @Tags         Data source
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  false  "Source id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.DataSource
+//
+// @Router       /admin/ds/{id} [get]
 func DsItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.DataSource{}, w, r)
 }
 
+// CfItem godoc
+// @Summary      Function info
+// @Description  Function detail info
+// @Tags         Cloud functions
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  false  "Function id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.CloudFunction
+//
+// @Router       /admin/cf/{id} [get]
 func CfItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.CloudFunction{}, w, r)
 }
 
+// PushItem godoc
+// @Summary      Push info
+// @Description  Push detail info
+// @Tags         Push messages
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  false  "Push id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.PushMessage
+//
+// @Router       /admin/push/{id} [get]
 func PushItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.PushMessage{}, w, r)
 }
 
+// CronItem godoc
+// @Summary      Cron job info
+// @Description  Cron job detail info
+// @Tags         Cron
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  false  "Push id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.CronJob
+//
+// @Router       /admin/cron/{id} [get]
 func CronItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.CronJob{}, w, r)
 }
@@ -623,7 +695,7 @@ func CreateCron(w http.ResponseWriter, r *http.Request) {
 }
 
 // Auth godoc
-// @Summary      Login
+// @Summary      Login to admin
 // @Description  Authenticate in admin
 // @Tags         Admin
 // @Accept       json

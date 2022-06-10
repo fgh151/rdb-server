@@ -16,7 +16,7 @@
                 "tags": [
                     "Admin"
                 ],
-                "summary": "Login",
+                "summary": "Login to admin",
                 "parameters": [
                     {
                         "type": "string",
@@ -73,6 +73,43 @@
                 }
             }
         },
+        "/admin/cf/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Function detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud functions",
+                    "Admin"
+                ],
+                "summary": "Function info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Function id",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CloudFunction"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/config": {
             "get": {
                 "security": [
@@ -100,6 +137,43 @@
                             "items": {
                                 "$ref": "#/definitions/models.Config"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/config/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Config detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config manager",
+                    "Admin"
+                ],
+                "summary": "Config info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Config id",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Config"
                         }
                     }
                 }
@@ -137,6 +211,43 @@
                 }
             }
         },
+        "/admin/cron/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Cron job detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cron",
+                    "Admin"
+                ],
+                "summary": "Cron job info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Push id",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CronJob"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/ds": {
             "get": {
                 "security": [
@@ -164,6 +275,43 @@
                             "items": {
                                 "$ref": "#/definitions/models.DataSource"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/ds/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Data source detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data source",
+                    "Admin"
+                ],
+                "summary": "Data source info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Source id",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DataSource"
                         }
                     }
                 }
@@ -236,6 +384,43 @@
                 }
             }
         },
+        "/admin/push/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Push detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Push messages",
+                    "Admin"
+                ],
+                "summary": "Push info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Push id",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PushMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/topics": {
             "get": {
                 "security": [
@@ -298,6 +483,339 @@
                 }
             }
         },
+        "/admin/users/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "User detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User",
+                    "Admin"
+                ],
+                "summary": "User info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User id",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cf/{id}/run": {
+            "get": {
+                "description": "Run function with id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud functions",
+                    "Public Api"
+                ],
+                "summary": "Run function",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Auth key",
+                        "name": "db-key",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Function id",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/cf/{id}/run/{rid}": {
+            "get": {
+                "description": "List logs of function run",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cloud functions",
+                    "Public Api"
+                ],
+                "summary": "List logs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Auth key",
+                        "name": "db-key",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Function id",
+                        "name": "id",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Run id",
+                        "name": "rid",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CloudFunctionLog"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/device/register": {
+            "post": {
+                "description": "Register device to receive push",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Push messages",
+                    "Public Api"
+                ],
+                "summary": "Register device",
+                "parameters": [
+                    {
+                        "description": "Device info",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDevice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserDevice"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/push/subscribe/{deviceId}": {
+            "get": {
+                "description": "Socket subscribe to push notifications",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Push messages"
+                ],
+                "summary": "Subscribe",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device id to subscribe",
+                        "name": "deviceId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/push/{id}/run": {
+            "get": {
+                "description": "Send push with id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Push messages",
+                    "Public Api"
+                ],
+                "summary": "Send push",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Auth key",
+                        "name": "db-key",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/user/auth": {
+            "post": {
+                "description": "Authenticate via api",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User",
+                    "Public Api"
+                ],
+                "summary": "Login via api",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email for login",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password for login",
+                        "name": "password",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/me": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Get current user info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User",
+                    "Public Api"
+                ],
+                "summary": "User info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email for login",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password for login",
+                        "name": "password",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/register": {
+            "post": {
+                "description": "Register via api",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User",
+                    "Public Api"
+                ],
+                "summary": "Register via api",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email for login",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password for login",
+                        "name": "password",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
         "/config/{id}": {
             "get": {
                 "description": "Get config by id",
@@ -308,7 +826,8 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Config manager"
+                    "Config manager",
+                    "Public Api"
                 ],
                 "summary": "Config",
                 "parameters": [
@@ -342,7 +861,8 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Data source"
+                    "Data source",
+                    "Public Api"
                 ],
                 "summary": "Get item",
                 "parameters": [
@@ -611,6 +1131,23 @@
                 }
             }
         },
+        "models.CloudFunctionLog": {
+            "type": "object",
+            "properties": {
+                "function_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "run_at": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Config": {
             "type": "object",
             "properties": {
@@ -762,15 +1299,19 @@
             "type": "object",
             "properties": {
                 "device": {
+                    "description": "Device type can be android | ios | macos | windows | linux | web\nexample: 'linux'",
                     "type": "string"
                 },
                 "device_token": {
+                    "description": "UUID Device Token\n9f80fcc8-0102-4795-94c0-4190c168ffc2",
                     "type": "string"
                 },
                 "id": {
+                    "description": "The UUID of a device\nexample: 6204037c-30e6-408b-8aaa-dd8219860b4b",
                     "type": "string"
                 },
                 "user_id": {
+                    "description": "The UUID of owned user\nexample: 6204037c-30e6-408b-8aaa-dd8219860b4b",
                     "type": "string"
                 }
             }

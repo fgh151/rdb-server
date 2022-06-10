@@ -16,6 +16,17 @@ definitions:
       title:
         type: string
     type: object
+  models.CloudFunctionLog:
+    properties:
+      function_id:
+        type: string
+      id:
+        type: string
+      result:
+        type: string
+      run_at:
+        type: string
+    type: object
   models.Config:
     properties:
       body:
@@ -115,12 +126,24 @@ definitions:
   models.UserDevice:
     properties:
       device:
+        description: |-
+          Device type can be android | ios | macos | windows | linux | web
+          example: 'linux'
         type: string
       device_token:
+        description: |-
+          UUID Device Token
+          9f80fcc8-0102-4795-94c0-4190c168ffc2
         type: string
       id:
+        description: |-
+          The UUID of a device
+          example: 6204037c-30e6-408b-8aaa-dd8219860b4b
         type: string
       user_id:
+        description: |-
+          The UUID of owned user
+          example: 6204037c-30e6-408b-8aaa-dd8219860b4b
         type: string
     type: object
 info:
@@ -147,7 +170,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.User'
-      summary: Login
+      summary: Login to admin
       tags:
       - Admin
   /admin/cf:
@@ -167,6 +190,29 @@ paths:
       security:
       - bearerAuth: []
       summary: List cloud functions
+      tags:
+      - Cloud functions
+      - Admin
+  /admin/cf/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Function detail info
+      parameters:
+      - description: Function id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CloudFunction'
+      security:
+      - bearerAuth: []
+      summary: Function info
       tags:
       - Cloud functions
       - Admin
@@ -190,6 +236,29 @@ paths:
       tags:
       - Config manager
       - Admin
+  /admin/config/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Config detail info
+      parameters:
+      - description: Config id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Config'
+      security:
+      - bearerAuth: []
+      summary: Config info
+      tags:
+      - Config manager
+      - Admin
   /admin/cron:
     get:
       consumes:
@@ -210,6 +279,29 @@ paths:
       tags:
       - Cron
       - Admin
+  /admin/cron/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Cron job detail info
+      parameters:
+      - description: Push id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CronJob'
+      security:
+      - bearerAuth: []
+      summary: Cron job info
+      tags:
+      - Cron
+      - Admin
   /admin/ds:
     get:
       consumes:
@@ -227,6 +319,29 @@ paths:
       security:
       - bearerAuth: []
       summary: List data sources
+      tags:
+      - Data source
+      - Admin
+  /admin/ds/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Data source detail info
+      parameters:
+      - description: Source id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DataSource'
+      security:
+      - bearerAuth: []
+      summary: Data source info
       tags:
       - Data source
       - Admin
@@ -273,6 +388,29 @@ paths:
       tags:
       - Push messages
       - Admin
+  /admin/push/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Push detail info
+      parameters:
+      - description: Push id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PushMessage'
+      security:
+      - bearerAuth: []
+      summary: Push info
+      tags:
+      - Push messages
+      - Admin
   /admin/topics:
     get:
       consumes:
@@ -311,6 +449,222 @@ paths:
       summary: List users
       tags:
       - User
+  /admin/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: User detail info
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - bearerAuth: []
+      summary: User info
+      tags:
+      - User
+      - Admin
+  /api/cf/{id}/run:
+    get:
+      consumes:
+      - application/json
+      description: Run function with id
+      parameters:
+      - description: Auth key
+        in: header
+        name: db-key
+        type: string
+      - description: Function id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Run function
+      tags:
+      - Cloud functions
+      - Public Api
+  /api/cf/{id}/run/{rid}:
+    get:
+      consumes:
+      - application/json
+      description: List logs of function run
+      parameters:
+      - description: Auth key
+        in: header
+        name: db-key
+        type: string
+      - description: Function id
+        in: path
+        name: id
+        type: string
+      - description: Run id
+        in: header
+        name: rid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CloudFunctionLog'
+      summary: List logs
+      tags:
+      - Cloud functions
+      - Public Api
+  /api/device/register:
+    post:
+      consumes:
+      - application/json
+      description: Register device to receive push
+      parameters:
+      - description: Device info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserDevice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserDevice'
+      summary: Register device
+      tags:
+      - Push messages
+      - Public Api
+  /api/push/{id}/run:
+    get:
+      consumes:
+      - application/json
+      description: Send push with id
+      parameters:
+      - description: Auth key
+        in: header
+        name: db-key
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Send push
+      tags:
+      - Push messages
+      - Public Api
+  /api/push/subscribe/{deviceId}:
+    get:
+      consumes:
+      - application/json
+      description: Socket subscribe to push notifications
+      parameters:
+      - description: Device id to subscribe
+        in: path
+        name: deviceId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      summary: Subscribe
+      tags:
+      - Push messages
+  /api/user/auth:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate via api
+      parameters:
+      - description: Email for login
+        in: query
+        name: email
+        type: string
+      - description: Password for login
+        in: query
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Login via api
+      tags:
+      - User
+      - Public Api
+  /api/user/me:
+    get:
+      consumes:
+      - application/json
+      description: Get current user info
+      parameters:
+      - description: Email for login
+        in: query
+        name: email
+        type: string
+      - description: Password for login
+        in: query
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - bearerAuth: []
+      summary: User info
+      tags:
+      - User
+      - Public Api
+  /api/user/register:
+    post:
+      consumes:
+      - application/json
+      description: Register via api
+      parameters:
+      - description: Email for login
+        in: query
+        name: email
+        type: string
+      - description: Password for login
+        in: query
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Register via api
+      tags:
+      - User
+      - Public Api
   /config/{id}:
     get:
       consumes:
@@ -333,6 +687,7 @@ paths:
       summary: Config
       tags:
       - Config manager
+      - Public Api
   /dse/{id}:
     get:
       consumes:
@@ -353,6 +708,7 @@ paths:
       summary: Get item
       tags:
       - Data source
+      - Public Api
   /em/{topic}:
     post:
       consumes:

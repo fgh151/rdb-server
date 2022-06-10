@@ -156,6 +156,16 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// SubscribePushHandler godoc
+// @Summary      Subscribe
+// @Description  Socket subscribe to push notifications
+// @Tags         Push messages
+// @Accept       json
+// @Produce      json
+// @Param        deviceId path    string  false  "Device id to subscribe" gg
+// @Success      200  {array}   interface{}
+//
+// @Router       /api/push/subscribe/{deviceId} [get]
 func SubscribePushHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)

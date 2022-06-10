@@ -14,6 +14,18 @@ import (
 	"time"
 )
 
+// ApiAuth godoc
+// @Summary      Login via api
+// @Description  Authenticate via api
+// @Tags         User
+// @Tags         Public Api
+// @Accept       json
+// @Produce      json
+// @Param        email    query     string  false  "Email for login" gg
+// @Param        password    query     string  false  "Password for login" gg
+// @Success      200  {object}   models.User
+//
+// @Router       /api/user/auth [post]
 func ApiAuth(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -40,6 +52,18 @@ func ApiAuth(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// ApiRegister godoc
+// @Summary      Register via api
+// @Description  Register via api
+// @Tags         User
+// @Tags         Public Api
+// @Accept       json
+// @Produce      json
+// @Param        email    query     string  false  "Email for login" gg
+// @Param        password    query     string  false  "Password for login" gg
+// @Success      200  {object}   models.User
+//
+// @Router       /api/user/register [post]
 func ApiRegister(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -62,6 +86,19 @@ func ApiRegister(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// ApiMe godoc
+// @Summary      User info
+// @Description  Get current user info
+// @Tags         User
+// @Tags         Public Api
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Param        email    query     string  false  "Email for login" gg
+// @Param        password    query     string  false  "Password for login" gg
+// @Success      200  {object}   models.User
+//
+// @Router       /api/user/me [get]
 func ApiMe(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -76,6 +113,7 @@ func ApiMe(w http.ResponseWriter, r *http.Request) {
 // @Summary      Config
 // @Description  Get config by id
 // @Tags         Config manager
+// @Tags         Public Api
 // @Accept       json
 // @Produce      json
 // @Param        id    path     string  false  "Config id" gg
@@ -104,6 +142,7 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 // @Summary      Get item
 // @Description  Get data source by id
 // @Tags         Data source
+// @Tags         Public Api
 // @Accept       json
 // @Produce      json
 // @Param        db-key    header     string  false  "Auth key" gg
@@ -129,6 +168,18 @@ func DSEItem(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// CfRun godoc
+// @Summary      Run function
+// @Description  Run function with id
+// @Tags         Cloud functions
+// @Tags         Public Api
+// @Accept       json
+// @Produce      json
+// @Param        db-key    header     string  false  "Auth key" gg
+// @Param        id    path     string  false  "Function id" gg
+// @Success      200
+//
+// @Router       /api/cf/{id}/run [get]
 func CfRun(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -147,6 +198,17 @@ func CfRun(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// PushRun
+// @Summary      Send push
+// @Description  Send push with id
+// @Tags         Push messages
+// @Tags         Public Api
+// @Accept       json
+// @Produce      json
+// @Param        db-key    header     string  false  "Auth key" true
+// @Success      200
+//
+// @Router       /api/push/{id}/run [get]
 func PushRun(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
@@ -155,6 +217,19 @@ func PushRun(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
+// CfRunLog
+// @Summary      List logs
+// @Description  List logs of function run
+// @Tags         Cloud functions
+// @Tags         Public Api
+// @Accept       json
+// @Produce      json
+// @Param        db-key    header     string  false  "Auth key" true
+// @Param        id    path     string  false  "Function id" true
+// @Param        rid    header     string  false  "Run id" true
+// @Success      200 {object} models.CloudFunctionLog
+//
+// @Router       /api/cf/{id}/run/{rid} [get]
 func CfRunLog(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -172,6 +247,17 @@ func CfRunLog(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// PushDeviceRegister
+// @Summary      Register device
+// @Description  Register device to receive push
+// @Tags         Push messages
+// @Tags         Public Api
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.UserDevice  true  "Device info" true
+// @Success      200 {object} models.UserDevice
+//
+// @Router       /api/device/register [post]
 func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
