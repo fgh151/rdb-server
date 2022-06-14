@@ -422,6 +422,7 @@ func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        id    path     string  false  "User id" gg
+// @Security bearerAuth
 // @Success      204
 //
 // @Router       /admin/users/{id} [delete]
@@ -437,6 +438,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        id    path     string  false  "Config id" gg
+// @Security bearerAuth
 // @Success      204
 //
 // @Router       /admin/config/{id} [delete]
@@ -452,6 +454,7 @@ func DeleteConfig(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        id    path     string  false  "Ds id" gg
+// @Security bearerAuth
 // @Success      204
 //
 // @Router       /admin/ds/{id} [delete]
@@ -467,6 +470,7 @@ func DeleteDs(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        id    path     string  false  "cf id" gg
+// @Security bearerAuth
 // @Success      204
 //
 // @Router       /admin/cf/{id} [delete]
@@ -477,11 +481,12 @@ func DeleteCf(w http.ResponseWriter, r *http.Request) {
 // DeletePush godoc
 // @Summary      Delete push
 // @Description  Delete push
-// @Tags         Push
+// @Tags         Push messages
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
 // @Param        id    path     string  false  "Push id" gg
+// @Security bearerAuth
 // @Success      204
 //
 // @Router       /admin/push/{id} [delete]
@@ -497,6 +502,7 @@ func DeletePush(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        id    path     string  false  "Cron id" gg
+// @Security bearerAuth
 // @Success      204
 //
 // @Router       /admin/cron/{id} [delete]
@@ -633,7 +639,7 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 // UpdatePush
 // @Summary      Update push
 // @Description  Update push
-// @Tags         Push
+// @Tags         Push messages
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
@@ -903,7 +909,7 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 // CreatePush
 // @Summary      Create push message
 // @Description  Create push message
-// @Tags         Push
+// @Tags         Push messages
 // @Tags         Admin
 // @Accept       json
 // @Produce      json

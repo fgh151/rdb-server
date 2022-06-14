@@ -1994,24 +1994,31 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "container": {
+                    "description": "Container name\nexample: docker.io/library/alpine",
                     "type": "string"
                 },
                 "id": {
+                    "description": "The function UUID\nexample: 6204037c-30e6-408b-8aaa-dd8219860b4b",
                     "type": "string"
                 },
                 "params": {
+                    "description": "Container run params\nexample: echo test",
                     "type": "string"
                 },
                 "project": {
+                    "description": "Linked project",
                     "$ref": "#/definitions/models.Project"
                 },
                 "project_id": {
+                    "description": "The project UUID\nexample: 6204037c-30e6-403b-8aaa-dd8219860b4b",
                     "type": "string"
                 },
                 "run_count": {
+                    "description": "Function run count",
                     "type": "integer"
                 },
                 "title": {
+                    "description": "Function title",
                     "type": "string"
                 }
             }
@@ -2020,15 +2027,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "function_id": {
+                    "description": "The function UUID\nexample: 6204037c-30e6-408b-8aaa-dd8219520b4b",
                     "type": "string"
                 },
                 "id": {
+                    "description": "The log UUID\nexample: 6204037c-30e6-408b-8aaa-dd8219860b4b",
                     "type": "string"
                 },
                 "result": {
+                    "description": "Run result",
                     "type": "string"
                 },
                 "run_at": {
+                    "description": "Run date time",
                     "type": "string"
                 }
             }

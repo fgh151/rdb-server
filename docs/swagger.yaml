@@ -2,29 +2,52 @@ definitions:
   models.CloudFunction:
     properties:
       container:
+        description: |-
+          Container name
+          example: docker.io/library/alpine
         type: string
       id:
+        description: |-
+          The function UUID
+          example: 6204037c-30e6-408b-8aaa-dd8219860b4b
         type: string
       params:
+        description: |-
+          Container run params
+          example: echo test
         type: string
       project:
         $ref: '#/definitions/models.Project'
+        description: Linked project
       project_id:
+        description: |-
+          The project UUID
+          example: 6204037c-30e6-403b-8aaa-dd8219860b4b
         type: string
       run_count:
+        description: Function run count
         type: integer
       title:
+        description: Function title
         type: string
     type: object
   models.CloudFunctionLog:
     properties:
       function_id:
+        description: |-
+          The function UUID
+          example: 6204037c-30e6-408b-8aaa-dd8219520b4b
         type: string
       id:
+        description: |-
+          The log UUID
+          example: 6204037c-30e6-408b-8aaa-dd8219860b4b
         type: string
       result:
+        description: Run result
         type: string
       run_at:
+        description: Run date time
         type: string
     type: object
   models.Config:

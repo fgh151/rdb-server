@@ -277,6 +277,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        topic    path     string  false  "Topic name" gg
+// @Security bearerAuth
 // @Success      200  {array}   interface{}
 //
 // @Router       /admin/em/list/{topic} [get]

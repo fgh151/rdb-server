@@ -12,7 +12,7 @@
     <option name="generatorPath" value="https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/5.0.0/openapi-generator-cli-5.0.0.jar" />
     <option name="jdkPath" value="Default" />
     <option name="language" value="java" />
-    <option name="specificationPath" value="$PROJECT_DIR$/swagger.yml" />
+    <option name="specificationPath" value="$PROJECT_DIR$/docs/swagger.yaml" />
     <method v="2" />
   </configuration>
 </component>
