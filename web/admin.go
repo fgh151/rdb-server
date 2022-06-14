@@ -33,11 +33,11 @@ func GetPagination(r *http.Request) (int, int, string, string) {
 
 	order := v.Get("_order")
 	if order == "" {
-		order = "id"
+		order = "ASC"
 	}
 	sort := v.Get("_sort")
 	if sort == "" {
-		sort = "ASC"
+		sort = "id"
 	}
 
 	return limit - offset, offset, order, sort
