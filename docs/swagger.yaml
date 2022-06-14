@@ -189,7 +189,17 @@ definitions:
         type: string
     type: object
 info:
-  contact: {}
+  contact:
+    email: fedor@support-pc.org
+    name: API Support
+    url: https://openitstudio.ru
+  description: Db server API description.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Db server API
+  version: "1.0"
 paths:
   /admin/auth:
     post:
@@ -268,6 +278,7 @@ paths:
       - description: cf id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -285,9 +296,10 @@ paths:
       - application/json
       description: Function detail info
       parameters:
-      - description: Function id
+      - description: cf id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -313,6 +325,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.DataSource'
+      - description: Function id
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -332,9 +349,10 @@ paths:
       - application/json
       description: Cloud function logs
       parameters:
-      - description: Fuc id id
+      - description: Fuc id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -402,6 +420,7 @@ paths:
       - description: Config id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -422,6 +441,7 @@ paths:
       - description: Config id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -447,6 +467,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Config'
+      - description: Config id
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -513,6 +538,7 @@ paths:
       - description: Cron id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -533,6 +559,7 @@ paths:
       - description: Push id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -558,6 +585,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.CronJob'
+      - description: Cron id
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -624,6 +656,7 @@ paths:
       - description: Ds id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -644,6 +677,7 @@ paths:
       - description: Source id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -665,10 +699,15 @@ paths:
       parameters:
       - description: Source info
         in: body
-        name: device
+        name: source
         required: true
         schema:
           $ref: '#/definitions/models.DataSource'
+      - description: Source info
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -691,6 +730,7 @@ paths:
       - description: Topic name
         in: path
         name: topic
+        required: true
         type: string
       produces:
       - application/json
@@ -760,6 +800,7 @@ paths:
       - description: Push id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -780,6 +821,7 @@ paths:
       - description: Push id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -805,6 +847,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.PushMessage'
+      - description: push id
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -870,6 +917,7 @@ paths:
       - description: Topic id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -888,6 +936,7 @@ paths:
       - description: Topic id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -913,6 +962,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Project'
+      - description: Project id
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -935,6 +989,7 @@ paths:
       - description: Topic name
         in: path
         name: topic
+        required: true
         type: string
       produces:
       - application/json
@@ -1003,6 +1058,7 @@ paths:
       - description: User id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -1023,6 +1079,7 @@ paths:
       - description: User id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -1048,6 +1105,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.User'
+      - description: User info
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1074,6 +1136,7 @@ paths:
       - description: Function id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -1097,10 +1160,12 @@ paths:
       - description: Function id
         in: path
         name: id
+        required: true
         type: string
       - description: Run id
-        in: header
+        in: path
         name: rid
+        required: true
         type: string
       produces:
       - application/json
@@ -1145,6 +1210,12 @@ paths:
       - description: Auth key
         in: header
         name: db-key
+        required: true
+        type: string
+      - description: Push id
+        in: path
+        name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -1164,6 +1235,7 @@ paths:
       - description: Device id to subscribe
         in: path
         name: deviceId
+        required: true
         type: string
       produces:
       - application/json
@@ -1287,6 +1359,7 @@ paths:
       - description: Config id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -1310,6 +1383,12 @@ paths:
       - description: Auth key
         in: header
         name: db-key
+        required: true
+        type: string
+      - description: Source id
+        in: path
+        name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -1331,6 +1410,7 @@ paths:
       - description: Topic name
         in: path
         name: topic
+        required: true
         type: string
       produces:
       - application/json
@@ -1353,10 +1433,12 @@ paths:
       - description: Topic name
         in: path
         name: topic
+        required: true
         type: string
       - description: Topic record id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -1378,10 +1460,12 @@ paths:
       - description: Topic name
         in: path
         name: topic
+        required: true
         type: string
       - description: Topic record id
         in: path
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -1404,6 +1488,7 @@ paths:
       - description: Topic name
         in: path
         name: topic
+        required: true
         type: string
       produces:
       - application/json
@@ -1426,6 +1511,7 @@ paths:
       - description: Topic name
         in: path
         name: topic
+        required: true
         type: string
       produces:
       - application/json
@@ -1448,10 +1534,12 @@ paths:
       - description: Topic name
         in: path
         name: topic
+        required: true
         type: string
       - description: Db key
         in: path
         name: key
+        required: true
         type: string
       produces:
       - application/json
@@ -1465,4 +1553,9 @@ paths:
       summary: Subscribe
       tags:
       - Entity manager
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

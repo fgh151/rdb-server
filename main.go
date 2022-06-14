@@ -15,6 +15,24 @@ import (
 	"os"
 )
 
+// @title           Db server API
+// @version         1.0
+// @description     Db server API description.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    https://openitstudio.ru
+// @contact.email  fedor@support-pc.org
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @securityDefinitions.bearer  BearerAuth
+
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        Authorization
+// @description					Description for what is this security definition being used
 func main() {
 
 	verboseMode := flag.Bool("v", false, "Verbose mode")

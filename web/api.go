@@ -116,7 +116,7 @@ func ApiMe(w http.ResponseWriter, r *http.Request) {
 // @Tags         Public Api
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  false  "Config id" gg
+// @Param        id    path     string  true  "Config id" id
 // @Success      200  {array}   interface{}
 //
 // @Router       /config/{id} [get]
@@ -145,7 +145,8 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 // @Tags         Public Api
 // @Accept       json
 // @Produce      json
-// @Param        db-key    header     string  false  "Auth key" gg
+// @Param        db-key    header     string  true  "Auth key" gg
+// @Param        id    path     string  true  "Source id"
 // @Success      200  {object}   models.Project
 //
 // @Router       /dse/{id} [get]
@@ -176,7 +177,7 @@ func DSEItem(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        db-key    header     string  false  "Auth key" gg
-// @Param        id    path     string  false  "Function id" gg
+// @Param        id    path     string  true  "Function id" gg
 // @Success      200
 //
 // @Router       /api/cf/{id}/run [get]
@@ -205,7 +206,8 @@ func CfRun(w http.ResponseWriter, r *http.Request) {
 // @Tags         Public Api
 // @Accept       json
 // @Produce      json
-// @Param        db-key    header     string  false  "Auth key" true
+// @Param        db-key    header     string  true  "Auth key" true
+// @Param        id    path     string  true  "Push id"
 // @Success      200
 //
 // @Router       /api/push/{id}/run [get]
@@ -225,8 +227,8 @@ func PushRun(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        db-key    header     string  false  "Auth key" true
-// @Param        id    path     string  false  "Function id" true
-// @Param        rid    header     string  false  "Run id" true
+// @Param        id    path     string  true  "Function id"
+// @Param        rid    path     string  true  "Run id"
 // @Success      200 {object} models.CloudFunctionLog
 //
 // @Router       /api/cf/{id}/run/{rid} [get]

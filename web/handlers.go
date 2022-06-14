@@ -77,7 +77,7 @@ func send403Error(w http.ResponseWriter, message string) {
 // @Tags         Entity manager
 // @Accept       json
 // @Produce      json
-// @Param        topic    path     string  false  "Topic name" gg
+// @Param        topic    path     string  true  "Topic name" gg
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/{topic} [post]
@@ -112,8 +112,8 @@ var upgrader = websocket.Upgrader{
 // @Tags         Entity manager
 // @Accept       json
 // @Produce      json
-// @Param        topic    path     string  false  "Topic name" gg
-// @Param        key    path     string  false  "Db key" gg
+// @Param        topic    path     string  true  "Topic name" gg
+// @Param        key    path     string  true  "Db key" string
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/subscribe/{topic}/{key} [get]
@@ -162,7 +162,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags         Push messages
 // @Accept       json
 // @Produce      json
-// @Param        deviceId path    string  false  "Device id to subscribe" gg
+// @Param        deviceId path    string  true  "Device id to subscribe" uuid
 // @Success      200  {array}   interface{}
 //
 // @Router       /api/push/subscribe/{deviceId} [get]
@@ -206,7 +206,7 @@ func SubscribePushHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags         Entity manager
 // @Accept       json
 // @Produce      json
-// @Param        topic    path     string  false  "Topic name" gg
+// @Param        topic    path     string  true  "Topic name" gg
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/find/{topic} [get]
@@ -232,7 +232,7 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags         Entity manager
 // @Accept       json
 // @Produce      json
-// @Param        topic    path     string  false  "Topic name" gg
+// @Param        topic    path     string  true  "Topic name" gg
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/list/{topic} [get]
@@ -276,7 +276,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        topic    path     string  false  "Topic name" gg
+// @Param        topic    path     string  true  "Topic name" gg
 // @Security bearerAuth
 // @Success      200  {array}   interface{}
 //
@@ -317,8 +317,8 @@ func AdminListHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags         Entity manager
 // @Accept       json
 // @Produce      json
-// @Param        topic    path     string  false  "Topic name" gg
-// @Param        id    path     string  false  "Topic record id" gg
+// @Param        topic    path     string  true  "Topic name" gg
+// @Param        id    path     string  true  "Topic record id" id
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/{topic}/{id} [patch]
@@ -347,8 +347,8 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags         Entity manager
 // @Accept       json
 // @Produce      json
-// @Param        topic    path     string  false  "Topic name" gg
-// @Param        id    path     string  false  "Topic record id" gg
+// @Param        topic    path     string  true  "Topic name" string
+// @Param        id    path     string  true  "Topic record id" uuid
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/{topic}/{id} [delete]

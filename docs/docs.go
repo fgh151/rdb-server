@@ -10,7 +10,16 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "https://openitstudio.ru",
+            "email": "fedor@support-pc.org"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -145,9 +154,10 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Function id",
+                        "description": "cf id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -186,6 +196,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.DataSource"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Function id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -220,7 +237,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "cf id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -252,9 +270,10 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Fuc id id",
+                        "description": "Fuc id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -361,7 +380,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Config id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -400,6 +420,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Config"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Config id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -434,7 +461,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Config id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -538,7 +566,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Push id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -577,6 +606,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.CronJob"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Cron id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -611,7 +647,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Cron id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -715,7 +752,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Source id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -748,12 +786,19 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Source info",
-                        "name": "device",
+                        "name": "source",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/models.DataSource"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Source info",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -788,7 +833,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Ds id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -822,7 +868,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic name",
                         "name": "topic",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -932,7 +979,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Push id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -971,6 +1019,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.PushMessage"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "push id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1005,7 +1060,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Push id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1108,7 +1164,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1147,6 +1204,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Project"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1176,7 +1240,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1210,7 +1275,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic name",
                         "name": "topic",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1319,7 +1385,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "User id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1358,6 +1425,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "User info",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1392,7 +1466,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "User id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1427,7 +1502,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Function id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1462,13 +1538,15 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Function id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
                         "description": "Run id",
                         "name": "rid",
-                        "in": "header"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1534,7 +1612,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Device id to subscribe",
                         "name": "deviceId",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1569,7 +1648,15 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Auth key",
                         "name": "db-key",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Push id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1755,7 +1842,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Config id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1790,7 +1878,15 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Auth key",
                         "name": "db-key",
-                        "in": "header"
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Source id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1821,7 +1917,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic name",
                         "name": "topic",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1855,7 +1952,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic name",
                         "name": "topic",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1889,13 +1987,15 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic name",
                         "name": "topic",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
                         "description": "Db key",
                         "name": "key",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1929,7 +2029,8 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic name",
                         "name": "topic",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1963,13 +2064,15 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic name",
                         "name": "topic",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
                         "description": "Topic record id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2001,13 +2104,15 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Topic name",
                         "name": "topic",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
                         "description": "Topic record id",
                         "name": "id",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2268,17 +2373,24 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Db server API",
+	Description:      "Db server API description.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

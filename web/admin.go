@@ -191,7 +191,7 @@ func listItems(model models.Model, filter []string, r *http.Request, w http.Resp
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  false  "User id" gg
+// @Param        id path    string  true  "User id" gg
 // @Security bearerAuth
 // @Success      200  {object}   models.User
 //
@@ -207,7 +207,7 @@ func UserItem(w http.ResponseWriter, r *http.Request) {
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  false  "Config id" gg
+// @Param        id path    string  true  "Config id" gg
 // @Security bearerAuth
 // @Success      200  {object}   models.Config
 //
@@ -223,7 +223,7 @@ func ConfigItem(w http.ResponseWriter, r *http.Request) {
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  false  "Source id" gg
+// @Param        id path    string  true  "Source id" gg
 // @Security bearerAuth
 // @Success      200  {object}   models.DataSource
 //
@@ -239,7 +239,7 @@ func DsItem(w http.ResponseWriter, r *http.Request) {
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  false  "Function id" gg
+// @Param        id    path     string  true  "cf id" id
 // @Security bearerAuth
 // @Success      200  {object}   models.CloudFunction
 //
@@ -255,7 +255,7 @@ func CfItem(w http.ResponseWriter, r *http.Request) {
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  false  "Push id" gg
+// @Param        id path    string  true  "Push id" id
 // @Security bearerAuth
 // @Success      200  {object}   models.PushMessage
 //
@@ -271,7 +271,7 @@ func PushItem(w http.ResponseWriter, r *http.Request) {
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  false  "Push id" gg
+// @Param        id path    string  true  "Push id" id
 // @Security bearerAuth
 // @Success      200  {object}   models.CronJob
 //
@@ -287,7 +287,7 @@ func CronItem(w http.ResponseWriter, r *http.Request) {
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  false  "Fuc id id" gg
+// @Param        id path    string  true  "Fuc id" id
 // @Security bearerAuth
 // @Success      200  {object}   models.CloudFunctionLog
 //
@@ -317,7 +317,7 @@ func CfLog(w http.ResponseWriter, r *http.Request) {
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  false  "Topic id" gg
+// @Param        id path    string  true  "Topic id" id
 // @Security bearerAuth
 // @Success      200  {object}   models.Project
 //
@@ -333,7 +333,7 @@ func TopicItem(w http.ResponseWriter, r *http.Request) {
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        topic path    string  false  "Topic name" gg
+// @Param        topic path    string  true  "Topic name"
 // @Security bearerAuth
 // @Success      200  {array} object
 //
@@ -379,6 +379,7 @@ func TopicData(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        device    body     models.Project  true  "Project info" true
+// @Param        id    path     string  true  "Project id" true
 // @Success      200 {object} models.Project
 // @Security bearerAuth
 //
@@ -421,7 +422,7 @@ func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  false  "User id" gg
+// @Param        id    path     string  true  "User id" id
 // @Security bearerAuth
 // @Success      204
 //
@@ -437,7 +438,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  false  "Config id" gg
+// @Param        id    path     string  true  "Config id" id
 // @Security bearerAuth
 // @Success      204
 //
@@ -453,7 +454,7 @@ func DeleteConfig(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  false  "Ds id" gg
+// @Param        id    path     string  true  "Ds id" id
 // @Security bearerAuth
 // @Success      204
 //
@@ -469,7 +470,7 @@ func DeleteDs(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  false  "cf id" gg
+// @Param        id    path     string  true  "cf id" id
 // @Security bearerAuth
 // @Success      204
 //
@@ -485,7 +486,7 @@ func DeleteCf(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  false  "Push id" gg
+// @Param        id    path     string  true  "Push id" id
 // @Security bearerAuth
 // @Success      204
 //
@@ -501,7 +502,7 @@ func DeletePush(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  false  "Cron id" gg
+// @Param        id    path     string  true  "Cron id" id
 // @Security bearerAuth
 // @Success      204
 //
@@ -518,6 +519,7 @@ func DeleteCron(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        device    body     models.User  true  "User info" true
+// @Param        id    path     string  true  "User info" id
 // @Success      200 {object} models.User
 // @Security bearerAuth
 //
@@ -550,6 +552,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        device    body     models.Config  true  "Config info" true
+// @Param        id    path     string  true  "Config id" id
 // @Success      200 {object} models.Config
 // @Security bearerAuth
 //
@@ -574,7 +577,8 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        device    body     models.DataSource  true  "Source info" true
+// @Param        source    body     models.DataSource  true  "Source info" true
+// @Param        id    path     string  true  "Source info" id
 // @Success      200 {object} models.DataSource
 // @Security bearerAuth
 //
@@ -605,6 +609,7 @@ func UpdateDs(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        device    body     models.DataSource  true  "Source info" true
+// @Param        id    path     string  true  "Function id" id
 // @Success      200 {object} models.DataSource
 // @Security bearerAuth
 //
@@ -644,6 +649,7 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        device    body     models.PushMessage  true  "push info" true
+// @Param        id    path     string  true  "push id" id
 // @Success      200 {object} models.PushMessage
 // @Security bearerAuth
 //
@@ -674,6 +680,7 @@ func UpdatePush(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        device    body     models.CronJob  true  "Cron job info" true
+// @Param        id    path     string  true  "Cron id"
 // @Success      200 {object} models.CronJob
 // @Security bearerAuth
 //
@@ -706,7 +713,7 @@ func UpdateCron(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  false  "Topic id" gg
+// @Param        id    path     string  true  "Topic id" string
 // @Success      204
 //
 // @Router       /admin/topics/{id} [delete]
