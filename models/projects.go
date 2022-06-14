@@ -22,7 +22,7 @@ func (p Project) List(limit int, offset int, sort string, order string, filter m
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Offset(offset).Limit(limit).Order(order + " " + sort).Where(filter).Find(&projects)
+	conn.Offset(offset).Limit(limit).Order(sort + " " + order).Where(filter).Find(&projects)
 
 	y := make([]interface{}, len(projects))
 	for i, v := range projects {

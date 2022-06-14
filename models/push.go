@@ -40,7 +40,7 @@ func (p PushMessage) List(limit int, offset int, sort string, order string, filt
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Offset(offset).Limit(limit).Order(order + " " + sort).Where(filter).Find(&pushMessages)
+	conn.Offset(offset).Limit(limit).Order(sort + " " + order).Where(filter).Find(&pushMessages)
 
 	y := make([]interface{}, len(pushMessages))
 	for i, v := range pushMessages {

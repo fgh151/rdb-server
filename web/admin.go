@@ -172,7 +172,7 @@ func listItems(model models.Model, filter []string, r *http.Request, w http.Resp
 	l, o, or, so := GetPagination(r)
 	f := formatQuery(r, filter)
 
-	arr := model.List(l, o, or, so, f)
+	arr := model.List(l, o, so, or, f)
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json")

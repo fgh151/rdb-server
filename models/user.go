@@ -39,7 +39,7 @@ func (p User) List(limit int, offset int, sort string, order string, filter map[
 
 	conn := server.MetaDb.GetConnection()
 
-	query := conn.Limit(limit).Offset(offset).Order(order + " " + sort)
+	query := conn.Limit(limit).Offset(offset).Order(sort + " " + order)
 
 	if len(filter) > 0 {
 		query.Where(filter)

@@ -37,7 +37,7 @@ func (p DataSource) List(limit int, offset int, sort string, order string, filte
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(order + " " + sort).Where(filter).Find(&sources)
+	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Find(&sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {
