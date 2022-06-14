@@ -133,7 +133,7 @@ func ListDs(w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /admin/cf [get]
 func ListCf(w http.ResponseWriter, r *http.Request) {
-	listItems(models.CloudFunction{}, []string{}, r, w)
+	listItems(models.CloudFunction{}, []string{"id"}, r, w)
 }
 
 // ListPush godoc

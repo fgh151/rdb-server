@@ -274,6 +274,8 @@ paths:
       responses:
         "204":
           description: ""
+      security:
+      - bearerAuth: []
       summary: Delete cloud function
       tags:
       - Cloud functions
@@ -406,6 +408,8 @@ paths:
       responses:
         "204":
           description: ""
+      security:
+      - bearerAuth: []
       summary: Delete config
       tags:
       - Config manager
@@ -515,6 +519,8 @@ paths:
       responses:
         "204":
           description: ""
+      security:
+      - bearerAuth: []
       summary: Delete cron job
       tags:
       - Cron
@@ -624,6 +630,8 @@ paths:
       responses:
         "204":
           description: ""
+      security:
+      - bearerAuth: []
       summary: Delete data source
       tags:
       - Data source
@@ -693,6 +701,8 @@ paths:
             items:
               type: object
             type: array
+      security:
+      - bearerAuth: []
       summary: List
       tags:
       - Entity manager
@@ -739,7 +749,7 @@ paths:
       - bearerAuth: []
       summary: Create push message
       tags:
-      - Push
+      - Push messages
       - Admin
   /admin/push/{id}:
     delete:
@@ -756,9 +766,11 @@ paths:
       responses:
         "204":
           description: ""
+      security:
+      - bearerAuth: []
       summary: Delete push
       tags:
-      - Push
+      - Push messages
       - Admin
     get:
       consumes:
@@ -804,7 +816,7 @@ paths:
       - bearerAuth: []
       summary: Update push
       tags:
-      - Push
+      - Push messages
       - Admin
   /admin/topics:
     get:
@@ -997,6 +1009,8 @@ paths:
       responses:
         "204":
           description: ""
+      security:
+      - bearerAuth: []
       summary: Delete user
       tags:
       - User

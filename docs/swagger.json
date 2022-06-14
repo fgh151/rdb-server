@@ -186,6 +186,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete cloud function",
                 "consumes": [
                     "application/json"
@@ -395,6 +400,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete config",
                 "consumes": [
                     "application/json"
@@ -567,6 +577,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete cron job",
                 "consumes": [
                     "application/json"
@@ -739,6 +754,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete data source",
                 "consumes": [
                     "application/json"
@@ -768,6 +788,11 @@
         },
         "/admin/em/list/{topic}": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "List topic records for admin access",
                 "consumes": [
                     "application/json"
@@ -846,7 +871,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Push",
+                    "Push messages",
                     "Admin"
                 ],
                 "summary": "Create push message",
@@ -921,7 +946,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Push",
+                    "Push messages",
                     "Admin"
                 ],
                 "summary": "Update push",
@@ -946,6 +971,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete push",
                 "consumes": [
                     "application/json"
@@ -954,7 +984,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Push",
+                    "Push messages",
                     "Admin"
                 ],
                 "summary": "Delete push",
@@ -1328,6 +1358,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete user",
                 "consumes": [
                     "application/json"

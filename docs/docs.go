@@ -198,6 +198,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete cloud function",
                 "consumes": [
                     "application/json"
@@ -407,6 +412,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete config",
                 "consumes": [
                     "application/json"
@@ -579,6 +589,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete cron job",
                 "consumes": [
                     "application/json"
@@ -751,6 +766,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete data source",
                 "consumes": [
                     "application/json"
@@ -780,6 +800,11 @@ const docTemplate = `{
         },
         "/admin/em/list/{topic}": {
             "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "List topic records for admin access",
                 "consumes": [
                     "application/json"
@@ -858,7 +883,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Push",
+                    "Push messages",
                     "Admin"
                 ],
                 "summary": "Create push message",
@@ -933,7 +958,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Push",
+                    "Push messages",
                     "Admin"
                 ],
                 "summary": "Update push",
@@ -958,6 +983,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete push",
                 "consumes": [
                     "application/json"
@@ -966,7 +996,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Push",
+                    "Push messages",
                     "Admin"
                 ],
                 "summary": "Delete push",
@@ -1340,6 +1370,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "description": "Delete user",
                 "consumes": [
                     "application/json"

@@ -106,3 +106,8 @@ GET http://localhost:9090/em/list/logbook?_start=0&_end=20
 Origin: app
 Accept: */*
 db-key: 123
+
+### Get function by id
+GET http://localhost:9090/admin/cf?id=62e6c3ac-d8bb-11ec-b095-acde48001122
+Accept: */*
+Authorization: Bearer 123
