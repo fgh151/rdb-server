@@ -21,6 +21,7 @@ func main() {
 	migrateFlag := flag.Bool("m", false, "Run migrations")
 	demoFlag := flag.Bool("demo", false, "Fill demo data")
 	docsFlag := flag.Bool("docs", true, "Disable public docs")
+	sentryFlag := flag.Bool("sentry", true, "Disable sentry logs")
 
 	flag.Parse()
 
@@ -34,16 +35,18 @@ func main() {
 	err := godotenv.Load()
 	err2.PanicErr(err)
 
-	hook, err := logrus_sentry.NewWithTagsSentryHook(
-		os.Getenv("SENTRY_DSN"),
-		map[string]string{"ENVIRONMENT": os.Getenv("SENTRY_ENVIRONMENT")},
-		[]log.Level{
-			log.PanicLevel,
-			log.FatalLevel,
-			log.ErrorLevel,
-		})
-	if err == nil {
-		log.AddHook(hook)
+	if *sentryFlag {
+		hook, err := logrus_sentry.NewWithTagsSentryHook(
+			os.Getenv("SENTRY_DSN"),
+			map[string]string{"ENVIRONMENT": os.Getenv("SENTRY_ENVIRONMENT")},
+			[]log.Level{
+				log.PanicLevel,
+				log.FatalLevel,
+				log.ErrorLevel,
+			})
+		if err == nil {
+			log.AddHook(hook)
+		}
 	}
 
 	log.Debug("Init meta db connection")
