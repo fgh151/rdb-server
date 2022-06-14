@@ -17,32 +17,43 @@ import (
 	"time"
 )
 
-//  cf := models.CloudFunction{
-//		Container: "docker.io/library/alpine",
-//		Params:    []string{"echo", "hello world"},
-//	}
-//
-//	cf.Run()
-
+// swagger:model
 type CloudFunction struct {
-	Id        uuid.UUID      `gorm:"primarykey" json:"id"`
-	ProjectId uuid.UUID      `json:"project_id"`
-	Title     string         `json:"title"`
-	Container string         `json:"container"`
+	// The function UUID
+	// example: 6204037c-30e6-408b-8aaa-dd8219860b4b
+	Id uuid.UUID `gorm:"primarykey" json:"id"`
+	// The project UUID
+	// example: 6204037c-30e6-403b-8aaa-dd8219860b4b
+	ProjectId uuid.UUID `json:"project_id"`
+	// Function title
+	Title string `json:"title"`
+	// Container name
+	// example: docker.io/library/alpine
+	Container string `json:"container"`
+	// Container run params
+	// example: echo test
 	Params    string         `json:"params"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
-	Project   Project
-
+	// Linked project
+	Project Project
+	// Function run count
 	RunCount int64 `gorm:"-:all" json:"run_count"`
 }
 
+// swagger:model
 type CloudFunctionLog struct {
-	Id         uuid.UUID `gorm:"primarykey" json:"id"`
+	// The log UUID
+	// example: 6204037c-30e6-408b-8aaa-dd8219860b4b
+	Id uuid.UUID `gorm:"primarykey" json:"id"`
+	// The function UUID
+	// example: 6204037c-30e6-408b-8aaa-dd8219520b4b
 	FunctionId uuid.UUID `json:"function_id"`
-	RunAt      time.Time `json:"run_at"`
-	Result     string    `json:"result"`
+	// Run date time
+	RunAt time.Time `json:"run_at"`
+	// Run result
+	Result string `json:"result"`
 }
 
 func ListCfLog(fId uuid.UUID, limit int, offset int, sort string, order string) []interface{} {

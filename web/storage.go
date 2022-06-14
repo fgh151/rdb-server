@@ -8,6 +8,18 @@ import (
 	"net/http"
 )
 
+// StoragePut
+// @Summary      Put file to storage
+// @Description  Put file to storage
+// @Tags         Storage
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        file    formData     file  true  "File to upload" true
+// @Success      200 {string} string
+// @Security bearerAuth
+//
+// @Router       /api/storage [post]
 func StoragePut(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 

@@ -40,6 +40,15 @@ definitions:
       title:
         type: string
     type: object
+  models.CreateUserForm:
+    properties:
+      Email:
+        description: new User email
+        type: string
+      Password:
+        description: new User password
+        type: string
+    type: object
   models.CronJob:
     properties:
       function:
@@ -105,22 +114,32 @@ definitions:
   models.User:
     properties:
       active:
+        description: Is user active
         type: boolean
       admin:
+        description: Is user admin
         type: boolean
       created_at:
+        description: Created at date time
         type: string
       devices:
+        description: user devices
         items:
           $ref: '#/definitions/models.UserDevice'
         type: array
       email:
+        description: User email
         type: string
       id:
+        description: |-
+          The user UUID
+          example: 6204037c-30e6-408b-8aaa-dd8219860b4b
         type: string
       last_login:
+        description: Last login date time
         type: string
       token:
+        description: Auth token
         type: string
     type: object
   models.UserDevice:
@@ -193,7 +212,49 @@ paths:
       tags:
       - Cloud functions
       - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create cloud function
+      parameters:
+      - description: Function info
+        in: body
+        name: cf
+        required: true
+        schema:
+          $ref: '#/definitions/models.CloudFunction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CloudFunction'
+      security:
+      - bearerAuth: []
+      summary: Create cloud function
+      tags:
+      - Cloud functions
+      - Admin
   /admin/cf/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete cloud function
+      parameters:
+      - description: cf id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete cloud function
+      tags:
+      - Cloud functions
+      - Admin
     get:
       consumes:
       - application/json
@@ -213,6 +274,53 @@ paths:
       security:
       - bearerAuth: []
       summary: Function info
+      tags:
+      - Cloud functions
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update cloud function
+      parameters:
+      - description: Source info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.DataSource'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DataSource'
+      security:
+      - bearerAuth: []
+      summary: Update cloud function
+      tags:
+      - Cloud functions
+      - Admin
+  /admin/cf/{id}/log:
+    get:
+      consumes:
+      - application/json
+      description: Cloud function logs
+      parameters:
+      - description: Fuc id id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CloudFunctionLog'
+      security:
+      - bearerAuth: []
+      summary: Logs
       tags:
       - Cloud functions
       - Admin
@@ -236,7 +344,49 @@ paths:
       tags:
       - Config manager
       - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create config
+      parameters:
+      - description: Config info
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - bearerAuth: []
+      summary: Create config
+      tags:
+      - Config manager
+      - Admin
   /admin/config/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete config
+      parameters:
+      - description: Config id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete config
+      tags:
+      - Config manager
+      - Admin
     get:
       consumes:
       - application/json
@@ -256,6 +406,30 @@ paths:
       security:
       - bearerAuth: []
       summary: Config info
+      tags:
+      - Config manager
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update config
+      parameters:
+      - description: Config info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.Config'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Config'
+      security:
+      - bearerAuth: []
+      summary: Update config
       tags:
       - Config manager
       - Admin
@@ -279,7 +453,49 @@ paths:
       tags:
       - Cron
       - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create cron job
+      parameters:
+      - description: Push info
+        in: body
+        name: cron
+        required: true
+        schema:
+          $ref: '#/definitions/models.CronJob'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CronJob'
+      security:
+      - bearerAuth: []
+      summary: Create cron job
+      tags:
+      - Cron
+      - Admin
   /admin/cron/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete cron job
+      parameters:
+      - description: Cron id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete cron job
+      tags:
+      - Cron
+      - Admin
     get:
       consumes:
       - application/json
@@ -299,6 +515,30 @@ paths:
       security:
       - bearerAuth: []
       summary: Cron job info
+      tags:
+      - Cron
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update cron job
+      parameters:
+      - description: Cron job info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.CronJob'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CronJob'
+      security:
+      - bearerAuth: []
+      summary: Update cron job
       tags:
       - Cron
       - Admin
@@ -322,7 +562,49 @@ paths:
       tags:
       - Data source
       - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create data source
+      parameters:
+      - description: Data source info
+        in: body
+        name: ds
+        required: true
+        schema:
+          $ref: '#/definitions/models.DataSource'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DataSource'
+      security:
+      - bearerAuth: []
+      summary: Create data source
+      tags:
+      - Data source
+      - Admin
   /admin/ds/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete data source
+      parameters:
+      - description: Ds id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete data source
+      tags:
+      - Data source
+      - Admin
     get:
       consumes:
       - application/json
@@ -342,6 +624,30 @@ paths:
       security:
       - bearerAuth: []
       summary: Data source info
+      tags:
+      - Data source
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update date source
+      parameters:
+      - description: Source info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.DataSource'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DataSource'
+      security:
+      - bearerAuth: []
+      summary: Update date source
       tags:
       - Data source
       - Admin
@@ -388,7 +694,49 @@ paths:
       tags:
       - Push messages
       - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create push message
+      parameters:
+      - description: Push info
+        in: body
+        name: push
+        required: true
+        schema:
+          $ref: '#/definitions/models.PushMessage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PushMessage'
+      security:
+      - bearerAuth: []
+      summary: Create push message
+      tags:
+      - Push
+      - Admin
   /admin/push/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete push
+      parameters:
+      - description: Push id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete push
+      tags:
+      - Push
+      - Admin
     get:
       consumes:
       - application/json
@@ -411,6 +759,30 @@ paths:
       tags:
       - Push messages
       - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update push
+      parameters:
+      - description: push info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.PushMessage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PushMessage'
+      security:
+      - bearerAuth: []
+      summary: Update push
+      tags:
+      - Push
+      - Admin
   /admin/topics:
     get:
       consumes:
@@ -430,6 +802,120 @@ paths:
       summary: List topics
       tags:
       - Topic
+    post:
+      consumes:
+      - application/json
+      description: Create topic
+      parameters:
+      - description: topic info
+        in: body
+        name: topic
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+      security:
+      - bearerAuth: []
+      summary: Create topic
+      tags:
+      - Entity manager
+      - Admin
+  /admin/topics/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete topic
+      parameters:
+      - description: Topic id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete topic
+      tags:
+      - Entity manager
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: topic detail info
+      parameters:
+      - description: Topic id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+      security:
+      - bearerAuth: []
+      summary: Topic
+      tags:
+      - Entity manager
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update topic
+      parameters:
+      - description: Project info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+      security:
+      - bearerAuth: []
+      summary: Update topic
+      tags:
+      - Entity manager
+      - Admin
+  /admin/topics/{topic}/data:
+    get:
+      consumes:
+      - application/json
+      description: topic data
+      parameters:
+      - description: Topic name
+        in: path
+        name: topic
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: object
+            type: array
+      security:
+      - bearerAuth: []
+      summary: Topic data
+      tags:
+      - Entity manager
+      - Admin
   /admin/users:
     get:
       consumes:
@@ -449,7 +935,49 @@ paths:
       summary: List users
       tags:
       - User
+    post:
+      consumes:
+      - application/json
+      description: Create user
+      parameters:
+      - description: User info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - bearerAuth: []
+      summary: Create user
+      tags:
+      - User
+      - Admin
   /admin/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete user
+      tags:
+      - User
+      - Admin
     get:
       consumes:
       - application/json
@@ -469,6 +997,30 @@ paths:
       security:
       - bearerAuth: []
       summary: User info
+      tags:
+      - User
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update user
+      parameters:
+      - description: User info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - bearerAuth: []
+      summary: Update user
       tags:
       - User
       - Admin
@@ -588,6 +1140,30 @@ paths:
       summary: Subscribe
       tags:
       - Push messages
+  /api/storage:
+    post:
+      consumes:
+      - application/json
+      description: Put file to storage
+      parameters:
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - bearerAuth: []
+      summary: Put file to storage
+      tags:
+      - Storage
+      - Admin
   /api/user/auth:
     post:
       consumes:

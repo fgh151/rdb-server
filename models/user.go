@@ -9,18 +9,28 @@ import (
 	"time"
 )
 
+// swagger:model
 type User struct {
-	Id           uuid.UUID      `gorm:"primarykey" json:"id"`
-	Email        string         `gorm:"index" json:"email"`
-	Token        string         `gorm:"index" json:"token"`
-	PasswordHash string         `json:"-"`
-	Admin        bool           `gorm:"index;default:false;type:bool" json:"admin"`
-	Active       bool           `gorm:"index;default:true;type:bool" json:"active"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"-"`
-	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
-	LastLogin    *time.Time     `gorm:"last_login" json:"last_login,omitempty"`
-
+	// The user UUID
+	// example: 6204037c-30e6-408b-8aaa-dd8219860b4b
+	Id uuid.UUID `gorm:"primarykey" json:"id"`
+	// User email
+	Email string `gorm:"index" json:"email"`
+	// Auth token
+	Token string `gorm:"index" json:"token"`
+	// Password hash
+	PasswordHash string `json:"-"`
+	// Is user admin
+	Admin bool `gorm:"index;default:false;type:bool" json:"admin"`
+	// Is user active
+	Active bool `gorm:"index;default:true;type:bool" json:"active"`
+	// Created at date time
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	// Last login date time
+	LastLogin *time.Time `gorm:"last_login" json:"last_login,omitempty"`
+	// user devices
 	Devices []UserDevice `gorm:"foreignKey:user_id" json:"devices"`
 }
 
@@ -68,8 +78,11 @@ func (p User) ValidatePassword(password string) bool {
 	return p.PasswordHash == security.HashPassword(password)
 }
 
+// swagger:model
 type CreateUserForm struct {
-	Email    string `json:"Email"`
+	// new User email
+	Email string `json:"Email"`
+	// new User password
 	Password string `json:"Password"`
 }
 
@@ -87,8 +100,11 @@ func (f CreateUserForm) Save() User {
 	return u
 }
 
+// swagger:model
 type LoginForm struct {
-	Email    string `json:"email"`
+	// User email
+	Email string `json:"email"`
+	// User password
 	Password string `json:"password"`
 }
 

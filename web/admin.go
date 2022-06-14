@@ -280,6 +280,18 @@ func CronItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.CronJob{}, w, r)
 }
 
+// CfLog godoc
+// @Summary      Logs
+// @Description  Cloud function logs
+// @Tags         Cloud functions
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  false  "Fuc id id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.CloudFunctionLog
+//
+// @Router       /admin/cf/{id}/log [get]
 func CfLog(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
@@ -298,10 +310,34 @@ func CfLog(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// TopicItem godoc
+// @Summary      Topic
+// @Description  topic detail info
+// @Tags         Entity manager
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  false  "Topic id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.Project
+//
+// @Router       /admin/topics/{id} [get]
 func TopicItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.Project{}, w, r)
 }
 
+// TopicData godoc
+// @Summary      Topic data
+// @Description  topic data
+// @Tags         Entity manager
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        topic path    string  false  "Topic name" gg
+// @Security bearerAuth
+// @Success      200  {array} object
+//
+// @Router       /admin/topics/{topic}/data [get]
 func TopicData(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -335,6 +371,18 @@ func TopicData(w http.ResponseWriter, r *http.Request) {
 	sendResponse(w, 200, result, err)
 }
 
+// UpdateTopic
+// @Summary      Update topic
+// @Description  Update topic
+// @Tags         Entity manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.Project  true  "Project info" true
+// @Success      200 {object} models.Project
+// @Security bearerAuth
+//
+// @Router       /admin/topics/{id} [put]
 func UpdateTopic(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -366,30 +414,108 @@ func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// DeleteUser godoc
+// @Summary      Delete user
+// @Description  Delete user
+// @Tags         User
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  false  "User id" gg
+// @Success      204
+//
+// @Router       /admin/users/{id} [delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.User{}, w, r)
 }
 
+// DeleteConfig godoc
+// @Summary      Delete config
+// @Description  Delete config
+// @Tags         Config manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  false  "Config id" gg
+// @Success      204
+//
+// @Router       /admin/config/{id} [delete]
 func DeleteConfig(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.Config{}, w, r)
 }
 
+// DeleteDs godoc
+// @Summary      Delete data source
+// @Description  Delete data source
+// @Tags         Data source
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  false  "Ds id" gg
+// @Success      204
+//
+// @Router       /admin/ds/{id} [delete]
 func DeleteDs(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.DataSource{}, w, r)
 }
 
+// DeleteCf godoc
+// @Summary      Delete cloud function
+// @Description  Delete cloud function
+// @Tags         Cloud functions
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  false  "cf id" gg
+// @Success      204
+//
+// @Router       /admin/cf/{id} [delete]
 func DeleteCf(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.CloudFunction{}, w, r)
 }
 
+// DeletePush godoc
+// @Summary      Delete push
+// @Description  Delete push
+// @Tags         Push
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  false  "Push id" gg
+// @Success      204
+//
+// @Router       /admin/push/{id} [delete]
 func DeletePush(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.PushMessage{}, w, r)
 }
 
+// DeleteCron godoc
+// @Summary      Delete cron job
+// @Description  Delete cron job
+// @Tags         Cron
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  false  "Cron id" gg
+// @Success      204
+//
+// @Router       /admin/cron/{id} [delete]
 func DeleteCron(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.CronJob{}, w, r)
 }
 
+// UpdateUser
+// @Summary      Update user
+// @Description  Update user
+// @Tags         User
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.User  true  "User info" true
+// @Success      200 {object} models.User
+// @Security bearerAuth
+//
+// @Router       /admin/users/{id} [put]
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
@@ -410,6 +536,18 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// UpdateConfig
+// @Summary      Update config
+// @Description  Update config
+// @Tags         Config manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.Config  true  "Config info" true
+// @Success      200 {object} models.Config
+// @Security bearerAuth
+//
+// @Router       /admin/config/{id} [put]
 func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	newm := models.Config{}
@@ -423,6 +561,18 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// UpdateDs
+// @Summary      Update date source
+// @Description  Update date source
+// @Tags         Data source
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.DataSource  true  "Source info" true
+// @Success      200 {object} models.DataSource
+// @Security bearerAuth
+//
+// @Router       /admin/ds/{id} [put]
 func UpdateDs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
@@ -441,6 +591,18 @@ func UpdateDs(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// UpdateCf
+// @Summary      Update cloud function
+// @Description  Update cloud function
+// @Tags         Cloud functions
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.DataSource  true  "Source info" true
+// @Success      200 {object} models.DataSource
+// @Security bearerAuth
+//
+// @Router       /admin/cf/{id} [put]
 func UpdateCf(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
@@ -468,6 +630,18 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// UpdatePush
+// @Summary      Update push
+// @Description  Update push
+// @Tags         Push
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.PushMessage  true  "push info" true
+// @Success      200 {object} models.PushMessage
+// @Security bearerAuth
+//
+// @Router       /admin/push/{id} [put]
 func UpdatePush(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
@@ -486,6 +660,18 @@ func UpdatePush(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// UpdateCron
+// @Summary      Update cron job
+// @Description  Update cron job
+// @Tags         Cron
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.CronJob  true  "Cron job info" true
+// @Success      200 {object} models.CronJob
+// @Security bearerAuth
+//
+// @Router       /admin/cron/{id} [put]
 func UpdateCron(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
@@ -507,6 +693,17 @@ func UpdateCron(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// DeleteTopic godoc
+// @Summary      Delete topic
+// @Description  Delete topic
+// @Tags         Entity manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  false  "Topic id" gg
+// @Success      204
+//
+// @Router       /admin/topics/{id} [delete]
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.Project{}, w, r)
 }
@@ -524,6 +721,18 @@ func deleteItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// CreateTopic
+// @Summary      Create topic
+// @Description  Create topic
+// @Tags         Entity manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        topic    body     models.Project  true  "topic info" true
+// @Success      200 {object} models.Project
+// @Security bearerAuth
+//
+// @Router       /admin/topics [post]
 func CreateTopic(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -544,6 +753,18 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// CreateUser
+// @Summary      Create user
+// @Description  Create user
+// @Tags         User
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        user    body     models.CreateUserForm  true  "User info" true
+// @Success      200 {object} models.User
+// @Security bearerAuth
+//
+// @Router       /admin/users [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
@@ -562,6 +783,18 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// CreateConfig
+// @Summary      Create config
+// @Description  Create config
+// @Tags         Config manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        config    body     models.CreateUserForm  true  "Config info" true
+// @Success      200 {object} models.User
+// @Security bearerAuth
+//
+// @Router       /admin/config [post]
 func CreateConfig(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := models.Config{}
@@ -585,6 +818,18 @@ func CreateConfig(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// CreateDs
+// @Summary      Create data source
+// @Description  Create data source
+// @Tags         Data source
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        ds    body     models.DataSource  true  "Data source info" true
+// @Success      200 {object} models.DataSource
+// @Security bearerAuth
+//
+// @Router       /admin/ds [post]
 func CreateDs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := models.DataSource{}
@@ -607,6 +852,18 @@ func CreateDs(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// CreateCf
+// @Summary      Create cloud function
+// @Description  Create cloud function
+// @Tags         Cloud functions
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        cf    body     models.CloudFunction  true  "Function info" true
+// @Success      200 {object} models.CloudFunction
+// @Security bearerAuth
+//
+// @Router       /admin/cf [post]
 func CreateCf(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := models.CloudFunction{}
@@ -643,6 +900,18 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// CreatePush
+// @Summary      Create push message
+// @Description  Create push message
+// @Tags         Push
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        push    body     models.PushMessage  true  "Push info" true
+// @Success      200 {object} models.PushMessage
+// @Security bearerAuth
+//
+// @Router       /admin/push [post]
 func CreatePush(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := models.PushMessage{}
@@ -668,6 +937,18 @@ func CreatePush(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
+// CreateCron
+// @Summary      Create cron job
+// @Description  Create cron job
+// @Tags         Cron
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        cron    body     models.CronJob  true  "Push info" true
+// @Success      200 {object} models.CronJob
+// @Security bearerAuth
+//
+// @Router       /admin/cron [post]
 func CreateCron(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := models.CronJob{}
