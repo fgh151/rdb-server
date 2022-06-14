@@ -1,39 +1,34 @@
-## Зависимости
+## Build dependencies
 
-Mongodb
+ * Golang ^1.17 
+ * swag ^1.8.2
 
-Postgres | Mysql | Sqlite
+## Runtime dependencies
 
-## Запуск
+ * Mongodb
+ * Postgres | Mysql | Sqlite
 
-Создать .env файл см .env.example
+## Bootstrap
 
-Флаги запуска:
+Create .env file by .evn.example 
 
- * ```-v``` режим подробного логирования
- * ```-m``` запуск миграций при старте
- * ```-demo``` заполнение баз данных демо данными
- * ```-docs``` Флаг выключает доступ к описанию swagger
- * ```-sentry``` Флаг выключает отправку данных в Sentry
+Run flags:
+
+ * ```-v``` Verbose mode
+ * ```-m``` Run migrations
+ * ```-demo``` Fill database demo data
+ * ```-docs``` Disable swagger public docs
+ * ```-sentry``` Disable sentry
+
+At firs run use ```-m``` flag to create database structure
 
 ## API
-### Авторизация
-В каждом запросе надо указывать заголовок 
-db-key в котором указывать ключ
+### Auth
+Set header ```db-key``` in each request. In socket methods set key in path.
 
-В методе подписки ключ нужно казать не в заголовке, а в параметре адреса
+### Api methods
 
-### Доступные методы
-
-POST /push/{topic} Отправка сообщения в топик
-
-PATCH /push/{topic} Изменение сообщения
-
-POST /find/{topic} Поиск сообщений
-
-GET /list/{topic} Список сообщений
-
-GET /subscribe/{topic}/{key} Сокет для подписки на новые сообщения
+See swagger in [docs dir](/docs)
 
 ## Docker compose example
 
