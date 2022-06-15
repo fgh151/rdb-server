@@ -107,6 +107,17 @@ Origin: app
 Accept: */*
 db-key: 123
 
+### Push em item
+POST http://192.168.31.63:9090/em/rss
+Origin: app
+Accept: */*
+db-key: rss
+Content-Type: application/json
+
+{
+  "key": "value"
+}
+
 ### Get function by id
 GET http://localhost:9090/admin/cf?id=62e6c3ac-d8bb-11ec-b095-acde48001122
 Accept: */*

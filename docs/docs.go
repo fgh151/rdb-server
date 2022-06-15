@@ -2137,6 +2137,10 @@ const docTemplate = `{
                     "description": "Container name\nexample: docker.io/library/alpine",
                     "type": "string"
                 },
+                "env": {
+                    "description": "Container env variables",
+                    "type": "string"
+                },
                 "id": {
                     "description": "The function UUID\nexample: 6204037c-30e6-408b-8aaa-dd8219860b4b",
                     "type": "string"

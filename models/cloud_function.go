@@ -32,7 +32,9 @@ type CloudFunction struct {
 	Container string `json:"container"`
 	// Container run params
 	// example: echo test
-	Params    string         `json:"params"`
+	Params string `json:"params"`
+	// Container env variables
+	Env       string         `json:"env"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
@@ -180,6 +182,7 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 	log.Debug(buf.String())
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Env:   strings.Split(p.Env, "\n"),
 		Image: uri.Image,
 		Cmd:   prepareDockerParams(p.Params),
 	}, nil, nil, nil, "")

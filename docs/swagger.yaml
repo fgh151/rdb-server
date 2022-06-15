@@ -6,6 +6,9 @@ definitions:
           Container name
           example: docker.io/library/alpine
         type: string
+      env:
+        description: Container env variables
+        type: string
       id:
         description: |-
           The function UUID
