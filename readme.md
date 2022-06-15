@@ -19,6 +19,7 @@ Run flags:
  * ```-demo``` Fill database demo data
  * ```-docs``` Disable swagger public docs
  * ```-sentry``` Disable sentry
+ * ```-mongo``` Disable mongo start initialization
 
 At firs run use ```-m``` flag to create database structure
 

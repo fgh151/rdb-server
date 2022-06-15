@@ -2,7 +2,7 @@
   <configuration default="false" name="run db-server verbose" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="db-server" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="-v" />
+    <parameters value="-v -mongo=false" />
     <kind value="FILE" />
     <package value="db-server" />
     <directory value="$PROJECT_DIR$" />

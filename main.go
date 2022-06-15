@@ -40,6 +40,7 @@ func main() {
 	demoFlag := flag.Bool("demo", false, "Fill demo data")
 	docsFlag := flag.Bool("docs", true, "Disable public docs")
 	sentryFlag := flag.Bool("sentry", true, "Disable sentry logs")
+	mongoFlag := flag.Bool("mongo", true, "Disable mongo initialization")
 
 	flag.Parse()
 
@@ -82,17 +83,19 @@ func main() {
 		os.Exit(0)
 	}
 
-	log.Debug("Init mongo db connection")
+	if *mongoFlag {
+		log.Debug("Init mongo db connection")
 
-	client, _ := drivers.GetDbInstance().GetConnection()
+		client, _ := drivers.GetDbInstance().GetConnection()
 
-	defer func() {
-		log.Debug("Close mongo db connection")
+		defer func() {
+			log.Debug("Close mongo db connection")
 
-		if err := client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
+			if err := client.Disconnect(context.TODO()); err != nil {
+				panic(err)
+			}
+		}()
+	}
 
 	log.Debug("Start cron")
 	models.InitCron()
