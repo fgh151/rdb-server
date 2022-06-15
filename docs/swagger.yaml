@@ -91,18 +91,58 @@ definitions:
   models.DataSource:
     properties:
       cache:
+        description: Cache result in local db
         type: boolean
       dsn:
+        description: Data source dsn
         type: string
+      endpoints:
+        items:
+          $ref: '#/definitions/models.DataSourceEndpoint'
+        type: array
       id:
+        description: |-
+          The data source UUID
+          example: 6204011c-30e6-408b-8aaa-dd8219860b4b
         type: string
       project:
         $ref: '#/definitions/models.Project'
+        description: Linked project
       project_id:
+        description: |-
+          Linked project  UUID
+          example: 6204011c-30e6-408b-8aaa-dd8214860b4b
         type: string
       title:
+        description: Data source title
         type: string
       type:
+        description: |-
+          The data source type
+          Enum of DsType
+          example: Mysql
+        type: string
+    type: object
+  models.DataSourceEndpoint:
+    properties:
+      data_source:
+        description: |-
+          Linked data source UUID
+          example: 6204011c-33e6-408b-8aaa-dd8214860b4b
+        type: string
+      dataSource:
+        $ref: '#/definitions/models.DataSource'
+        description: Linked data source
+      id:
+        description: |-
+          The data source endpoint UUID
+          example: 6234011c-30e6-408b-8aaa-dd8219860b4b
+        type: string
+      table_name:
+        description: Endpoint table name
+        type: string
+      title:
+        description: Data source endpoint title
         type: string
     type: object
   models.Project:
@@ -650,6 +690,32 @@ paths:
       tags:
       - Data source
       - Admin
+  /admin/ds/{dsIid}/dse:
+    get:
+      consumes:
+      - application/json
+      description: List data source endpoints
+      parameters:
+      - description: Data source id
+        in: path
+        name: dsIid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.DataSourceEndpoint'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List data source endpoints
+      tags:
+      - Data source
+      - Admin
   /admin/ds/{id}:
     delete:
       consumes:
@@ -721,6 +787,99 @@ paths:
       security:
       - bearerAuth: []
       summary: Update date source
+      tags:
+      - Data source
+      - Admin
+  /admin/ds/dse/{dsId}:
+    post:
+      consumes:
+      - application/json
+      description: Create data source endpoint
+      parameters:
+      - description: Data source info
+        in: body
+        name: dse
+        required: true
+        schema:
+          $ref: '#/definitions/models.DataSourceEndpoint'
+      - description: Data source id
+        in: path
+        name: dsId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DataSourceEndpoint'
+      security:
+      - bearerAuth: []
+      summary: Create data source endpoint
+      tags:
+      - Data source
+      - Admin
+  /admin/ds/dse/{dsId}/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Data source endpoint detail info
+      parameters:
+      - description: Data source id
+        in: path
+        name: dsId
+        required: true
+        type: string
+      - description: Endpoint id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DataSource'
+      security:
+      - bearerAuth: []
+      summary: Data source endpoint info
+      tags:
+      - Data source
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update date source endpoint
+      parameters:
+      - description: Endpoint info
+        in: body
+        name: dse
+        required: true
+        schema:
+          $ref: '#/definitions/models.DataSourceEndpoint'
+      - description: Endpoint id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data source id
+        in: path
+        name: dsId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DataSourceEndpoint'
+      security:
+      - bearerAuth: []
+      summary: Update date source endpoint
       tags:
       - Data source
       - Admin
@@ -1377,6 +1536,33 @@ paths:
       tags:
       - Config manager
       - Public Api
+  /ds/dse/{dsId}/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete data source endpoint
+      parameters:
+      - description: Data source endpoint id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data source id
+        in: path
+        name: dsId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - bearerAuth: []
+      summary: Delete data source endpoint
+      tags:
+      - Data source
+      - Admin
   /dse/{id}:
     get:
       consumes:

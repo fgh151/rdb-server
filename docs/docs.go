@@ -728,6 +728,191 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/ds/dse/{dsId}": {
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Create data source endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data source",
+                    "Admin"
+                ],
+                "summary": "Create data source endpoint",
+                "parameters": [
+                    {
+                        "description": "Data source info",
+                        "name": "dse",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DataSourceEndpoint"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data source id",
+                        "name": "dsId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DataSourceEndpoint"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/ds/dse/{dsId}/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Data source endpoint detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data source",
+                    "Admin"
+                ],
+                "summary": "Data source endpoint info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Data source id",
+                        "name": "dsId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Endpoint id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DataSource"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Update date source endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data source",
+                    "Admin"
+                ],
+                "summary": "Update date source endpoint",
+                "parameters": [
+                    {
+                        "description": "Endpoint info",
+                        "name": "dse",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DataSourceEndpoint"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Endpoint id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data source id",
+                        "name": "dsId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DataSourceEndpoint"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/ds/{dsIid}/dse": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "List data source endpoints",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data source",
+                    "Admin"
+                ],
+                "summary": "List data source endpoints",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Data source id",
+                        "name": "dsIid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DataSourceEndpoint"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/admin/ds/{id}": {
             "get": {
                 "security": [
@@ -1859,6 +2044,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/ds/dse/{dsId}/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete data source endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data source",
+                    "Admin"
+                ],
+                "summary": "Delete data source endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Data source endpoint id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Data source id",
+                        "name": "dsId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/dse/{id}": {
             "get": {
                 "description": "Get data source by id",
@@ -2245,24 +2472,62 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "cache": {
+                    "description": "Cache result in local db",
                     "type": "boolean"
                 },
                 "dsn": {
+                    "description": "Data source dsn",
                     "type": "string"
                 },
+                "endpoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DataSourceEndpoint"
+                    }
+                },
                 "id": {
+                    "description": "The data source UUID\nexample: 6204011c-30e6-408b-8aaa-dd8219860b4b",
                     "type": "string"
                 },
                 "project": {
+                    "description": "Linked project",
                     "$ref": "#/definitions/models.Project"
                 },
                 "project_id": {
+                    "description": "Linked project  UUID\nexample: 6204011c-30e6-408b-8aaa-dd8214860b4b",
                     "type": "string"
                 },
                 "title": {
+                    "description": "Data source title",
                     "type": "string"
                 },
                 "type": {
+                    "description": "The data source type\nEnum of DsType\nexample: Mysql",
+                    "type": "string"
+                }
+            }
+        },
+        "models.DataSourceEndpoint": {
+            "type": "object",
+            "properties": {
+                "dataSource": {
+                    "description": "Linked data source",
+                    "$ref": "#/definitions/models.DataSource"
+                },
+                "data_source": {
+                    "description": "Linked data source UUID\nexample: 6204011c-33e6-408b-8aaa-dd8214860b4b",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The data source endpoint UUID\nexample: 6234011c-30e6-408b-8aaa-dd8219860b4b",
+                    "type": "string"
+                },
+                "table_name": {
+                    "description": "Endpoint table name",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Data source endpoint title",
                     "type": "string"
                 }
             }

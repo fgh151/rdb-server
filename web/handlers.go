@@ -36,12 +36,12 @@ func checkAccess(w http.ResponseWriter, r *http.Request) bool {
 	p := models.Project{}.GetByTopic(topic).(models.Project)
 
 	if !validateOrigin(p, r.Header.Get("Origin")) {
-		send403Error(w, "Cors error. Origin not allowed")
+		Send403Error(w, "Cors error. Origin not allowed")
 		return false
 	}
 
 	if !validateKey(p.Key, r.Header.Get("db-key")) {
-		send403Error(w, "db-key not Valid")
+		Send403Error(w, "db-key not Valid")
 		return false
 	}
 
@@ -65,7 +65,7 @@ func validateKey(k1 string, k2 string) bool {
 	return k1 == k2
 }
 
-func send403Error(w http.ResponseWriter, message string) {
+func Send403Error(w http.ResponseWriter, message string) {
 	log.Debug("403 error")
 	payload := map[string]string{"code": "not acceptable", "message": message}
 	sendResponse(w, 403, payload, nil)
@@ -126,7 +126,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	rkey := vars["key"]
 
 	if !validateKey(models.Project{}.GetKey(topic), rkey) {
-		send403Error(w, "db-key not Valid")
+		Send403Error(w, "db-key not Valid")
 	} else {
 		c, err := upgrader.Upgrade(w, r, nil)
 

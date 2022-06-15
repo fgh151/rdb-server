@@ -129,7 +129,7 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 	rKey := r.Header.Get("db-key")
 
 	if !validateKey(model.Project.Key, rKey) {
-		send403Error(w, "db-key not Valid")
+		Send403Error(w, "db-key not Valid")
 	} else {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
@@ -156,7 +156,7 @@ func DSEItem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	model := models.DataSourceEndpoint{}.GetById(vars["id"]).(models.DataSourceEndpoint)
 
-	arr := model.List(10, 0, "id", "ASC")
+	arr := model.List(10, 0, "id", "ASC", make(map[string]interface{}))
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

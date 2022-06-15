@@ -17,19 +17,34 @@ const (
 	DSTypeMysql    DsType = "Mysql"
 	DSTypePostgres DsType = "Postgres"
 	DSTypeSqlite   DsType = "Sqlite"
+
+	DSTypeXML DsType = "Xml"
 )
 
 type DataSource struct {
-	Id        uuid.UUID `gorm:"primarykey" json:"id"`
-	Type      DsType    `json:"type"`
-	Title     string    `json:"title"`
-	Dsn       string    `json:"dsn"`
+	// The data source UUID
+	// example: 6204011c-30e6-408b-8aaa-dd8219860b4b
+	Id uuid.UUID `gorm:"primarykey" json:"id"`
+	// The data source type
+	// Enum of DsType
+	// example: Mysql
+	Type DsType `json:"type"`
+	// Data source title
+	Title string `json:"title"`
+	// Data source dsn
+	Dsn string `json:"dsn"`
+	// Linked project  UUID
+	// example: 6204011c-30e6-408b-8aaa-dd8214860b4b
 	ProjectId uuid.UUID `json:"project_id"`
-	Cache     bool      `json:"cache"`
+	// Cache result in local db
+	Cache bool `json:"cache"`
+	// Linked project
 	Project   Project
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+
+	Endpoints []DataSourceEndpoint `json:"endpoints"`
 }
 
 func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
@@ -37,7 +52,7 @@ func (p DataSource) List(limit int, offset int, sort string, order string, filte
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Find(&sources)
+	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Preload("Endpoints").Find(&sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {
@@ -67,56 +82,36 @@ func (p DataSource) Delete(id string) {
 }
 
 type DataSourceEndpoint struct {
-	Id    uuid.UUID `gorm:"primarykey" json:"id"`
-	Title string    `json:"title"`
-
+	// The data source endpoint UUID
+	// example: 6234011c-30e6-408b-8aaa-dd8219860b4b
+	Id uuid.UUID `gorm:"primarykey" json:"id"`
+	// Data source endpoint title
+	Title string `json:"title"`
+	// Endpoint table name
 	TableName string `json:"table_name"`
-
+	// Linked data source UUID
+	// example: 6204011c-33e6-408b-8aaa-dd8214860b4b
 	DataSourceId uuid.UUID `json:"data_source"`
-	DataSource   DataSource
-	CreatedAt    time.Time      `json:"-"`
-	UpdatedAt    time.Time      `json:"-"`
-	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
+	// Linked data source
+	DataSource DataSource
+	CreatedAt  time.Time      `json:"-"`
+	UpdatedAt  time.Time      `json:"-"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
-func (e DataSourceEndpoint) List(limit int, offset int, order string, sort string) []interface{} {
-	var arr []interface{}
+func (e DataSourceEndpoint) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+	var sources []DataSourceEndpoint
 
-	conn, err := e.getConnection()
+	conn := server.MetaDb.GetConnection()
 
-	if err != nil {
-		err2.DebugErr(err)
-		return arr
+	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Find(&sources)
+
+	y := make([]interface{}, len(sources))
+	for i, v := range sources {
+		y[i] = v
 	}
 
-	rows, err := conn.Debug().Table(e.TableName).Limit(limit).Offset(offset).Order(order + " " + sort).Rows()
-	err2.DebugErr(err)
-
-	defer func() { _ = rows.Close() }()
-
-	for rows.Next() {
-
-		cols, _ := rows.Columns()
-		data := make(map[string]string)
-
-		columns := make([]string, len(cols))
-		columnPointers := make([]interface{}, len(cols))
-
-		for i := range columns {
-			columnPointers[i] = &columns[i]
-		}
-
-		err := rows.Scan(columnPointers...)
-		err2.DebugErr(err)
-
-		for i, colName := range cols {
-			data[colName] = columns[i]
-		}
-
-		arr = append(arr, data)
-	}
-
-	return arr
+	return y
 }
 
 var dsConnections = make(map[string]*gorm.DB)
@@ -138,6 +133,9 @@ func (e DataSourceEndpoint) getConnection() (*gorm.DB, error) {
 	case DSTypeSqlite:
 		conn, err := gorm.Open(sqlite.Open(e.DataSource.Dsn), &gorm.Config{})
 		return e.attachConnectionToPool(conn, err)
+
+	case DSTypeXML:
+		return nil, nil
 	}
 
 	return nil, nil
@@ -156,7 +154,7 @@ func (e DataSourceEndpoint) GetById(id string) interface{} {
 
 	conn := server.MetaDb.GetConnection()
 
-	conn.Preload("DataSource").First(&source, "id = ?", id)
+	conn.First(&source, "id = ?", id)
 
 	return source
 }
@@ -175,4 +173,9 @@ func (e DataSourceEndpoint) Total() *int64 {
 	conn.Table(e.TableName).Count(&cnt)
 
 	return &cnt
+}
+
+func (e DataSourceEndpoint) Delete(id string) {
+	conn := server.MetaDb.GetConnection()
+	conn.Where("id = ?", id).Delete(&e)
 }

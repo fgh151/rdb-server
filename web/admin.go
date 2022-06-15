@@ -121,6 +121,36 @@ func ListDs(w http.ResponseWriter, r *http.Request) {
 	listItems(models.DataSource{}, []string{}, r, w)
 }
 
+// ListDse godoc
+// @Summary      List data source endpoints
+// @Description  List data source endpoints
+// @Tags         Data source
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Param        dsIid path    string  true  "Data source id" id
+// @Success      200  {array}   models.DataSourceEndpoint
+//
+// @Router       /admin/ds/{dsIid}/dse [get]
+func ListDse(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	l, o, or, so := GetPagination(r)
+	f := formatQuery(r, []string{"data_source_id"})
+
+	arr := models.DataSourceEndpoint{}.List(l, o, so, or, f)
+	total := len(arr)
+	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("X-Total-Count", strconv.Itoa(total))
+
+	resp, _ := json.Marshal(arr)
+	w.WriteHeader(200)
+	_, err := w.Write(resp)
+	err2.DebugErr(err)
+}
+
 // ListCf godoc
 // @Summary      List cloud functions
 // @Description  List cloud functions
@@ -230,6 +260,23 @@ func ConfigItem(w http.ResponseWriter, r *http.Request) {
 // @Router       /admin/ds/{id} [get]
 func DsItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.DataSource{}, w, r)
+}
+
+// DseItem godoc
+// @Summary      Data source endpoint info
+// @Description  Data source endpoint detail info
+// @Tags         Data source
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        dsId path    string  true  "Data source id" gg
+// @Param        id path    string  true  "Endpoint id" gg
+// @Security bearerAuth
+// @Success      200  {object}   models.DataSource
+//
+// @Router       /admin/ds/dse/{dsId}/{id} [get]
+func DseItem(w http.ResponseWriter, r *http.Request) {
+	getItem(models.DataSourceEndpoint{}, w, r)
 }
 
 // CfItem godoc
@@ -463,6 +510,23 @@ func DeleteDs(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.DataSource{}, w, r)
 }
 
+// DeleteDse godoc
+// @Summary      Delete data source endpoint
+// @Description  Delete data source endpoint
+// @Tags         Data source
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  true  "Data source endpoint id" id
+// @Param        dsId    path     string  true  "Data source id" id
+// @Security bearerAuth
+// @Success      204
+//
+// @Router       /ds/dse/{dsId}/{id} [delete]
+func DeleteDse(w http.ResponseWriter, r *http.Request) {
+	deleteItem(models.DataSource{}, w, r)
+}
+
 // DeleteCf godoc
 // @Summary      Delete cloud function
 // @Description  Delete cloud function
@@ -588,6 +652,38 @@ func UpdateDs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var exist = models.DataSource{}.GetById(vars["id"]).(models.DataSource)
 	newm := models.DataSource{}
+
+	err := json.NewDecoder(r.Body).Decode(&newm)
+
+	newm.CreatedAt = exist.CreatedAt
+
+	server.MetaDb.GetConnection().Save(&newm)
+
+	resp, _ := json.Marshal(newm)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
+}
+
+// UpdateDse
+// @Summary      Update date source endpoint
+// @Description  Update date source endpoint
+// @Tags         Data source
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        dse    body     models.DataSourceEndpoint  true  "Endpoint info" true
+// @Param        id    path     string  true  "Endpoint id" id
+// @Param        dsId    path     string  true  "Data source id" id
+// @Success      200 {object} models.DataSourceEndpoint
+// @Security bearerAuth
+//
+// @Router       /admin/ds/dse/{dsId}/{id} [put]
+func UpdateDse(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	vars := mux.Vars(r)
+	var exist = models.DataSourceEndpoint{}.GetById(vars["id"]).(models.DataSourceEndpoint)
+	newm := models.DataSourceEndpoint{}
 
 	err := json.NewDecoder(r.Body).Decode(&newm)
 
@@ -848,6 +944,56 @@ func CreateDs(w http.ResponseWriter, r *http.Request) {
 	model := models.DataSource{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
+	err2.DebugErr(err)
+	model.Id, err = uuid.NewUUID()
+	err2.DebugErr(err)
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	server.MetaDb.GetConnection().Create(&model)
+
+	resp, _ := json.Marshal(model)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
+}
+
+// CreateDse
+// @Summary      Create data source endpoint
+// @Description  Create data source endpoint
+// @Tags         Data source
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        dse    body     models.DataSourceEndpoint  true  "Data source info" true
+// @Param        dsId    path     string  true  "Data source id" id
+// @Success      200 {object} models.DataSourceEndpoint
+// @Security bearerAuth
+//
+// @Router       /admin/ds/dse/{dsId} [post]
+func CreateDse(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	vars := mux.Vars(r)
+	dsUuid, err := uuid.Parse(vars["dsId"])
+	err2.DebugErr(err)
+
+	if err != nil {
+		payload := map[string]string{"code": "not acceptable", "message": "Wrong data source id"}
+		w.WriteHeader(500)
+		resp, _ := json.Marshal(payload)
+		_, err = w.Write(resp)
+		return
+	}
+
+	model := models.DataSourceEndpoint{
+		DataSourceId: dsUuid,
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
 	model.Id, err = uuid.NewUUID()
 	err2.DebugErr(err)
