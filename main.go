@@ -49,12 +49,12 @@ func main() {
 	}
 
 	log.Debug("Init log system done")
-	log.Debug("Init sentry")
 
 	err := godotenv.Load()
 	err2.PanicErr(err)
 
 	if *sentryFlag {
+		log.Debug("Init sentry")
 		hook, err := logrus_sentry.NewWithTagsSentryHook(
 			os.Getenv("SENTRY_DSN"),
 			map[string]string{"ENVIRONMENT": os.Getenv("SENTRY_ENVIRONMENT")},
