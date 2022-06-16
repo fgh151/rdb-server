@@ -1070,6 +1070,192 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/pl": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "List pipelines",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pipeline",
+                    "Admin"
+                ],
+                "summary": "List pipelines",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Pipeline"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Create pipeline",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pipeline",
+                    "Admin"
+                ],
+                "summary": "Create pipeline",
+                "parameters": [
+                    {
+                        "description": "Pipeline info",
+                        "name": "pl",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Pipeline"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Pipeline"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/pl/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Pipeline detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pipeline",
+                    "Admin"
+                ],
+                "summary": "Pipeline info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pipeline id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Pipeline"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Update pipeline",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pipeline",
+                    "Admin"
+                ],
+                "summary": "Update pipeline",
+                "parameters": [
+                    {
+                        "description": "Pipeline info",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Pipeline"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pipeline id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Pipeline"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete pipeline",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pipeline",
+                    "Admin"
+                ],
+                "summary": "Delete pipeline",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pipeline id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/admin/push": {
             "get": {
                 "security": [
@@ -2528,6 +2714,35 @@ const docTemplate = `{
                 },
                 "title": {
                     "description": "Data source endpoint title",
+                    "type": "string"
+                }
+            }
+        },
+        "models.Pipeline": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "The pipeline UUID\nexample: 6204037c-30e6-418b-8aaa-dd8219860b4b",
+                    "type": "string"
+                },
+                "input": {
+                    "description": "Input type",
+                    "type": "string"
+                },
+                "input_id": {
+                    "description": "The pipeline input UUID\nexample: 6204037c-30e6-418b-8saa-dd8219860b4b",
+                    "type": "string"
+                },
+                "output": {
+                    "description": "Output type",
+                    "type": "string"
+                },
+                "output_id": {
+                    "description": "The pipeline output UUID\nexample: 6204037c-30e6-413b-8saa-dd8219860b4b",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Mnemonic name",
                     "type": "string"
                 }
             }

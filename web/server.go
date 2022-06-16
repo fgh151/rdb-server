@@ -110,6 +110,12 @@ func InitServer(enableDocs *bool) {
 	admin.HandleFunc("/cf/{id}", DeleteCf).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/cf/{id}", UpdateCf).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
+	admin.HandleFunc("/pl", ListPipeline).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/pl", CreatePipeline).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	admin.HandleFunc("/pl/{id}", PipelineItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/pl/{id}", DeletePipeline).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/pl/{id}", UpdatePipeline).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+
 	admin.HandleFunc("/push", ListPush).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
 	admin.HandleFunc("/push", CreatePush).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
 	admin.HandleFunc("/push/{id}", PushItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler

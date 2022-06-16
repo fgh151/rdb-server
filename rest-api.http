@@ -122,3 +122,8 @@ Content-Type: application/json
 GET http://localhost:9090/admin/cf?id=62e6c3ac-d8bb-11ec-b095-acde48001122
 Accept: */*
 Authorization: Bearer 123
+
+### List piplines
+GET http://localhost:9090/admin/pl?_end=10&_order=ASC&_sort=id&_start=0
+Accept: */*
+Authorization: Bearer 123

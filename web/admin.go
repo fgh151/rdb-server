@@ -166,6 +166,21 @@ func ListCf(w http.ResponseWriter, r *http.Request) {
 	listItems(models.CloudFunction{}, []string{"id"}, r, w)
 }
 
+// ListPipeline godoc
+// @Summary      List pipelines
+// @Description  List pipelines
+// @Tags         Pipeline
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.Pipeline
+//
+// @Router       /admin/pl [get]
+func ListPipeline(w http.ResponseWriter, r *http.Request) {
+	listItems(models.Pipeline{}, []string{"id"}, r, w)
+}
+
 // ListPush godoc
 // @Summary      List push messages
 // @Description  List push messages
@@ -208,9 +223,11 @@ func listItems(model models.Model, filter []string, r *http.Request, w http.Resp
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
 
-	resp, _ := json.Marshal(arr)
+	resp, err := json.Marshal(arr)
+	log.Debug(string(resp))
+	err2.DebugErr(err)
 	w.WriteHeader(200)
-	_, err := w.Write(resp)
+	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }
 
@@ -293,6 +310,22 @@ func DseItem(w http.ResponseWriter, r *http.Request) {
 // @Router       /admin/cf/{id} [get]
 func CfItem(w http.ResponseWriter, r *http.Request) {
 	getItem(models.CloudFunction{}, w, r)
+}
+
+// PipelineItem godoc
+// @Summary      Pipeline info
+// @Description  Pipeline detail info
+// @Tags         Pipeline
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  true  "Pipeline id" id
+// @Security bearerAuth
+// @Success      200  {object}   models.Pipeline
+//
+// @Router       /admin/pl/{id} [get]
+func PipelineItem(w http.ResponseWriter, r *http.Request) {
+	getItem(models.Pipeline{}, w, r)
 }
 
 // PushItem godoc
@@ -543,6 +576,22 @@ func DeleteCf(w http.ResponseWriter, r *http.Request) {
 	deleteItem(models.CloudFunction{}, w, r)
 }
 
+// DeletePipeline godoc
+// @Summary      Delete pipeline
+// @Description  Delete pipeline
+// @Tags         Pipeline
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  true  "Pipeline id" id
+// @Security bearerAuth
+// @Success      204
+//
+// @Router       /admin/pl/{id} [delete]
+func DeletePipeline(w http.ResponseWriter, r *http.Request) {
+	deleteItem(models.Pipeline{}, w, r)
+}
+
 // DeletePush godoc
 // @Summary      Delete push
 // @Description  Delete push
@@ -734,6 +783,37 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 	)
 
 	w.WriteHeader(200)
+	err2.DebugErr(err)
+}
+
+// UpdatePipeline
+// @Summary      Update pipeline
+// @Description  Update pipeline
+// @Tags         Pipeline
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     models.Pipeline  true  "Pipeline info" true
+// @Param        id    path     string  true  "Pipeline id" id
+// @Success      200 {object} models.Pipeline
+// @Security bearerAuth
+//
+// @Router       /admin/pl/{id} [put]
+func UpdatePipeline(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	vars := mux.Vars(r)
+	var exist = models.Pipeline{}.GetById(vars["id"]).(models.Pipeline)
+	newm := models.Pipeline{}
+
+	err := json.NewDecoder(r.Body).Decode(&newm)
+
+	newm.CreatedAt = exist.CreatedAt
+
+	server.MetaDb.GetConnection().Save(&newm)
+
+	resp, _ := json.Marshal(newm)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }
 
@@ -1049,6 +1129,43 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 			err := models.BuildImage(file, uri)
 			err2.DebugErr(err)
 		}()
+	}
+
+	server.MetaDb.GetConnection().Create(&model)
+
+	resp, _ := json.Marshal(model)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
+}
+
+// CreatePipeline
+// @Summary      Create pipeline
+// @Description  Create pipeline
+// @Tags         Pipeline
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        pl    body     models.Pipeline  true  "Pipeline info" true
+// @Success      200 {object} models.Pipeline
+// @Security bearerAuth
+//
+// @Router       /admin/pl [post]
+func CreatePipeline(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+	model := models.Pipeline{}
+
+	err := json.NewDecoder(r.Body).Decode(&model)
+	err2.DebugErr(err)
+	id, err := uuid.NewUUID()
+	model.Id = id
+
+	err2.DebugErr(err)
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, err.Error(), 400)
+		return
 	}
 
 	server.MetaDb.GetConnection().Create(&model)

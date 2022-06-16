@@ -145,6 +145,33 @@ definitions:
         description: Data source endpoint title
         type: string
     type: object
+  models.Pipeline:
+    properties:
+      id:
+        description: |-
+          The pipeline UUID
+          example: 6204037c-30e6-418b-8aaa-dd8219860b4b
+        type: string
+      input:
+        description: Input type
+        type: string
+      input_id:
+        description: |-
+          The pipeline input UUID
+          example: 6204037c-30e6-418b-8saa-dd8219860b4b
+        type: string
+      output:
+        description: Output type
+        type: string
+      output_id:
+        description: |-
+          The pipeline output UUID
+          example: 6204037c-30e6-413b-8saa-dd8219860b4b
+        type: string
+      title:
+        description: Mnemonic name
+        type: string
+    type: object
   models.Project:
     properties:
       id:
@@ -908,6 +935,124 @@ paths:
       summary: List
       tags:
       - Entity manager
+      - Admin
+  /admin/pl:
+    get:
+      consumes:
+      - application/json
+      description: List pipelines
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Pipeline'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List pipelines
+      tags:
+      - Pipeline
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create pipeline
+      parameters:
+      - description: Pipeline info
+        in: body
+        name: pl
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pipeline'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pipeline'
+      security:
+      - bearerAuth: []
+      summary: Create pipeline
+      tags:
+      - Pipeline
+      - Admin
+  /admin/pl/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete pipeline
+      parameters:
+      - description: Pipeline id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - bearerAuth: []
+      summary: Delete pipeline
+      tags:
+      - Pipeline
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Pipeline detail info
+      parameters:
+      - description: Pipeline id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pipeline'
+      security:
+      - bearerAuth: []
+      summary: Pipeline info
+      tags:
+      - Pipeline
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update pipeline
+      parameters:
+      - description: Pipeline info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pipeline'
+      - description: Pipeline id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Pipeline'
+      security:
+      - bearerAuth: []
+      summary: Update pipeline
+      tags:
+      - Pipeline
       - Admin
   /admin/push:
     get:
