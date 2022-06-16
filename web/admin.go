@@ -66,7 +66,7 @@ func formatQuery(r *http.Request, params []string) map[string]interface{} {
 // ListTopics godoc
 // @Summary      List topics
 // @Description  List topics
-// @Tags         Topic
+// @Tags         TopicOutput
 // @Accept       json
 // @Produce      json
 // @Security bearerAuth
@@ -391,13 +391,13 @@ func CfLog(w http.ResponseWriter, r *http.Request) {
 }
 
 // TopicItem godoc
-// @Summary      Topic
+// @Summary      TopicOutput
 // @Description  topic detail info
 // @Tags         Entity manager
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        id path    string  true  "Topic id" id
+// @Param        id path    string  true  "TopicOutput id" id
 // @Security bearerAuth
 // @Success      200  {object}   models.Project
 //
@@ -407,13 +407,13 @@ func TopicItem(w http.ResponseWriter, r *http.Request) {
 }
 
 // TopicData godoc
-// @Summary      Topic data
+// @Summary      TopicOutput data
 // @Description  topic data
 // @Tags         Entity manager
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        topic path    string  true  "Topic name"
+// @Param        topic path    string  true  "TopicOutput name"
 // @Security bearerAuth
 // @Success      200  {array} object
 //
@@ -889,7 +889,7 @@ func UpdateCron(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        id    path     string  true  "Topic id" string
+// @Param        id    path     string  true  "TopicOutput id" string
 // @Success      204
 //
 // @Router       /admin/topics/{id} [delete]

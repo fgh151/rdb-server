@@ -89,15 +89,19 @@ func PushHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 		requestPayload := getPayload(r)
-		_, err := drivers.GetDbInstance().Insert(os.Getenv("DB_NAME"), topic, requestPayload)
-
+		err := SaveTopicMessage(os.Getenv("DB_NAME"), topic, requestPayload)
 		var i interface{}
 		sendResponse(w, 202, i, err)
-
-		if err == nil {
-			events.GetInstance().RegisterNewMessage(topic, requestPayload)
-		}
 	}
+}
+
+func SaveTopicMessage(db string, topic string, payload interface{}) error {
+	_, err := drivers.GetDbInstance().Insert(db, topic, payload)
+	if err == nil {
+		events.GetInstance().RegisterNewMessage(topic, payload)
+	}
+
+	return err
 }
 
 var upgrader = websocket.Upgrader{

@@ -97,7 +97,6 @@ func main() {
 		}()
 	}
 
-	log.Debug("Start cron")
 	models.InitCron()
 
 	log.Debug("Init web server")

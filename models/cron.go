@@ -73,6 +73,7 @@ func (j CronJob) Schedule(cron *cron.Cron) {
 }
 
 func InitCron() {
+	log.Debug("Start cron")
 	c := server.Cron.GetScheduler()
 	c.Start()
 	defer func() {

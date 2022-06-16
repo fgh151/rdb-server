@@ -2,10 +2,24 @@ package models
 
 import (
 	"db-server/server"
+	"db-server/web"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"os"
 	"time"
+)
+
+type PipelineOutputType string
+
+const (
+	TopicOutput PipelineOutputType = "topic"
+)
+
+type PipelineInputType string
+
+const (
+	FunctionInput PipelineInputType = "func"
 )
 
 type Pipeline struct {
@@ -15,18 +29,22 @@ type Pipeline struct {
 	// Mnemonic name
 	Title string `json:"title"`
 	// Input type
-	Input string `json:"input"`
+	Input PipelineInputType `json:"input"`
 	// The pipeline input UUID
 	// example: 6204037c-30e6-418b-8saa-dd8219860b4b
 	InputId uuid.UUID `json:"input_id"`
 	// Output type
-	Output string `json:"output"`
+	Output PipelineOutputType `json:"output"`
 	// The pipeline output UUID
 	// example: 6204037c-30e6-413b-8saa-dd8219860b4b
 	OutputId  uuid.UUID      `json:"output_id"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+type PipelineProcess interface {
+	PipelineProcess(data interface{})
 }
 
 func (p Pipeline) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
@@ -60,4 +78,18 @@ func (p Pipeline) Delete(id string) {
 
 func (p Pipeline) Total() *int64 {
 	return TotalRecords(&Pipeline{})
+}
+
+func RunPipeline(inputName string, inputID uuid.UUID, data interface{}) {
+	var source Pipeline
+	conn := server.MetaDb.GetConnection()
+	tx := conn.First(&source, "input = ? AND input_id = ?", inputName, inputID.String())
+	if tx.RowsAffected > 0 {
+		switch source.Output {
+		case TopicOutput:
+			t := Project{}.GetById(source.OutputId.String()).(Project)
+			_ = web.SaveTopicMessage(os.Getenv("DB_NAME"), t.Topic, data)
+		}
+	}
+	return
 }

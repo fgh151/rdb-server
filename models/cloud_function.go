@@ -207,6 +207,8 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 	result, err := makeResultFromStream(out)
 	p.checkErr(runId, err)
 
+	RunPipeline("func", p.Id, result)
+
 	log.Debug("Cf run result " + runId.String() + " " + result)
 
 	p.log(runId, result)
