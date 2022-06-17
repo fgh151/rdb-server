@@ -765,17 +765,18 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 
 	var projectId, _ = uuid.Parse(r.FormValue("project_id"))
 
+	uri, err := models.GetContainerUri(r.FormValue("container"))
 	file, _, err := r.FormFile("dockerarc")
 	if err == nil {
-		uri, err := models.GetContainerUri(r.FormValue("container"))
 		err2.DebugErr(err)
 
 		go func() {
-			err := models.BuildImage(file, uri)
+			err := server.BuildDockerImage(file, []string{uri.Vendor + "/" + uri.Image})
 			err2.DebugErr(err)
 		}()
 	} else {
 		log.Debug(err)
+		server.PullDockerImage(uri.Vendor + "/" + uri.Image)
 	}
 
 	server.MetaDb.GetConnection().Table("cloud_functions").Where("id = ?", vars["id"]).Updates(
@@ -1135,7 +1136,7 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 		err2.DebugErr(err)
 
 		go func() {
-			err := models.BuildImage(file, uri)
+			err := server.BuildDockerImage(file, []string{uri.Vendor + "/" + uri.Image})
 			err2.DebugErr(err)
 		}()
 	}

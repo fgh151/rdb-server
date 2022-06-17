@@ -5,10 +5,8 @@ import (
 	err2 "db-server/err"
 	"db-server/server"
 	"errors"
-	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -34,10 +32,11 @@ type CloudFunction struct {
 	// example: echo test
 	Params string `json:"params"`
 	// Container env variables
-	Env       string         `json:"env"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Env         string         `json:"env"`
+	ContainerId string         `json:"-"`
+	CreatedAt   time.Time      `json:"-"`
+	UpdatedAt   time.Time      `json:"-"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
 	// Linked project
 	Project Project
 	// Function run count
@@ -163,45 +162,43 @@ func prepareDockerParams(raw string) []string {
 
 func (p CloudFunction) Run(runId uuid.UUID) {
 
-	uri, err := GetContainerUri(p.Container)
+	if p.ContainerId == "" {
+		uri, err := GetContainerUri(p.Container)
+		err2.WarnErr(err)
 
-	err2.WarnErr(err)
+		if err != nil {
+			return
+		}
+
+		cid, err := server.CreateDockerContainer(uri.Image, prepareDockerParams(p.Params), strings.Split(p.Env, "\n"))
+		err2.WarnErr(err)
+
+		if err != nil {
+			return
+		}
+
+		p.ContainerId = cid
+
+		server.MetaDb.GetConnection().Model(CloudFunction{}).Where("id = ?", p.Id).Update("container_id", cid)
+	}
 
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	p.checkErr(runId, err)
+	cli, err := server.GetDockerCli()
 
-	path := uri.Host + "/" + uri.Vendor + "/" + uri.Image
-
-	// Делаем docker pull
-	reader, err := cli.ImagePull(ctx, path, types.ImagePullOptions{})
-	p.checkErr(runId, err)
-
-	buf := new(strings.Builder)
-	_, err = io.Copy(buf, reader)
-	log.Debug(buf.String())
-
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Env:   strings.Split(p.Env, "\n"),
-		Image: uri.Image,
-		Cmd:   prepareDockerParams(p.Params),
-	}, nil, nil, nil, "")
-	p.checkErr(runId, err)
-
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err := cli.ContainerStart(ctx, p.ContainerId, types.ContainerStartOptions{}); err != nil {
 		err2.DebugErr(err)
 		p.log(runId, "error "+err.Error())
 		return
 	}
 
-	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+	statusCh, errCh := cli.ContainerWait(ctx, p.ContainerId, container.WaitConditionNotRunning)
 	select {
 	case err := <-errCh:
 		p.checkErr(runId, err)
 	case <-statusCh:
 	}
 
-	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: log.GetLevel() >= log.InfoLevel})
+	out, err := cli.ContainerLogs(ctx, p.ContainerId, types.ContainerLogsOptions{ShowStdout: log.GetLevel() >= log.InfoLevel})
 	p.checkErr(runId, err)
 
 	result, err := makeResultFromStream(out)
@@ -212,44 +209,6 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 	log.Debug("Cf run result " + runId.String() + " " + result)
 
 	p.log(runId, result)
-}
-
-func BuildImage(tar io.Reader, uri ContainerUri) error {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	err2.DebugErr(err)
-
-	ctx := context.Background()
-
-	//tar, err := archive.TarWithOptions("node-hello/", &archive.TarOptions{})
-	opts := types.ImageBuildOptions{
-		Dockerfile: "Dockerfile",
-		Tags:       []string{uri.Vendor + "/" + uri.Image},
-		Remove:     true,
-	}
-
-	res, err := cli.ImageBuild(ctx, tar, opts)
-
-	defer func() {
-		err := res.Body.Close()
-		err2.DebugErr(err)
-	}()
-
-	buf := new(strings.Builder)
-	_, err = io.Copy(buf, res.Body)
-
-	if err != nil {
-		log.Debug(err)
-		return err
-	}
-
-	// check errors
-	fmt.Println(buf.String())
-
-	if buf.String() != "" {
-		return errors.New(buf.String())
-	}
-
-	return nil
 }
 
 func makeResultFromStream(stream io.Reader) (string, error) {
