@@ -1457,7 +1457,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Topic"
+                    "TopicOutput"
                 ],
                 "summary": "List topics",
                 "responses": {
@@ -1529,11 +1529,11 @@ const docTemplate = `{
                     "Entity manager",
                     "Admin"
                 ],
-                "summary": "Topic",
+                "summary": "TopicOutput",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Topic id",
+                        "description": "TopicOutput id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1609,7 +1609,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Topic id",
+                        "description": "TopicOutput id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1640,11 +1640,11 @@ const docTemplate = `{
                     "Entity manager",
                     "Admin"
                 ],
-                "summary": "Topic data",
+                "summary": "TopicOutput data",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Topic name",
+                        "description": "TopicOutput name",
                         "name": "topic",
                         "in": "path",
                         "required": true

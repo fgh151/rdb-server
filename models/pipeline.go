@@ -2,7 +2,6 @@ package models
 
 import (
 	"db-server/server"
-	"db-server/web"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -88,7 +87,7 @@ func RunPipeline(inputName string, inputID uuid.UUID, data interface{}) {
 		switch source.Output {
 		case TopicOutput:
 			t := Project{}.GetById(source.OutputId.String()).(Project)
-			_ = web.SaveTopicMessage(os.Getenv("DB_NAME"), t.Topic, data)
+			_ = server.SaveTopicMessage(os.Getenv("DB_NAME"), t.Topic, data)
 		}
 	}
 	return

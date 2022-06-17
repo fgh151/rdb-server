@@ -1190,7 +1190,7 @@ paths:
       - bearerAuth: []
       summary: List topics
       tags:
-      - Topic
+      - TopicOutput
     post:
       consumes:
       - application/json
@@ -1221,7 +1221,7 @@ paths:
       - application/json
       description: Delete topic
       parameters:
-      - description: Topic id
+      - description: TopicOutput id
         in: path
         name: id
         required: true
@@ -1240,7 +1240,7 @@ paths:
       - application/json
       description: topic detail info
       parameters:
-      - description: Topic id
+      - description: TopicOutput id
         in: path
         name: id
         required: true
@@ -1254,7 +1254,7 @@ paths:
             $ref: '#/definitions/models.Project'
       security:
       - bearerAuth: []
-      summary: Topic
+      summary: TopicOutput
       tags:
       - Entity manager
       - Admin
@@ -1293,7 +1293,7 @@ paths:
       - application/json
       description: topic data
       parameters:
-      - description: Topic name
+      - description: TopicOutput name
         in: path
         name: topic
         required: true
@@ -1309,7 +1309,7 @@ paths:
             type: array
       security:
       - bearerAuth: []
-      summary: Topic data
+      summary: TopicOutput data
       tags:
       - Entity manager
       - Admin

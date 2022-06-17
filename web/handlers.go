@@ -5,6 +5,7 @@ import (
 	err2 "db-server/err"
 	"db-server/events"
 	"db-server/models"
+	"db-server/server"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -89,19 +90,10 @@ func PushHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 		requestPayload := getPayload(r)
-		err := SaveTopicMessage(os.Getenv("DB_NAME"), topic, requestPayload)
+		err := server.SaveTopicMessage(os.Getenv("DB_NAME"), topic, requestPayload)
 		var i interface{}
 		sendResponse(w, 202, i, err)
 	}
-}
-
-func SaveTopicMessage(db string, topic string, payload interface{}) error {
-	_, err := drivers.GetDbInstance().Insert(db, topic, payload)
-	if err == nil {
-		events.GetInstance().RegisterNewMessage(topic, payload)
-	}
-
-	return err
 }
 
 var upgrader = websocket.Upgrader{
