@@ -788,8 +788,11 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 
+	resp, _ := json.Marshal(models.CloudFunction{}.GetById(vars["id"]))
 	w.WriteHeader(200)
+	_, err = w.Write(resp)
 	err2.DebugErr(err)
+
 }
 
 // UpdatePipeline
