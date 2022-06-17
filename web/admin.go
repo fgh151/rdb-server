@@ -779,7 +779,13 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 	}
 
 	server.MetaDb.GetConnection().Table("cloud_functions").Where("id = ?", vars["id"]).Updates(
-		map[string]interface{}{"title": r.FormValue("title"), "project_id": projectId, "container": r.FormValue("container"), "params": r.FormValue("params")},
+		map[string]interface{}{
+			"title":      r.FormValue("title"),
+			"project_id": projectId,
+			"container":  r.FormValue("container"),
+			"params":     r.FormValue("params"),
+			"env":        r.FormValue("env"),
+		},
 	)
 
 	w.WriteHeader(200)
