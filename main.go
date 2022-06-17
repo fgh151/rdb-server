@@ -4,7 +4,6 @@ import (
 	"context"
 	"db-server/drivers"
 	err2 "db-server/err"
-	"db-server/migrations"
 	"db-server/models"
 	"db-server/server"
 	"db-server/web"
@@ -36,8 +35,6 @@ import (
 func main() {
 
 	verboseMode := flag.Bool("v", false, "Verbose mode")
-	migrateFlag := flag.Bool("m", false, "Run migrations")
-	demoFlag := flag.Bool("demo", false, "Fill demo data")
 	docsFlag := flag.Bool("docs", true, "Disable public docs")
 	sentryFlag := flag.Bool("sentry", true, "Disable sentry logs")
 	mongoFlag := flag.Bool("mongo", true, "Disable mongo initialization")
@@ -69,19 +66,7 @@ func main() {
 	}
 
 	log.Debug("Init meta db connection")
-	db := server.MetaDb.GetConnection()
-
-	if *migrateFlag {
-		log.Debug("Try to migrate db")
-		migrations.Migrate(db)
-		os.Exit(0)
-	}
-
-	if *demoFlag {
-		log.Debug("Fill db demo data")
-		models.CreateDemo()
-		os.Exit(0)
-	}
+	server.MetaDb.GetConnection()
 
 	if *mongoFlag {
 		log.Debug("Init mongo db connection")

@@ -15,7 +15,6 @@ Create .env file by .evn.example
 Run flags:
 
  * ```-v``` Verbose mode
- * ```-m``` Run migrations
  * ```-demo``` Fill database demo data
  * ```-docs``` Disable swagger public docs
  * ```-sentry``` Disable sentry
@@ -71,3 +70,12 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 ```
+
+## CLI
+
+### Commands
+
+ * ```backup``` Backup data base
+ * ```restore``` Restore database
+ * ```migrate``` Migrate database
+ * ```demo``` Fill database demo data
