@@ -62,7 +62,7 @@ func ApiAuth(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        provider    path     string  true  "Provider name"
-// @Success      200  {string}
+// @Success      200  {string} string
 //
 // @Router       /api/user/oauth/{provider}/link [get]
 func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {

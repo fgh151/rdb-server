@@ -2156,6 +2156,79 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/oauth/{provider}/link": {
+            "get": {
+                "description": "Get link for oauth",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OAuth",
+                    "Public Api"
+                ],
+                "summary": "OAuth link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Provider name",
+                        "name": "provider",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/oauth/{provider}/{code}": {
+            "get": {
+                "description": "Get user by oauth code",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OAuth",
+                    "Public Api"
+                ],
+                "summary": "OAuth user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Provider name",
+                        "name": "provider",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/register": {
             "post": {
                 "description": "Register via api",

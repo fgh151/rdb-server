@@ -2,19 +2,15 @@ package oauth
 
 import (
 	"context"
-	err2 "db-server/err"
 	"db-server/models"
 	"db-server/server"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/vk"
 	"gorm.io/datatypes"
 	"io"
-	"strconv"
 )
 
 type UserOauth struct {
@@ -47,9 +43,14 @@ func (p UserOauth) GetByExternalId(id string) (UserOauth, error) {
 }
 
 type ClientOauth struct {
-	Provider   string
-	Config     *oauth2.Config
-	GetUserApi string
+	Provider     string
+	Config       *oauth2.Config
+	GetUserApi   string
+	ExternalUser ExternalUser
+}
+
+type ExternalUser interface {
+	GetOauthUser(resp io.ReadCloser) (UserOauth, error)
 }
 
 func GetClient(provider string) (ClientOauth, error) {
@@ -57,8 +58,9 @@ func GetClient(provider string) (ClientOauth, error) {
 	switch provider {
 	case "github":
 		return ClientOauth{
-			Provider:   provider,
-			GetUserApi: "https://api.github.com/user",
+			Provider:     provider,
+			GetUserApi:   "https://api.github.com/user",
+			ExternalUser: GithubUser{},
 			Config: &oauth2.Config{
 				ClientID:     models.GetAppSettingsByName("oauth_gh_client_id"),
 				ClientSecret: models.GetAppSettingsByName("oauth_gh_client_secret"),
@@ -69,8 +71,9 @@ func GetClient(provider string) (ClientOauth, error) {
 		}, nil
 	case "vk":
 		return ClientOauth{
-			Provider:   provider,
-			GetUserApi: "https://api.vk.com/method/users.get.json",
+			Provider:     provider,
+			GetUserApi:   "https://api.vk.com/method/users.get.json",
+			ExternalUser: VkUser{},
 			Config: &oauth2.Config{
 				ClientID:     models.GetAppSettingsByName("oauth_vk_client_id"),
 				ClientSecret: models.GetAppSettingsByName("oauth_vk_client_secret"),
@@ -98,43 +101,5 @@ func (c ClientOauth) GetUserByCode(code string) (UserOauth, error) {
 
 	resp, err := cl.Get(c.GetUserApi)
 
-	return GetOauthUser(resp.Body)
-}
-
-func GetOauthUser(resp io.ReadCloser) (UserOauth, error) {
-
-	u := GithubUser{}
-	decoder := json.NewDecoder(resp)
-	err := decoder.Decode(&u)
-	err2.DebugErr(err)
-
-	bodyBytes, err := io.ReadAll(resp)
-	err2.DebugErr(err)
-
-	bodyString := string(bodyBytes)
-
-	fmt.Println(bodyString)
-
-	e, err := UserOauth{}.GetByExternalId(strconv.Itoa(u.Id))
-
-	if err == nil {
-		return e, nil
-	}
-
-	//u.Data = datatypes.JSON([]byte(bodyString))
-
-	localUser, err := models.User{}.GetByEmail(u.Email)
-	m, _ := json.Marshal(u)
-
-	id, _ := uuid.NewUUID()
-	ru := UserOauth{
-		Id:        id,
-		Data:      m,
-		UserId:    localUser.(models.User).Id,
-		ServiceId: strconv.Itoa(u.Id),
-	}
-
-	server.MetaDb.GetConnection().Create(ru)
-
-	return ru, err
+	return c.ExternalUser.GetOauthUser(resp.Body)
 }

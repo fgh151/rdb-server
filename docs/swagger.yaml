@@ -1630,6 +1630,55 @@ paths:
       tags:
       - User
       - Public Api
+  /api/user/oauth/{provider}/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by oauth code
+      parameters:
+      - description: Provider name
+        in: path
+        name: provider
+        required: true
+        type: string
+      - description: Code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: OAuth user
+      tags:
+      - OAuth
+      - Public Api
+  /api/user/oauth/{provider}/link:
+    get:
+      consumes:
+      - application/json
+      description: Get link for oauth
+      parameters:
+      - description: Provider name
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: OAuth link
+      tags:
+      - OAuth
+      - Public Api
   /api/user/register:
     post:
       consumes:

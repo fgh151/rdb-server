@@ -10,18 +10,15 @@ import (
 	"strconv"
 )
 
-type GithubUser struct {
-	Login     string `json:"login"`
-	Id        int    `json:"id"`
-	AvatarUrl string `json:"avatar_url"`
-	Name      string `json:"name"`
-	Email     string `json:"email"`
+type VkUser struct {
+	Login string `json:"login"`
+	Id    int    `json:"id"`
+	Email string `json:"email"`
 }
 
-func (u GithubUser) GetOauthUser(resp io.ReadCloser) (UserOauth, error) {
+func (u VkUser) GetOauthUser(resp io.ReadCloser) (UserOauth, error) {
 
 	data := make(map[string]interface{})
-
 	decoder := json.NewDecoder(resp)
 	err := decoder.Decode(&u)
 	err2.DebugErr(err)
@@ -33,6 +30,8 @@ func (u GithubUser) GetOauthUser(resp io.ReadCloser) (UserOauth, error) {
 	if err == nil {
 		return e, nil
 	}
+
+	//u.Data = datatypes.JSON([]byte(bodyString))
 
 	localUser, err := models.User{}.GetByEmail(u.Email)
 	m, _ := json.Marshal(data)
