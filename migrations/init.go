@@ -3,6 +3,7 @@ package migrations
 import (
 	err2 "db-server/err"
 	"db-server/models"
+	"db-server/oauth"
 	"gorm.io/gorm"
 )
 
@@ -20,6 +21,8 @@ func Migrate(db *gorm.DB) {
 		&models.PushLog{},
 		&models.CronJob{},
 		&models.Pipeline{},
+		&oauth.UserOauth{},
+		&models.AppSettings{},
 	)
 
 	err2.PanicErr(err)

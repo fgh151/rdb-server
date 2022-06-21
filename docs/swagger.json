@@ -2595,9 +2595,7 @@
         "models.Config": {
             "type": "object",
             "properties": {
-                "body": {
-                    "type": "string"
-                },
+                "body": {},
                 "id": {
                     "type": "string"
                 },
@@ -2764,9 +2762,7 @@
                 "id": {
                     "type": "string"
                 },
-                "payload": {
-                    "type": "string"
-                },
+                "payload": {},
                 "receivers": {
                     "type": "array",
                     "items": {

@@ -69,6 +69,20 @@ func (p User) GetById(id string) interface{} {
 	return user
 }
 
+func (p User) GetByEmail(email string) (interface{}, error) {
+	var user User
+
+	conn := server.MetaDb.GetConnection()
+
+	tx := conn.First(&user, "email = ?", email)
+
+	if tx.RowsAffected > 0 {
+		return user, nil
+	}
+
+	return user, errors.New("No user found")
+}
+
 func (p User) Delete(id string) {
 	conn := server.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)

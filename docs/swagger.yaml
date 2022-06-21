@@ -55,8 +55,7 @@ definitions:
     type: object
   models.Config:
     properties:
-      body:
-        type: string
+      body: {}
       id:
         type: string
       project:
@@ -189,8 +188,7 @@ definitions:
         type: string
       id:
         type: string
-      payload:
-        type: string
+      payload: {}
       receivers:
         items:
           $ref: '#/definitions/models.UserDevice'

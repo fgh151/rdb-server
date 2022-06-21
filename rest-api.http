@@ -127,3 +127,9 @@ Authorization: Bearer 123
 GET http://localhost:9090/admin/pl?_end=10&_order=ASC&_sort=id&_start=0
 Accept: */*
 Authorization: Bearer 123
+
+### OAuth link
+GET http://localhost:9090/api/user/oauth/github/link
+
+### OAuth user
+GET http://localhost:9090/api/user/oauth/github/af5b6435760a4b7ef71f

@@ -3,6 +3,7 @@ package models
 import (
 	"db-server/server"
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"time"
 )
@@ -11,7 +12,7 @@ type PushMessage struct {
 	Id        uuid.UUID      `gorm:"primarykey" json:"id"`
 	Title     string         `json:"title"`
 	Body      string         `json:"body"`
-	Payload   string         `json:"payload"`
+	Payload   datatypes.JSON `json:"payload"`
 	Topic     string         `json:"topic"`
 	Sent      bool           `json:"sent"`
 	SentAt    time.Time      `json:"sent_at"`

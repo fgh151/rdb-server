@@ -131,6 +131,9 @@ func InitServer(enableDocs *bool) {
 
 	admin.HandleFunc("/em/list/{topic}", AdminListHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
+	r.HandleFunc("/api/user/oauth/{provider}/link", ApiOAuthLink).Methods(http.MethodGet, http.MethodOptions)   // each request calls PushHandler
+	r.HandleFunc("/api/user/oauth/{provider}/{code}", ApiOAuthCode).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+
 	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)                             // each request calls PushHandler
 	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions)                     // each request calls PushHandler
 	r.HandleFunc("/api/device/register", PushDeviceRegister).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler

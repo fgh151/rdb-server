@@ -2604,9 +2604,7 @@ const docTemplate = `{
         "models.Config": {
             "type": "object",
             "properties": {
-                "body": {
-                    "type": "string"
-                },
+                "body": {},
                 "id": {
                     "type": "string"
                 },
@@ -2773,9 +2771,7 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "payload": {
-                    "type": "string"
-                },
+                "payload": {},
                 "receivers": {
                     "type": "array",
                     "items": {
