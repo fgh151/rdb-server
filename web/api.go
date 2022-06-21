@@ -107,7 +107,10 @@ func ApiOAuthCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rresp, _ := json.Marshal(u.GetUser())
+	user := u.GetUser()
+	user.UpdateLastLogin()
+
+	rresp, _ := json.Marshal(user)
 	w.WriteHeader(200)
 	_, err = w.Write(rresp)
 	err2.DebugErr(err)

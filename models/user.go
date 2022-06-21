@@ -92,6 +92,12 @@ func (p User) ValidatePassword(password string) bool {
 	return p.PasswordHash == security.HashPassword(password)
 }
 
+func (p User) UpdateLastLogin() {
+	now := time.Now()
+	p.LastLogin = &now
+	server.MetaDb.GetConnection().Save(&p)
+}
+
 // swagger:model
 type CreateUserForm struct {
 	// new User email
@@ -139,10 +145,7 @@ func (f LoginForm) login(condition *User) (User, error) {
 		return login, errors.New("invalid login or password")
 	}
 
-	now := time.Now()
-
-	login.LastLogin = &now
-	server.MetaDb.GetConnection().Save(&login)
+	login.UpdateLastLogin()
 
 	return login, nil
 }
