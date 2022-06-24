@@ -1646,6 +1646,11 @@ paths:
         name: code
         required: true
         type: string
+      - description: Auth key
+        in: header
+        name: db-key
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1666,6 +1671,11 @@ paths:
       - description: Provider name
         in: path
         name: provider
+        required: true
+        type: string
+      - description: Auth key
+        in: header
+        name: db-key
         required: true
         type: string
       produces:
@@ -1713,6 +1723,11 @@ paths:
       - description: Config id
         in: path
         name: id
+        required: true
+        type: string
+      - description: Auth key
+        in: header
+        name: db-key
         required: true
         type: string
       produces:

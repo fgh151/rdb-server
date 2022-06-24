@@ -2,6 +2,7 @@ package models
 
 import (
 	"db-server/server"
+	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
@@ -44,6 +45,20 @@ func (p Project) GetById(id string) interface{} {
 	conn.First(&project, "id = ?", id)
 
 	return project
+}
+
+func (p Project) GetByKey(key string) (interface{}, error) {
+	var project Project
+
+	conn := server.MetaDb.GetConnection()
+
+	tx := conn.First(&project, "key = ?", key)
+
+	if tx.RowsAffected < 1 {
+		return project, errors.New("No project found")
+	}
+
+	return project, nil
 }
 
 func (p Project) GetByTopic(topic string) interface{} {

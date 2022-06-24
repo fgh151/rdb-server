@@ -54,7 +54,7 @@ type ExternalUser interface {
 	GetOauthUser(resp io.ReadCloser) (UserOauth, error)
 }
 
-func GetClient(provider string) (ClientOauth, error) {
+func GetClient(provider string, projectId uuid.UUID) (ClientOauth, error) {
 
 	switch provider {
 	case "github":
@@ -63,9 +63,9 @@ func GetClient(provider string) (ClientOauth, error) {
 			GetUserApi:   "https://api.github.com/user",
 			ExternalUser: GithubUser{},
 			Config: &oauth2.Config{
-				ClientID:     models.GetAppSettingsByName("oauth_gh_client_id"),
-				ClientSecret: models.GetAppSettingsByName("oauth_gh_client_secret"),
-				RedirectURL:  models.GetAppSettingsByName("oauth_gh_client_redirect"),
+				ClientID:     models.GetAppSettingsByName(projectId, "oauth_gh_client_id"),
+				ClientSecret: models.GetAppSettingsByName(projectId, "oauth_gh_client_secret"),
+				RedirectURL:  models.GetAppSettingsByName(projectId, "oauth_gh_client_redirect"),
 				Scopes:       []string{"user"},
 				Endpoint:     github.Endpoint,
 			},
@@ -76,9 +76,9 @@ func GetClient(provider string) (ClientOauth, error) {
 			GetUserApi:   "https://api.vk.com/method/users.get.json",
 			ExternalUser: VkUser{},
 			Config: &oauth2.Config{
-				ClientID:     models.GetAppSettingsByName("oauth_vk_client_id"),
-				ClientSecret: models.GetAppSettingsByName("oauth_vk_client_secret"),
-				RedirectURL:  models.GetAppSettingsByName("oauth_vk_client_redirect"),
+				ClientID:     models.GetAppSettingsByName(projectId, "oauth_vk_client_id"),
+				ClientSecret: models.GetAppSettingsByName(projectId, "oauth_vk_client_secret"),
+				RedirectURL:  models.GetAppSettingsByName(projectId, "oauth_vk_client_redirect"),
 				Scopes:       []string{"email"},
 				Endpoint:     vk.Endpoint,
 			},
@@ -89,9 +89,9 @@ func GetClient(provider string) (ClientOauth, error) {
 			GetUserApi:   "https://login.yandex.ru/info?format=json",
 			ExternalUser: YandexUser{},
 			Config: &oauth2.Config{
-				ClientID:     models.GetAppSettingsByName("oauth_yandex_client_id"),
-				ClientSecret: models.GetAppSettingsByName("oauth_yandex_client_secret"),
-				RedirectURL:  models.GetAppSettingsByName("oauth_yandex_client_redirect"),
+				ClientID:     models.GetAppSettingsByName(projectId, "oauth_yandex_client_id"),
+				ClientSecret: models.GetAppSettingsByName(projectId, "oauth_yandex_client_secret"),
+				RedirectURL:  models.GetAppSettingsByName(projectId, "oauth_yandex_client_redirect"),
 				Scopes:       []string{"email", "profile"},
 				Endpoint:     yandex.Endpoint,
 			},

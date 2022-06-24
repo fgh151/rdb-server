@@ -62,6 +62,7 @@ func ApiAuth(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        provider    path     string  true  "Provider name"
+// @Param        db-key    header     string  true  "Auth key" gg
 // @Success      200  {string} string
 //
 // @Router       /api/user/oauth/{provider}/link [get]
@@ -70,7 +71,15 @@ func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	provider := vars["provider"]
 
-	client, _ := oauth.GetClient(provider)
+	rKey := r.Header.Get("db-key")
+	p, err := models.Project{}.GetByKey(rKey)
+
+	if err != nil {
+		payload := map[string]string{"code": "not acceptable", "message": err.Error()}
+		sendResponse(w, 500, payload, nil)
+	}
+
+	client, _ := oauth.GetClient(provider, p.(models.Project).Id)
 
 	url := client.Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
 
@@ -87,6 +96,7 @@ func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        provider    path     string  true  "Provider name"
 // @Param        code    path     string  true  "Code"
+// @Param        db-key    header     string  true  "Auth key" gg
 // @Success      200  {object} models.User
 //
 // @Router       /api/user/oauth/{provider}/{code} [get]
@@ -96,7 +106,15 @@ func ApiOAuthCode(w http.ResponseWriter, r *http.Request) {
 	provider := vars["provider"]
 	code := vars["code"]
 
-	client, _ := oauth.GetClient(provider)
+	rKey := r.Header.Get("db-key")
+	p, err := models.Project{}.GetByKey(rKey)
+
+	if err != nil {
+		payload := map[string]string{"code": "not acceptable", "message": err.Error()}
+		sendResponse(w, 500, payload, nil)
+	}
+
+	client, _ := oauth.GetClient(provider, p.(models.Project).Id)
 
 	u, err := client.GetUserByCode(code)
 
@@ -183,6 +201,7 @@ func ApiMe(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        id    path     string  true  "Config id" id
+// @Param        db-key    header     string  true  "Auth key" gg
 // @Success      200  {array}   interface{}
 //
 // @Router       /config/{id} [get]

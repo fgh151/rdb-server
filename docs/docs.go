@@ -2177,6 +2177,13 @@ const docTemplate = `{
                         "name": "provider",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Auth key",
+                        "name": "db-key",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2216,6 +2223,13 @@ const docTemplate = `{
                         "description": "Code",
                         "name": "code",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Auth key",
+                        "name": "db-key",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -2287,6 +2301,13 @@ const docTemplate = `{
                         "description": "Config id",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Auth key",
+                        "name": "db-key",
+                        "in": "header",
                         "required": true
                     }
                 ],
