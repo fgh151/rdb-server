@@ -9,6 +9,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 	"golang.org/x/oauth2/vk"
+	"golang.org/x/oauth2/yandex"
 	"gorm.io/datatypes"
 	"io"
 )
@@ -80,6 +81,19 @@ func GetClient(provider string) (ClientOauth, error) {
 				RedirectURL:  models.GetAppSettingsByName("oauth_vk_client_redirect"),
 				Scopes:       []string{"email"},
 				Endpoint:     vk.Endpoint,
+			},
+		}, nil
+	case "yandex":
+		return ClientOauth{
+			Provider:     provider,
+			GetUserApi:   "https://login.yandex.ru/info?format=json",
+			ExternalUser: VkUser{},
+			Config: &oauth2.Config{
+				ClientID:     models.GetAppSettingsByName("oauth_yandex_client_id"),
+				ClientSecret: models.GetAppSettingsByName("oauth_yandex_client_secret"),
+				RedirectURL:  models.GetAppSettingsByName("oauth_yandex_client_redirect"),
+				Scopes:       []string{"email", "profile"},
+				Endpoint:     yandex.Endpoint,
 			},
 		}, nil
 
