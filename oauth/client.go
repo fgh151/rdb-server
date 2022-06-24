@@ -87,7 +87,7 @@ func GetClient(provider string) (ClientOauth, error) {
 		return ClientOauth{
 			Provider:     provider,
 			GetUserApi:   "https://login.yandex.ru/info?format=json",
-			ExternalUser: VkUser{},
+			ExternalUser: YandexUser{},
 			Config: &oauth2.Config{
 				ClientID:     models.GetAppSettingsByName("oauth_yandex_client_id"),
 				ClientSecret: models.GetAppSettingsByName("oauth_yandex_client_secret"),
