@@ -129,6 +129,8 @@ func InitServer(enableDocs *bool) {
 	admin.HandleFunc("/cron/{id}", DeleteCron).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/cron/{id}", UpdateCron).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
+	admin.HandleFunc("/settings/{projectId}/oauth", SettingsOauth).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+
 	admin.HandleFunc("/em/list/{topic}", AdminListHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
 	r.HandleFunc("/api/user/oauth/{provider}/link", ApiOAuthLink).Methods(http.MethodGet, http.MethodOptions)   // each request calls PushHandler

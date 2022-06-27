@@ -231,6 +231,35 @@ func listItems(model models.Model, filter []string, r *http.Request, w http.Resp
 	err2.DebugErr(err)
 }
 
+// SettingsOauth godoc
+// @Summary      List OAuth settings
+// @Description  List OAuth settings
+// @Tags         OAuth
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   models.AppSettings
+//
+// @Router       /settings/{projectId}/oauth [get]
+func SettingsOauth(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	pid := params["projectId"]
+
+	var result []map[string]interface{}
+	tx := server.MetaDb.GetConnection().Table("app_settings").Where("name like ? AND project_id = ?", "oauth_%", pid).Select("name", "value").Find(&result)
+
+	log.Debug(tx.RowsAffected)
+
+	resp, err := json.Marshal(result)
+	err2.DebugErr(err)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
+}
+
 // UserItem godoc
 // @Summary      User info
 // @Description  User detail info

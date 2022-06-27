@@ -8,12 +8,20 @@ import (
 )
 
 type AppSettings struct {
-	Id        uint   `gorm:"primaryKey"`
-	Name      string `gorm:"index"`
-	Value     string
+	// The UUID
+	// example: 6204037c-30e6-408b-8aaa-dd8219860e4b
+	Id uuid.UUID `gorm:"primarykey" json:"id"`
+	// Mnemonic name
+	// example: oauth_gh_client_secret
+	Name string `gorm:"index"`
+	// Settings value
+	// example: 123
+	Value string
+	// The project UUID
+	// example: 6204037c-30e6-438b-8aaa-dd8219860e4b
 	ProjectId uuid.UUID `json:"project_id"`
-	Project   Project   `json:"project"`
-
+	// The project
+	Project   Project        `json:"project"`
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`

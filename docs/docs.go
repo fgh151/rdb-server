@@ -2634,9 +2634,66 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/settings/{projectId}/oauth": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "List OAuth settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OAuth",
+                    "Admin"
+                ],
+                "summary": "List OAuth settings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AppSettings"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "models.AppSettings": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "The UUID\nexample: 6204037c-30e6-408b-8aaa-dd8219860e4b",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Mnemonic name\nexample: oauth_gh_client_secret",
+                    "type": "string"
+                },
+                "project": {
+                    "description": "The project",
+                    "$ref": "#/definitions/models.Project"
+                },
+                "project_id": {
+                    "description": "The project UUID\nexample: 6204037c-30e6-438b-8aaa-dd8219860e4b",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Settings value\nexample: 123",
+                    "type": "string"
+                }
+            }
+        },
         "models.CloudFunction": {
             "type": "object",
             "properties": {

@@ -79,7 +79,7 @@ func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {
 		sendResponse(w, 500, payload, nil)
 	}
 
-	client, _ := oauth.GetClient(provider, p.(models.Project).Id)
+	client, _ := oauth.GetClient(provider, p.Id)
 
 	url := client.Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
 
@@ -114,7 +114,7 @@ func ApiOAuthCode(w http.ResponseWriter, r *http.Request) {
 		sendResponse(w, 500, payload, nil)
 	}
 
-	client, _ := oauth.GetClient(provider, p.(models.Project).Id)
+	client, _ := oauth.GetClient(provider, p.Id)
 
 	u, err := client.GetUserByCode(code)
 
