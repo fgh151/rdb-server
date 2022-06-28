@@ -1,4 +1,4 @@
-package security
+package utils
 
 import (
 	"crypto/md5"
@@ -19,4 +19,8 @@ func GenerateRandomString(n int) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(b)
+}
+
+func ValidateKey(k1 string, k2 string) bool {
+	return k1 == k2
 }

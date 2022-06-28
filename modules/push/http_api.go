@@ -2,6 +2,7 @@ package push
 
 import (
 	err2 "db-server/err"
+	"db-server/events"
 	"db-server/modules/push/device"
 	"db-server/modules/push/models"
 	"db-server/modules/user"
@@ -10,6 +11,7 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"time"
@@ -26,6 +28,11 @@ func AddAdminRoutes(admin *mux.Router) {
 
 func AddApiRoutes(api *mux.Router) {
 	api.HandleFunc("/push/{id}/run", PushRun).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+}
+
+func AddPublicApiRoutes(r *mux.Router) {
+	r.HandleFunc("/api/push/subscribe/{deviceId}", SubscribePushHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+
 }
 
 // ListPush godoc
@@ -205,4 +212,54 @@ func createPushLog(message models.PushMessage, device user.UserDevice, err error
 	}
 
 	db.MetaDb.GetConnection().Create(&l)
+}
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+} // use default options
+
+// SubscribePushHandler godoc
+// @Summary      Subscribe
+// @Description  Socket subscribe to push notifications
+// @Tags         Push messages
+// @Accept       json
+// @Produce      json
+// @Param        deviceId path    string  true  "Device id to subscribe" uuid
+// @Success      200  {array}   interface{}
+//
+// @Router       /api/push/subscribe/{deviceId} [get]
+func SubscribePushHandler(w http.ResponseWriter, r *http.Request) {
+
+	log.Debug(r.Method, r.RequestURI)
+
+	vars := mux.Vars(r)
+	deviceId := vars["deviceId"]
+	c, err := upgrader.Upgrade(w, r, nil)
+
+	events.GetPush().Subscribe(deviceId, c)
+	defer events.GetPush().Unsubscribe(deviceId)
+
+	err = c.WriteMessage(websocket.TextMessage, []byte("test own message"))
+
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer func() { _ = c.Close() }()
+	for {
+		mt, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+		log.Printf("recv: %s", message)
+		err = c.WriteMessage(mt, message)
+		if err != nil {
+			log.Println("write:", err)
+			break
+		}
+	}
+
 }

@@ -1177,7 +1177,13 @@ paths:
       description: List topics
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/project.Project'
+            type: array
       security:
       - bearerAuth: []
       summary: List topics
@@ -1187,9 +1193,20 @@ paths:
       consumes:
       - application/json
       description: Create topic
+      parameters:
+      - description: topic info
+        in: body
+        name: topic
+        required: true
+        schema:
+          $ref: '#/definitions/project.Project'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Project'
       security:
       - bearerAuth: []
       summary: Create topic
@@ -1228,7 +1245,11 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Project'
       security:
       - bearerAuth: []
       summary: TopicOutput
@@ -1239,9 +1260,25 @@ paths:
       consumes:
       - application/json
       description: Update topic
+      parameters:
+      - description: Project info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/project.Project'
+      - description: Project id
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Project'
       security:
       - bearerAuth: []
       summary: Update topic

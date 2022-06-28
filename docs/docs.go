@@ -1460,7 +1460,17 @@ const docTemplate = `{
                     "TopicOutput"
                 ],
                 "summary": "List topics",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.Project"
+                            }
+                        }
+                    }
+                }
             },
             "post": {
                 "security": [
@@ -1480,7 +1490,25 @@ const docTemplate = `{
                     "Admin"
                 ],
                 "summary": "Create topic",
-                "responses": {}
+                "parameters": [
+                    {
+                        "description": "topic info",
+                        "name": "topic",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
             }
         },
         "/admin/topics/{id}": {
@@ -1511,7 +1539,14 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
             },
             "put": {
                 "security": [
@@ -1531,7 +1566,32 @@ const docTemplate = `{
                     "Admin"
                 ],
                 "summary": "Update topic",
-                "responses": {}
+                "parameters": [
+                    {
+                        "description": "Project info",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
             },
             "delete": {
                 "description": "Delete topic",

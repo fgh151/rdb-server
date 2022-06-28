@@ -1,4 +1,4 @@
-package web
+package em
 
 import (
 	"db-server/drivers"
@@ -6,8 +6,11 @@ import (
 	"db-server/events"
 	"db-server/modules/project"
 	"db-server/server"
+	"db-server/server/db"
 	"db-server/utils"
 	"encoding/json"
+	"fmt"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
@@ -19,18 +22,29 @@ import (
 	"strings"
 )
 
+func AddPublicApiRoutes(em *mux.Router) {
+	em.HandleFunc("/find/{topic}", FindHandler).Methods(http.MethodPost, http.MethodOptions)                // each request calls PushHandler
+	em.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet, http.MethodOptions)                 // each request calls PushHandler
+	em.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	em.HandleFunc("/{topic}", PushHandler).Methods(http.MethodPost, http.MethodOptions)                     // each request calls PushHandler
+	em.HandleFunc("/{topic}/{id}", UpdateHandler).Methods(http.MethodPatch, http.MethodOptions)             // each request calls PushHandler
+	em.HandleFunc("/{topic}/{id}", DeleteHandler).Methods(http.MethodDelete, http.MethodOptions)            // each request calls PushHandler
+}
+
+func AddAdminRoutes(admin *mux.Router) {
+	admin.HandleFunc("/topics", ListTopics).Methods(http.MethodGet, http.MethodOptions)             // each request calls PushHandler
+	admin.HandleFunc("/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/topics/{topic}/data", TopicData).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet, http.MethodOptions)         // each request calls PushHandler
+	admin.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/topics/{id}", UpdateTopic).Methods(http.MethodPut, http.MethodOptions)       // each request calls PushHandler
+
+	admin.HandleFunc("/em/list/{topic}", AdminListHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+}
+
 func GetTopic(r *http.Request) string {
 	vars := mux.Vars(r)
 	return vars["topic"]
-}
-
-func getPayload(r *http.Request) map[string]interface{} {
-	var requestPayload map[string]interface{}
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&requestPayload)
-	err2.PanicErr(err)
-
-	return requestPayload
 }
 
 func checkAccess(w http.ResponseWriter, r *http.Request) bool {
@@ -38,12 +52,12 @@ func checkAccess(w http.ResponseWriter, r *http.Request) bool {
 	p := project.Project{}.GetByTopic(topic).(project.Project)
 
 	if !validateOrigin(p, r.Header.Get("Origin")) {
-		Send403Error(w, "Cors error. Origin not allowed")
+		utils.Send403Error(w, "Cors error. Origin not allowed")
 		return false
 	}
 
-	if !validateKey(p.Key, r.Header.Get("db-key")) {
-		Send403Error(w, "db-key not Valid")
+	if !utils.ValidateKey(p.Key, r.Header.Get("db-key")) {
+		utils.Send403Error(w, "db-key not Valid")
 		return false
 	}
 
@@ -63,16 +77,6 @@ func validateOrigin(p project.Project, origin string) bool {
 	return false
 }
 
-func validateKey(k1 string, k2 string) bool {
-	return k1 == k2
-}
-
-func Send403Error(w http.ResponseWriter, message string) {
-	log.Debug("403 error")
-	payload := map[string]string{"code": "not acceptable", "message": message}
-	sendResponse(w, 403, payload, nil)
-}
-
 // PushHandler godoc
 // @Summary      Create
 // @Description  Create topic record
@@ -90,10 +94,10 @@ func PushHandler(w http.ResponseWriter, r *http.Request) {
 	topic := GetTopic(r)
 
 	if checkAccess(w, r) {
-		requestPayload := getPayload(r)
+		requestPayload := utils.GetPayload(r)
 		err := server.SaveTopicMessage(os.Getenv("DB_NAME"), topic, requestPayload)
 		var i interface{}
-		sendResponse(w, 202, i, err)
+		utils.SendResponse(w, 202, i, err)
 	}
 }
 
@@ -122,8 +126,8 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	rkey := vars["key"]
 
-	if !validateKey(project.Project{}.GetKey(topic), rkey) {
-		Send403Error(w, "db-key not Valid")
+	if !utils.ValidateKey(project.Project{}.GetKey(topic), rkey) {
+		utils.Send403Error(w, "db-key not Valid")
 	} else {
 		c, err := upgrader.Upgrade(w, r, nil)
 
@@ -153,50 +157,6 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// SubscribePushHandler godoc
-// @Summary      Subscribe
-// @Description  Socket subscribe to push notifications
-// @Tags         Push messages
-// @Accept       json
-// @Produce      json
-// @Param        deviceId path    string  true  "Device id to subscribe" uuid
-// @Success      200  {array}   interface{}
-//
-// @Router       /api/push/subscribe/{deviceId} [get]
-func SubscribePushHandler(w http.ResponseWriter, r *http.Request) {
-
-	log.Debug(r.Method, r.RequestURI)
-
-	vars := mux.Vars(r)
-	deviceId := vars["deviceId"]
-	c, err := upgrader.Upgrade(w, r, nil)
-
-	events.GetPush().Subscribe(deviceId, c)
-	defer events.GetPush().Unsubscribe(deviceId)
-
-	err = c.WriteMessage(websocket.TextMessage, []byte("test own message"))
-
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer func() { _ = c.Close() }()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
-	}
-
-}
-
 // FindHandler godoc
 // @Summary      Search
 // @Description  Search in topic
@@ -212,14 +172,14 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	topic := GetTopic(r)
-	requestPayload := getPayload(r)
+	requestPayload := utils.GetPayload(r)
 
 	if checkAccess(w, r) {
 		limit, offset, _, _ := utils.GetPagination(r)
 
 		res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload, int64(limit), int64(offset))
 
-		sendResponse(w, 200, res, err)
+		utils.SendResponse(w, 200, res, err)
 	}
 }
 
@@ -262,7 +222,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Add("X-Total-Count", strconv.FormatInt(count, 10))
 
-		sendResponse(w, 200, res, err)
+		utils.SendResponse(w, 200, res, err)
 	}
 }
 
@@ -305,7 +265,7 @@ func AdminListHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("X-Total-Count", strconv.FormatInt(count, 10))
 
-	sendResponse(w, 200, res, err)
+	utils.SendResponse(w, 200, res, err)
 }
 
 // UpdateHandler godoc
@@ -327,14 +287,14 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 
-		requestPayload := getPayload(r)
+		requestPayload := utils.GetPayload(r)
 
 		vars := mux.Vars(r)
 		id := vars["id"]
 
 		res, err := drivers.GetDbInstance().Update(os.Getenv("DB_NAME"), topic, id, requestPayload)
 
-		sendResponse(w, 202, res, err)
+		utils.SendResponse(w, 202, res, err)
 	}
 }
 
@@ -361,21 +321,162 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 		res, err := drivers.GetDbInstance().Delete(os.Getenv("DB_NAME"), topic, id)
 
-		sendResponse(w, 202, res, err)
+		utils.SendResponse(w, 202, res, err)
 	}
 }
 
-func sendResponse(w http.ResponseWriter, statusCode int, payload interface{}, err error) {
-	if err == nil {
-		w.WriteHeader(statusCode)
-		if payload != nil {
-			resp, _ := json.Marshal(payload)
-			_, err = w.Write(resp)
-			err2.DebugErr(err)
+// ListTopics godoc
+// @Summary      List topics
+// @Description  List topics
+// @Tags         TopicOutput
+// @Accept       json
+// @Produce      json
+// @Security bearerAuth
+// @Success      200  {array}   project.Project
+//
+// @Router       /admin/topics [get]
+func ListTopics(w http.ResponseWriter, r *http.Request) {
+	utils.ListItems(project.Project{}, []string{}, r, w)
+}
+
+// TopicItem godoc
+// @Summary      TopicOutput
+// @Description  topic detail info
+// @Tags         Entity manager
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        id path    string  true  "TopicOutput id" id
+// @Security bearerAuth
+// @Success      200  {object}   project.Project
+//
+// @Router       /admin/topics/{id} [get]
+func TopicItem(w http.ResponseWriter, r *http.Request) {
+	utils.GetItem(project.Project{}, w, r)
+}
+
+// TopicData godoc
+// @Summary      TopicOutput data
+// @Description  topic data
+// @Tags         Entity manager
+// @tags Admin
+// @Accept       json
+// @Produce      json
+// @Param        topic path    string  true  "TopicOutput name"
+// @Security bearerAuth
+// @Success      200  {array} object
+//
+// @Router       /admin/topics/{topic}/data [get]
+func TopicData(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	topic := GetTopic(r)
+
+	limit, offset, rorder, sort := utils.GetPagination(r)
+
+	order, sort := drivers.GetMongoSort(sort, rorder)
+
+	log.Debug("Mongo limit " + strconv.Itoa(limit) + " offset " + strconv.Itoa(offset) + " order " + rorder + " sort " + sort)
+
+	res, count, err := drivers.GetDbInstance().List(os.Getenv("DB_NAME"), topic, int64(limit), int64(offset), order, sort, bson.D{})
+
+	var result []map[string]string
+
+	for _, resArray := range res {
+		record := make(map[string]string)
+		for key, obj := range resArray.Map() {
+
+			if key == "_id" {
+				key = "id"
+				obj = strings.ReplaceAll(strings.ReplaceAll(fmt.Sprintf("%v", obj), "bjectID(\"", ""), "\")", "")
+			}
+			record[key] = fmt.Sprintf("%v", obj)
 		}
-	} else {
-		w.WriteHeader(500)
-		_, err = w.Write([]byte(err.Error()))
-		err2.DebugErr(err)
+		result = append(result, record)
 	}
+
+	w.Header().Add("X-Total-Count", strconv.FormatInt(count, 10))
+
+	utils.SendResponse(w, 200, result, err)
+}
+
+// UpdateTopic
+// @Summary      Update topic
+// @Description  Update topic
+// @Tags         Entity manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        device    body     project.Project  true  "Project info" true
+// @Param        id    path     string  true  "Project id" true
+// @Success      200 {object} project.Project */
+// @Security bearerAuth
+//
+// @Router       /admin/topics/{id} [put]
+func UpdateTopic(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	vars := mux.Vars(r)
+
+	var t = project.Project{}.GetById(vars["id"]).(project.Project)
+
+	err := json.NewDecoder(r.Body).Decode(&t)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	db.MetaDb.GetConnection().Save(&t)
+
+	resp, _ := json.Marshal(t)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
+}
+
+// DeleteTopic godoc
+// @Summary      Delete topic
+// @Description  Delete topic
+// @Tags         Entity manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        id    path     string  true  "TopicOutput id" string
+// @Success      204
+//
+// @Router       /admin/topics/{id} [delete]
+func DeleteTopic(w http.ResponseWriter, r *http.Request) {
+	utils.DeleteItem(project.Project{}, w, r)
+}
+
+// CreateTopic
+// @Summary      Create topic
+// @Description  Create topic
+// @Tags         Entity manager
+// @Tags         Admin
+// @Accept       json
+// @Produce      json
+// @Param        topic    body     project.Project  true  "topic info" true
+// @Success      200 {object} project.Project */
+// @Security bearerAuth
+//
+// @Router       /admin/topics [post]
+func CreateTopic(w http.ResponseWriter, r *http.Request) {
+	log.Debug(r.Method, r.RequestURI)
+
+	var t project.Project
+	t.Id, _ = uuid.NewUUID()
+
+	err := json.NewDecoder(r.Body).Decode(&t)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	db.MetaDb.GetConnection().Create(&t)
+
+	resp, _ := json.Marshal(t)
+	w.WriteHeader(200)
+	_, err = w.Write(resp)
+	err2.DebugErr(err)
 }

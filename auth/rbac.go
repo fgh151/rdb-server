@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"db-server/modules/user"
+	"db-server/utils"
 	"encoding/json"
 	"net/http"
 )
@@ -9,15 +11,15 @@ import (
 func AdminVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		user := GetUserFromRequest(r)
+		usr, err := utils.GetUserFromRequest(r)
 
-		if user == nil {
+		if err != nil {
 			w.WriteHeader(http.StatusForbidden)
 			_ = json.NewEncoder(w).Encode("Wrong auth token")
 			return
 		}
 
-		if user.Admin != true {
+		if usr.(user.User).Admin != true {
 			w.WriteHeader(http.StatusForbidden)
 			_ = json.NewEncoder(w).Encode("Method not allowed")
 			return

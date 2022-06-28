@@ -1,8 +1,8 @@
 package user
 
 import (
-	"db-server/security"
 	"db-server/server/db"
+	"db-server/utils"
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -94,7 +94,7 @@ func (p User) Delete(id string) {
 }
 
 func (p User) ValidatePassword(password string) bool {
-	return p.PasswordHash == security.HashPassword(password)
+	return p.PasswordHash == utils.HashPassword(password)
 }
 
 func (p User) UpdateLastLogin() {
@@ -114,8 +114,8 @@ type CreateUserForm struct {
 func (f CreateUserForm) Save() User {
 	var u = User{
 		Email:        f.Email,
-		PasswordHash: security.HashPassword(f.Password),
-		Token:        security.GenerateRandomString(15),
+		PasswordHash: utils.HashPassword(f.Password),
+		Token:        utils.GenerateRandomString(15),
 	}
 
 	u.Id, _ = uuid.NewUUID()

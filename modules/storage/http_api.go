@@ -1,12 +1,17 @@
-package web
+package storage
 
 import (
 	err2 "db-server/err"
 	"db-server/server"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
+
+func AddApiRoutes(api *mux.Router) {
+	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+}
 
 // StoragePut
 // @Summary      Put file to storage
