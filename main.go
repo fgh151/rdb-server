@@ -6,7 +6,7 @@ import (
 	err2 "db-server/err"
 	"db-server/models"
 	"db-server/server"
-	"db-server/web"
+	"db-server/server/web"
 	"flag"
 	"github.com/evalphobia/logrus_sentry"
 	"github.com/joho/godotenv"
@@ -85,5 +85,5 @@ func main() {
 	models.InitCron()
 
 	log.Debug("Init web server")
-	web.InitServer(docsFlag)
+	web.StartServer(docsFlag)
 }
