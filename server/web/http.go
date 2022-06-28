@@ -3,6 +3,7 @@ package web
 import (
 	"db-server/auth"
 	"db-server/docs"
+	"db-server/modules/push"
 	"db-server/web"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -117,12 +118,7 @@ func StartServer(enableDocs *bool) {
 	admin.HandleFunc("/pl/{id}", web.DeletePipeline).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
 	admin.HandleFunc("/pl/{id}", web.UpdatePipeline).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
-	admin.HandleFunc("/push", web.ListPush).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/push", web.CreatePush).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/push/{id}", web.PushItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/push/{id}/run", web.PushItem).Methods(http.MethodGet, http.MethodOptions)  // each request calls PushHandler
-	admin.HandleFunc("/push/{id}", web.DeletePush).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/push/{id}", web.UpdatePush).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	push.AddAdminRoutes(admin)
 
 	admin.HandleFunc("/cron", web.ListCron).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
 	admin.HandleFunc("/cron", web.CreateCron).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
@@ -147,7 +143,8 @@ func StartServer(enableDocs *bool) {
 	api.HandleFunc("/storage", web.StoragePut).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
 	api.HandleFunc("/cf/{id}/run", web.CfRun).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
 	api.HandleFunc("/cf/{id}/run/{rid}", web.CfRunLog).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
-	api.HandleFunc("/push/{id}/run", web.PushRun).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+
+	push.AddApiRoutes(api)
 
 	headersOk := handlers.AllowedHeaders(allowedHeaders)
 	originsOk := handlers.AllowedOrigins([]string{"*"})

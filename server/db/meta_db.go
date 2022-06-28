@@ -1,7 +1,8 @@
-package server
+package db
 
 import (
 	"db-server/drivers"
+	"db-server/modules"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -52,3 +53,10 @@ func (c connection) GetConnection() *gorm.DB {
 }
 
 var MetaDb = connection{}
+
+func (c connection) TotalRecords(m modules.Model) *int64 {
+	conn := c.GetConnection()
+	var cnt int64
+	conn.Model(&m).Count(&cnt)
+	return &cnt
+}

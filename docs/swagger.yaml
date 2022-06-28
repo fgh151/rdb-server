@@ -1,5 +1,5 @@
 definitions:
-  models.CloudFunction:
+  cf.CloudFunction:
     properties:
       container:
         description: |-
@@ -20,7 +20,7 @@ definitions:
           example: echo test
         type: string
       project:
-        $ref: '#/definitions/models.Project'
+        $ref: '#/definitions/project.Project'
         description: Linked project
       project_id:
         description: |-
@@ -34,7 +34,7 @@ definitions:
         description: Function title
         type: string
     type: object
-  models.CloudFunctionLog:
+  cf.CloudFunctionLog:
     properties:
       function_id:
         description: |-
@@ -53,31 +53,22 @@ definitions:
         description: Run date time
         type: string
     type: object
-  models.Config:
+  config.Config:
     properties:
       body: {}
       id:
         type: string
       project:
-        $ref: '#/definitions/models.Project'
+        $ref: '#/definitions/project.Project'
       project_id:
         type: string
       title:
         type: string
     type: object
-  models.CreateUserForm:
-    properties:
-      Email:
-        description: new User email
-        type: string
-      Password:
-        description: new User password
-        type: string
-    type: object
-  models.CronJob:
+  cron.CronJob:
     properties:
       function:
-        $ref: '#/definitions/models.CloudFunction'
+        $ref: '#/definitions/cf.CloudFunction'
       function_id:
         type: string
       id:
@@ -87,7 +78,7 @@ definitions:
       title:
         type: string
     type: object
-  models.DataSource:
+  ds.DataSource:
     properties:
       cache:
         description: Cache result in local db
@@ -97,7 +88,7 @@ definitions:
         type: string
       endpoints:
         items:
-          $ref: '#/definitions/models.DataSourceEndpoint'
+          $ref: '#/definitions/ds.DataSourceEndpoint'
         type: array
       id:
         description: |-
@@ -105,7 +96,7 @@ definitions:
           example: 6204011c-30e6-408b-8aaa-dd8219860b4b
         type: string
       project:
-        $ref: '#/definitions/models.Project'
+        $ref: '#/definitions/project.Project'
         description: Linked project
       project_id:
         description: |-
@@ -122,7 +113,7 @@ definitions:
           example: Mysql
         type: string
     type: object
-  models.DataSourceEndpoint:
+  ds.DataSourceEndpoint:
     properties:
       data_source:
         description: |-
@@ -130,7 +121,7 @@ definitions:
           example: 6204011c-33e6-408b-8aaa-dd8214860b4b
         type: string
       dataSource:
-        $ref: '#/definitions/models.DataSource'
+        $ref: '#/definitions/ds.DataSource'
         description: Linked data source
       id:
         description: |-
@@ -144,7 +135,27 @@ definitions:
         description: Data source endpoint title
         type: string
     type: object
-  models.Pipeline:
+  models.PushMessage:
+    properties:
+      body:
+        type: string
+      id:
+        type: string
+      payload: {}
+      receivers:
+        items:
+          $ref: '#/definitions/user.UserDevice'
+        type: array
+      sent:
+        type: boolean
+      sent_at:
+        type: string
+      title:
+        type: string
+      topic:
+        type: string
+    type: object
+  pipeline.Pipeline:
     properties:
       id:
         description: |-
@@ -171,7 +182,7 @@ definitions:
         description: Mnemonic name
         type: string
     type: object
-  models.Project:
+  project.Project:
     properties:
       id:
         type: string
@@ -182,27 +193,16 @@ definitions:
       topic:
         type: string
     type: object
-  models.PushMessage:
+  user.CreateUserForm:
     properties:
-      body:
+      Email:
+        description: new User email
         type: string
-      id:
-        type: string
-      payload: {}
-      receivers:
-        items:
-          $ref: '#/definitions/models.UserDevice'
-        type: array
-      sent:
-        type: boolean
-      sent_at:
-        type: string
-      title:
-        type: string
-      topic:
+      Password:
+        description: new User password
         type: string
     type: object
-  models.User:
+  user.User:
     properties:
       active:
         description: Is user active
@@ -216,7 +216,7 @@ definitions:
       devices:
         description: user devices
         items:
-          $ref: '#/definitions/models.UserDevice'
+          $ref: '#/definitions/user.UserDevice'
         type: array
       email:
         description: User email
@@ -233,7 +233,7 @@ definitions:
         description: Auth token
         type: string
     type: object
-  models.UserDevice:
+  user.UserDevice:
     properties:
       device:
         description: |-
@@ -289,7 +289,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       summary: Login to admin
       tags:
       - Admin
@@ -305,7 +305,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.CloudFunction'
+              $ref: '#/definitions/cf.CloudFunction'
             type: array
       security:
       - bearerAuth: []
@@ -323,14 +323,14 @@ paths:
         name: cf
         required: true
         schema:
-          $ref: '#/definitions/models.CloudFunction'
+          $ref: '#/definitions/cf.CloudFunction'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CloudFunction'
+            $ref: '#/definitions/cf.CloudFunction'
       security:
       - bearerAuth: []
       summary: Create cloud function
@@ -375,7 +375,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CloudFunction'
+            $ref: '#/definitions/cf.CloudFunction'
       security:
       - bearerAuth: []
       summary: Function info
@@ -392,7 +392,7 @@ paths:
         name: device
         required: true
         schema:
-          $ref: '#/definitions/models.DataSource'
+          $ref: '#/definitions/ds.DataSource'
       - description: Function id
         in: path
         name: id
@@ -404,7 +404,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DataSource'
+            $ref: '#/definitions/ds.DataSource'
       security:
       - bearerAuth: []
       summary: Update cloud function
@@ -428,7 +428,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CloudFunctionLog'
+            $ref: '#/definitions/cf.CloudFunctionLog'
       security:
       - bearerAuth: []
       summary: Logs
@@ -447,7 +447,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Config'
+              $ref: '#/definitions/config.Config'
             type: array
       security:
       - bearerAuth: []
@@ -465,14 +465,14 @@ paths:
         name: config
         required: true
         schema:
-          $ref: '#/definitions/models.CreateUserForm'
+          $ref: '#/definitions/user.CreateUserForm'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       security:
       - bearerAuth: []
       summary: Create config
@@ -517,7 +517,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Config'
+            $ref: '#/definitions/config.Config'
       security:
       - bearerAuth: []
       summary: Config info
@@ -534,7 +534,7 @@ paths:
         name: device
         required: true
         schema:
-          $ref: '#/definitions/models.Config'
+          $ref: '#/definitions/config.Config'
       - description: Config id
         in: path
         name: id
@@ -546,7 +546,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Config'
+            $ref: '#/definitions/config.Config'
       security:
       - bearerAuth: []
       summary: Update config
@@ -565,7 +565,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.CronJob'
+              $ref: '#/definitions/cron.CronJob'
             type: array
       security:
       - bearerAuth: []
@@ -583,14 +583,14 @@ paths:
         name: cron
         required: true
         schema:
-          $ref: '#/definitions/models.CronJob'
+          $ref: '#/definitions/cron.CronJob'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CronJob'
+            $ref: '#/definitions/cron.CronJob'
       security:
       - bearerAuth: []
       summary: Create cron job
@@ -635,7 +635,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CronJob'
+            $ref: '#/definitions/cron.CronJob'
       security:
       - bearerAuth: []
       summary: Cron job info
@@ -652,7 +652,7 @@ paths:
         name: device
         required: true
         schema:
-          $ref: '#/definitions/models.CronJob'
+          $ref: '#/definitions/cron.CronJob'
       - description: Cron id
         in: path
         name: id
@@ -664,7 +664,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CronJob'
+            $ref: '#/definitions/cron.CronJob'
       security:
       - bearerAuth: []
       summary: Update cron job
@@ -683,7 +683,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.DataSource'
+              $ref: '#/definitions/ds.DataSource'
             type: array
       security:
       - bearerAuth: []
@@ -701,14 +701,14 @@ paths:
         name: ds
         required: true
         schema:
-          $ref: '#/definitions/models.DataSource'
+          $ref: '#/definitions/ds.DataSource'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DataSource'
+            $ref: '#/definitions/ds.DataSource'
       security:
       - bearerAuth: []
       summary: Create data source
@@ -733,7 +733,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.DataSourceEndpoint'
+              $ref: '#/definitions/ds.DataSourceEndpoint'
             type: array
       security:
       - bearerAuth: []
@@ -779,7 +779,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DataSource'
+            $ref: '#/definitions/ds.DataSource'
       security:
       - bearerAuth: []
       summary: Data source info
@@ -796,7 +796,7 @@ paths:
         name: source
         required: true
         schema:
-          $ref: '#/definitions/models.DataSource'
+          $ref: '#/definitions/ds.DataSource'
       - description: Source info
         in: path
         name: id
@@ -808,7 +808,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DataSource'
+            $ref: '#/definitions/ds.DataSource'
       security:
       - bearerAuth: []
       summary: Update date source
@@ -826,7 +826,7 @@ paths:
         name: dse
         required: true
         schema:
-          $ref: '#/definitions/models.DataSourceEndpoint'
+          $ref: '#/definitions/ds.DataSourceEndpoint'
       - description: Data source id
         in: path
         name: dsId
@@ -838,7 +838,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DataSourceEndpoint'
+            $ref: '#/definitions/ds.DataSourceEndpoint'
       security:
       - bearerAuth: []
       summary: Create data source endpoint
@@ -867,7 +867,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DataSource'
+            $ref: '#/definitions/ds.DataSource'
       security:
       - bearerAuth: []
       summary: Data source endpoint info
@@ -884,7 +884,7 @@ paths:
         name: dse
         required: true
         schema:
-          $ref: '#/definitions/models.DataSourceEndpoint'
+          $ref: '#/definitions/ds.DataSourceEndpoint'
       - description: Endpoint id
         in: path
         name: id
@@ -901,7 +901,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DataSourceEndpoint'
+            $ref: '#/definitions/ds.DataSourceEndpoint'
       security:
       - bearerAuth: []
       summary: Update date source endpoint
@@ -946,7 +946,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Pipeline'
+              $ref: '#/definitions/pipeline.Pipeline'
             type: array
       security:
       - bearerAuth: []
@@ -964,14 +964,14 @@ paths:
         name: pl
         required: true
         schema:
-          $ref: '#/definitions/models.Pipeline'
+          $ref: '#/definitions/pipeline.Pipeline'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Pipeline'
+            $ref: '#/definitions/pipeline.Pipeline'
       security:
       - bearerAuth: []
       summary: Create pipeline
@@ -1016,7 +1016,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Pipeline'
+            $ref: '#/definitions/pipeline.Pipeline'
       security:
       - bearerAuth: []
       summary: Pipeline info
@@ -1033,7 +1033,7 @@ paths:
         name: device
         required: true
         schema:
-          $ref: '#/definitions/models.Pipeline'
+          $ref: '#/definitions/pipeline.Pipeline'
       - description: Pipeline id
         in: path
         name: id
@@ -1045,7 +1045,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Pipeline'
+            $ref: '#/definitions/pipeline.Pipeline'
       security:
       - bearerAuth: []
       summary: Update pipeline
@@ -1177,13 +1177,7 @@ paths:
       description: List topics
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Project'
-            type: array
+      responses: {}
       security:
       - bearerAuth: []
       summary: List topics
@@ -1193,20 +1187,9 @@ paths:
       consumes:
       - application/json
       description: Create topic
-      parameters:
-      - description: topic info
-        in: body
-        name: topic
-        required: true
-        schema:
-          $ref: '#/definitions/models.Project'
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Project'
+      responses: {}
       security:
       - bearerAuth: []
       summary: Create topic
@@ -1245,11 +1228,7 @@ paths:
         type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Project'
+      responses: {}
       security:
       - bearerAuth: []
       summary: TopicOutput
@@ -1260,25 +1239,9 @@ paths:
       consumes:
       - application/json
       description: Update topic
-      parameters:
-      - description: Project info
-        in: body
-        name: device
-        required: true
-        schema:
-          $ref: '#/definitions/models.Project'
-      - description: Project id
-        in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Project'
+      responses: {}
       security:
       - bearerAuth: []
       summary: Update topic
@@ -1323,7 +1286,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.User'
+              $ref: '#/definitions/user.User'
             type: array
       security:
       - bearerAuth: []
@@ -1340,14 +1303,14 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.CreateUserForm'
+          $ref: '#/definitions/user.CreateUserForm'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       security:
       - bearerAuth: []
       summary: Create user
@@ -1392,7 +1355,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       security:
       - bearerAuth: []
       summary: User info
@@ -1409,7 +1372,7 @@ paths:
         name: device
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/user.User'
       - description: User info
         in: path
         name: id
@@ -1421,7 +1384,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       security:
       - bearerAuth: []
       summary: Update user
@@ -1478,7 +1441,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CloudFunctionLog'
+            $ref: '#/definitions/cf.CloudFunctionLog'
       summary: List logs
       tags:
       - Cloud functions
@@ -1494,14 +1457,14 @@ paths:
         name: device
         required: true
         schema:
-          $ref: '#/definitions/models.UserDevice'
+          $ref: '#/definitions/user.UserDevice'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserDevice'
+            $ref: '#/definitions/user.UserDevice'
       summary: Register device
       tags:
       - Push messages
@@ -1598,7 +1561,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       summary: Login via api
       tags:
       - User
@@ -1623,7 +1586,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       security:
       - bearerAuth: []
       summary: User info
@@ -1657,7 +1620,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       summary: OAuth user
       tags:
       - OAuth
@@ -1709,7 +1672,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/user.User'
       summary: Register via api
       tags:
       - User
@@ -1792,7 +1755,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Project'
+            $ref: '#/definitions/project.Project'
       summary: Get item
       tags:
       - Data source

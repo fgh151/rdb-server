@@ -2,8 +2,8 @@ package oauth
 
 import (
 	err2 "db-server/err"
-	"db-server/models"
-	"db-server/server"
+	"db-server/modules/user"
+	"db-server/server/db"
 	"encoding/json"
 	"github.com/google/uuid"
 	"io"
@@ -33,18 +33,18 @@ func (u VkUser) GetOauthUser(resp io.ReadCloser) (UserOauth, error) {
 
 	//u.Data = datatypes.JSON([]byte(bodyString))
 
-	localUser, err := models.User{}.GetByEmail(u.Email)
+	localUser, err := user.User{}.GetByEmail(u.Email)
 	m, _ := json.Marshal(data)
 
 	id, _ := uuid.NewUUID()
 	ru := UserOauth{
 		Id:        id,
 		Data:      m,
-		UserId:    localUser.(models.User).Id,
+		UserId:    localUser.(user.User).Id,
 		ServiceId: strconv.Itoa(u.Id),
 	}
 
-	server.MetaDb.GetConnection().Create(ru)
+	db.MetaDb.GetConnection().Create(ru)
 
 	return ru, err
 }

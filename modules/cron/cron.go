@@ -1,7 +1,9 @@
-package models
+package cron
 
 import (
+	"db-server/modules/cf"
 	"db-server/server"
+	"db-server/server/db"
 	"github.com/google/uuid"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
@@ -10,15 +12,15 @@ import (
 )
 
 type CronJob struct {
-	Id         uuid.UUID      `gorm:"primarykey" json:"id"`
-	Title      string         `json:"title"`
-	TimeParams string         `json:"time_params"`
-	FunctionId uuid.UUID      `json:"function_id"`
-	Function   CloudFunction  `gorm:"foreignKey:FunctionId" json:"function"`
-	CronId     cron.EntryID   `gorm:"index" json:"-"`
-	CreatedAt  time.Time      `json:"-"`
-	UpdatedAt  time.Time      `json:"-"`
-	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
+	Id         uuid.UUID        `gorm:"primarykey" json:"id"`
+	Title      string           `json:"title"`
+	TimeParams string           `json:"time_params"`
+	FunctionId uuid.UUID        `json:"function_id"`
+	Function   cf.CloudFunction `gorm:"foreignKey:FunctionId" json:"function"`
+	CronId     cron.EntryID     `gorm:"index" json:"-"`
+	CreatedAt  time.Time        `json:"-"`
+	UpdatedAt  time.Time        `json:"-"`
+	DeletedAt  gorm.DeletedAt   `gorm:"index" json:"-"`
 }
 
 // TableName Gorm table name
@@ -29,7 +31,7 @@ func (j CronJob) TableName() string {
 func (j CronJob) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var jobs []CronJob
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Find(&jobs)
 
@@ -44,7 +46,7 @@ func (j CronJob) List(limit int, offset int, sort string, order string, filter m
 func (j CronJob) GetById(id string) interface{} {
 	var job CronJob
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.First(&job, "id = ?", id)
 
@@ -52,12 +54,12 @@ func (j CronJob) GetById(id string) interface{} {
 }
 
 func (j CronJob) Delete(id string) {
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&j)
 }
 
 func (j CronJob) Total() *int64 {
-	return TotalRecords(&CronJob{})
+	return db.MetaDb.TotalRecords(&CronJob{})
 }
 
 func (j CronJob) Schedule(cron *cron.Cron) {
@@ -65,7 +67,7 @@ func (j CronJob) Schedule(cron *cron.Cron) {
 
 	j.CronId, err = cron.AddFunc(j.TimeParams, func() {
 		log.Debug("Run cron " + j.Id.String())
-		function := CloudFunction{}.GetById(j.FunctionId.String()).(CloudFunction)
+		function := cf.CloudFunction{}.GetById(j.FunctionId.String()).(cf.CloudFunction)
 		id, _ := uuid.NewUUID()
 		function.Run(id)
 	})
@@ -73,7 +75,7 @@ func (j CronJob) Schedule(cron *cron.Cron) {
 	if err != nil {
 		log.Debug(err)
 	} else {
-		server.MetaDb.GetConnection().Save(&j)
+		db.MetaDb.GetConnection().Save(&j)
 	}
 }
 

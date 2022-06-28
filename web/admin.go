@@ -3,8 +3,16 @@ package web
 import (
 	"db-server/drivers"
 	err2 "db-server/err"
-	"db-server/models"
+	"db-server/modules/cf"
+	"db-server/modules/config"
+	"db-server/modules/cron"
+	"db-server/modules/ds"
+	"db-server/modules/pipeline"
+	"db-server/modules/project"
+	"db-server/modules/user"
 	"db-server/server"
+	"db-server/server/db"
+	"db-server/utils"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
@@ -17,52 +25,6 @@ import (
 	"strings"
 )
 
-func GetPagination(r *http.Request) (int, int, string, string) {
-
-	v := r.URL.Query()
-
-	limit, err := strconv.Atoi(v.Get("_end"))
-	if err != nil {
-		limit = 10
-	}
-
-	offset, err := strconv.Atoi(v.Get("_start"))
-	if err != nil {
-		offset = 0
-	}
-
-	order := v.Get("_order")
-	if order == "" {
-		order = "ASC"
-	}
-	sort := v.Get("_sort")
-	if sort == "" {
-		sort = "id"
-	}
-
-	return limit - offset, offset, order, sort
-}
-
-func formatQuery(r *http.Request, params []string) map[string]interface{} {
-	result := make(map[string]interface{})
-
-	if len(params) < 1 {
-		return result
-	}
-
-	v := r.URL.Query()
-	for _, param := range params {
-		if v.Has(param) {
-			val := v.Get(param)
-			if val != "" {
-				result[param] = val
-			}
-		}
-	}
-
-	return result
-}
-
 // ListTopics godoc
 // @Summary      List topics
 // @Description  List topics
@@ -70,11 +32,11 @@ func formatQuery(r *http.Request, params []string) map[string]interface{} {
 // @Accept       json
 // @Produce      json
 // @Security bearerAuth
-// @Success      200  {array}   models.Project
+/* @Success      200  {array}   project.Project */
 //
 // @Router       /admin/topics [get]
 func ListTopics(w http.ResponseWriter, r *http.Request) {
-	listItems(models.Project{}, []string{}, r, w)
+	utils.ListItems(project.Project{}, []string{}, r, w)
 }
 
 // ListUsers godoc
@@ -84,11 +46,11 @@ func ListTopics(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Security bearerAuth
-// @Success      200  {array}   models.User
+// @Success      200  {array}   user.User
 //
 // @Router       /admin/users [get]
 func ListUsers(w http.ResponseWriter, r *http.Request) {
-	listItems(models.User{}, []string{"id", "email", "admin", "active"}, r, w)
+	utils.ListItems(user.User{}, []string{"id", "email", "admin", "active"}, r, w)
 }
 
 // ListConfig godoc
@@ -99,11 +61,11 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Security bearerAuth
-// @Success      200  {array}   models.Config
+// @Success      200  {array}   config.Config
 //
 // @Router       /admin/config [get]
 func ListConfig(w http.ResponseWriter, r *http.Request) {
-	listItems(models.Config{}, []string{}, r, w)
+	utils.ListItems(config.Config{}, []string{}, r, w)
 }
 
 // ListDs godoc
@@ -114,11 +76,11 @@ func ListConfig(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Security bearerAuth
-// @Success      200  {array}   models.DataSource
+// @Success      200  {array}   ds.DataSource
 //
 // @Router       /admin/ds [get]
 func ListDs(w http.ResponseWriter, r *http.Request) {
-	listItems(models.DataSource{}, []string{}, r, w)
+	utils.ListItems(ds.DataSource{}, []string{}, r, w)
 }
 
 // ListDse godoc
@@ -130,16 +92,16 @@ func ListDs(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Security bearerAuth
 // @Param        dsIid path    string  true  "Data source id" id
-// @Success      200  {array}   models.DataSourceEndpoint
+// @Success      200  {array}   ds.DataSourceEndpoint
 //
 // @Router       /admin/ds/{dsIid}/dse [get]
 func ListDse(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	l, o, or, so := GetPagination(r)
-	f := formatQuery(r, []string{"data_source_id"})
+	l, o, or, so := utils.GetPagination(r)
+	f := utils.FormatQuery(r, []string{"data_source_id"})
 
-	arr := models.DataSourceEndpoint{}.List(l, o, so, or, f)
+	arr := ds.DataSourceEndpoint{}.List(l, o, so, or, f)
 	total := len(arr)
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json")
@@ -159,11 +121,11 @@ func ListDse(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Security bearerAuth
-// @Success      200  {array}   models.CloudFunction
+// @Success      200  {array}   cf.CloudFunction
 //
 // @Router       /admin/cf [get]
 func ListCf(w http.ResponseWriter, r *http.Request) {
-	listItems(models.CloudFunction{}, []string{"id"}, r, w)
+	utils.ListItems(cf.CloudFunction{}, []string{"id"}, r, w)
 }
 
 // ListPipeline godoc
@@ -174,26 +136,11 @@ func ListCf(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Security bearerAuth
-// @Success      200  {array}   models.Pipeline
+// @Success      200  {array}   pipeline.Pipeline
 //
 // @Router       /admin/pl [get]
 func ListPipeline(w http.ResponseWriter, r *http.Request) {
-	listItems(models.Pipeline{}, []string{"id"}, r, w)
-}
-
-// ListPush godoc
-// @Summary      List push messages
-// @Description  List push messages
-// @Tags         Push messages
-// @tags Admin
-// @Accept       json
-// @Produce      json
-// @Security bearerAuth
-// @Success      200  {array}   models.PushMessage
-//
-// @Router       /admin/push [get]
-func ListPush(w http.ResponseWriter, r *http.Request) {
-	listItems(models.PushMessage{}, []string{}, r, w)
+	utils.ListItems(pipeline.Pipeline{}, []string{"id"}, r, w)
 }
 
 // ListCron godoc
@@ -204,31 +151,11 @@ func ListPush(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Security bearerAuth
-// @Success      200  {array}   models.CronJob
+// @Success      200  {array}   cron.CronJob
 //
 // @Router       /admin/cron [get]
 func ListCron(w http.ResponseWriter, r *http.Request) {
-	listItems(models.CronJob{}, []string{}, r, w)
-}
-
-func listItems(model models.Model, filter []string, r *http.Request, w http.ResponseWriter) {
-	log.Debug(r.Method, r.RequestURI)
-
-	l, o, or, so := GetPagination(r)
-	f := formatQuery(r, filter)
-
-	arr := model.List(l, o, so, or, f)
-	total := model.Total()
-	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
-
-	resp, err := json.Marshal(arr)
-	log.Debug(string(resp))
-	err2.DebugErr(err)
-	w.WriteHeader(200)
-	_, err = w.Write(resp)
-	err2.DebugErr(err)
+	utils.ListItems(cron.CronJob{}, []string{}, r, w)
 }
 
 // UserItem godoc
@@ -240,11 +167,11 @@ func listItems(model models.Model, filter []string, r *http.Request, w http.Resp
 // @Produce      json
 // @Param        id path    string  true  "User id" gg
 // @Security bearerAuth
-// @Success      200  {object}   models.User
+// @Success      200  {object}   user.User
 //
 // @Router       /admin/users/{id} [get]
 func UserItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.User{}, w, r)
+	utils.GetItem(user.User{}, w, r)
 }
 
 // ConfigItem godoc
@@ -256,11 +183,11 @@ func UserItem(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id path    string  true  "Config id" gg
 // @Security bearerAuth
-// @Success      200  {object}   models.Config
+// @Success      200  {object}   config.Config
 //
 // @Router       /admin/config/{id} [get]
 func ConfigItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.Config{}, w, r)
+	utils.GetItem(config.Config{}, w, r)
 }
 
 // DsItem godoc
@@ -272,11 +199,11 @@ func ConfigItem(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id path    string  true  "Source id" gg
 // @Security bearerAuth
-// @Success      200  {object}   models.DataSource
+// @Success      200  {object}   ds.DataSource
 //
 // @Router       /admin/ds/{id} [get]
 func DsItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.DataSource{}, w, r)
+	utils.GetItem(ds.DataSource{}, w, r)
 }
 
 // DseItem godoc
@@ -289,11 +216,11 @@ func DsItem(w http.ResponseWriter, r *http.Request) {
 // @Param        dsId path    string  true  "Data source id" gg
 // @Param        id path    string  true  "Endpoint id" gg
 // @Security bearerAuth
-// @Success      200  {object}   models.DataSource
+// @Success      200  {object}   ds.DataSource
 //
 // @Router       /admin/ds/dse/{dsId}/{id} [get]
 func DseItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.DataSourceEndpoint{}, w, r)
+	utils.GetItem(ds.DataSourceEndpoint{}, w, r)
 }
 
 // CfItem godoc
@@ -305,11 +232,11 @@ func DseItem(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id    path     string  true  "cf id" id
 // @Security bearerAuth
-// @Success      200  {object}   models.CloudFunction
+// @Success      200  {object}   cf.CloudFunction
 //
 // @Router       /admin/cf/{id} [get]
 func CfItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.CloudFunction{}, w, r)
+	utils.GetItem(cf.CloudFunction{}, w, r)
 }
 
 // PipelineItem godoc
@@ -321,27 +248,11 @@ func CfItem(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id    path     string  true  "Pipeline id" id
 // @Security bearerAuth
-// @Success      200  {object}   models.Pipeline
+// @Success      200  {object}   pipeline.Pipeline
 //
 // @Router       /admin/pl/{id} [get]
 func PipelineItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.Pipeline{}, w, r)
-}
-
-// PushItem godoc
-// @Summary      Push info
-// @Description  Push detail info
-// @Tags         Push messages
-// @tags Admin
-// @Accept       json
-// @Produce      json
-// @Param        id path    string  true  "Push id" id
-// @Security bearerAuth
-// @Success      200  {object}   models.PushMessage
-//
-// @Router       /admin/push/{id} [get]
-func PushItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.PushMessage{}, w, r)
+	utils.GetItem(pipeline.Pipeline{}, w, r)
 }
 
 // CronItem godoc
@@ -353,11 +264,11 @@ func PushItem(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id path    string  true  "Push id" id
 // @Security bearerAuth
-// @Success      200  {object}   models.CronJob
+// @Success      200  {object}   cron.CronJob
 //
 // @Router       /admin/cron/{id} [get]
 func CronItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.CronJob{}, w, r)
+	utils.GetItem(cron.CronJob{}, w, r)
 }
 
 // CfLog godoc
@@ -369,17 +280,17 @@ func CronItem(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id path    string  true  "Fuc id" id
 // @Security bearerAuth
-// @Success      200  {object}   models.CloudFunctionLog
+// @Success      200  {object}   cf.CloudFunctionLog
 //
 // @Router       /admin/cf/{id}/log [get]
 func CfLog(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	f := models.CloudFunction{}.GetById(vars["id"]).(models.CloudFunction)
+	f := cf.CloudFunction{}.GetById(vars["id"]).(cf.CloudFunction)
 
-	l, o, s, or := GetPagination(r)
-	arr := models.ListCfLog(f.Id, l, o, s, or)
-	total := models.LogsTotal(f.Id)
+	l, o, s, or := utils.GetPagination(r)
+	arr := cf.ListCfLog(f.Id, l, o, s, or)
+	total := cf.LogsTotal(f.Id)
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("X-Total-Count", strconv.FormatInt(*total, 10))
@@ -399,11 +310,11 @@ func CfLog(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id path    string  true  "TopicOutput id" id
 // @Security bearerAuth
-// @Success      200  {object}   models.Project
+/* @Success      200  {object}   project.Project */
 //
 // @Router       /admin/topics/{id} [get]
 func TopicItem(w http.ResponseWriter, r *http.Request) {
-	getItem(models.Project{}, w, r)
+	utils.GetItem(project.Project{}, w, r)
 }
 
 // TopicData godoc
@@ -423,7 +334,7 @@ func TopicData(w http.ResponseWriter, r *http.Request) {
 
 	topic := GetTopic(r)
 
-	limit, offset, rorder, sort := GetPagination(r)
+	limit, offset, rorder, sort := utils.GetPagination(r)
 
 	order, sort := drivers.GetMongoSort(sort, rorder)
 
@@ -458,9 +369,9 @@ func TopicData(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        device    body     models.Project  true  "Project info" true
+/* / @Param        device    body     project.Project  true  "Project info" true
 // @Param        id    path     string  true  "Project id" true
-// @Success      200 {object} models.Project
+// @Success      200 {object} project.Project */
 // @Security bearerAuth
 //
 // @Router       /admin/topics/{id} [put]
@@ -469,7 +380,7 @@ func UpdateTopic(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	var t = models.Project{}.GetById(vars["id"]).(models.Project)
+	var t = project.Project{}.GetById(vars["id"]).(project.Project)
 
 	err := json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
@@ -477,21 +388,11 @@ func UpdateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.MetaDb.GetConnection().Save(&t)
+	db.MetaDb.GetConnection().Save(&t)
 
 	resp, _ := json.Marshal(t)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
-	err2.DebugErr(err)
-}
-
-func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-
-	vars := mux.Vars(r)
-	resp, _ := json.Marshal(m.GetById(vars["id"]))
-	w.WriteHeader(200)
-	_, err := w.Write(resp)
 	err2.DebugErr(err)
 }
 
@@ -508,7 +409,7 @@ func getItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /admin/users/{id} [delete]
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.User{}, w, r)
+	utils.DeleteItem(user.User{}, w, r)
 }
 
 // DeleteConfig godoc
@@ -524,7 +425,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /admin/config/{id} [delete]
 func DeleteConfig(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.Config{}, w, r)
+	utils.DeleteItem(config.Config{}, w, r)
 }
 
 // DeleteDs godoc
@@ -540,7 +441,7 @@ func DeleteConfig(w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /admin/ds/{id} [delete]
 func DeleteDs(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.DataSource{}, w, r)
+	utils.DeleteItem(ds.DataSource{}, w, r)
 }
 
 // DeleteDse godoc
@@ -557,7 +458,7 @@ func DeleteDs(w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /ds/dse/{dsId}/{id} [delete]
 func DeleteDse(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.DataSource{}, w, r)
+	utils.DeleteItem(ds.DataSource{}, w, r)
 }
 
 // DeleteCf godoc
@@ -573,7 +474,7 @@ func DeleteDse(w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /admin/cf/{id} [delete]
 func DeleteCf(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.CloudFunction{}, w, r)
+	utils.DeleteItem(cf.CloudFunction{}, w, r)
 }
 
 // DeletePipeline godoc
@@ -589,23 +490,7 @@ func DeleteCf(w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /admin/pl/{id} [delete]
 func DeletePipeline(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.Pipeline{}, w, r)
-}
-
-// DeletePush godoc
-// @Summary      Delete push
-// @Description  Delete push
-// @Tags         Push messages
-// @Tags         Admin
-// @Accept       json
-// @Produce      json
-// @Param        id    path     string  true  "Push id" id
-// @Security bearerAuth
-// @Success      204
-//
-// @Router       /admin/push/{id} [delete]
-func DeletePush(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.PushMessage{}, w, r)
+	utils.DeleteItem(pipeline.Pipeline{}, w, r)
 }
 
 // DeleteCron godoc
@@ -621,7 +506,7 @@ func DeletePush(w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /admin/cron/{id} [delete]
 func DeleteCron(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.CronJob{}, w, r)
+	utils.DeleteItem(cron.CronJob{}, w, r)
 }
 
 // UpdateUser
@@ -631,17 +516,17 @@ func DeleteCron(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        device    body     models.User  true  "User info" true
+// @Param        device    body     user.User  true  "User info" true
 // @Param        id    path     string  true  "User info" id
-// @Success      200 {object} models.User
+// @Success      200 {object} user.User
 // @Security bearerAuth
 //
 // @Router       /admin/users/{id} [put]
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = models.User{}.GetById(vars["id"]).(models.User)
-	newm := models.User{}
+	var exist = user.User{}.GetById(vars["id"]).(user.User)
+	newm := user.User{}
 
 	err := json.NewDecoder(r.Body).Decode(&newm)
 
@@ -649,7 +534,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	newm.LastLogin = exist.LastLogin
 	newm.PasswordHash = exist.PasswordHash
 
-	server.MetaDb.GetConnection().Save(&newm)
+	db.MetaDb.GetConnection().Save(&newm)
 
 	resp, _ := json.Marshal(newm)
 	w.WriteHeader(200)
@@ -664,18 +549,18 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        device    body     models.Config  true  "Config info" true
+// @Param        device    body     config.Config  true  "Config info" true
 // @Param        id    path     string  true  "Config id" id
-// @Success      200 {object} models.Config
+// @Success      200 {object} config.Config
 // @Security bearerAuth
 //
 // @Router       /admin/config/{id} [put]
 func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	newm := models.Config{}
+	newm := config.Config{}
 
 	err := json.NewDecoder(r.Body).Decode(&newm)
-	server.MetaDb.GetConnection().Save(&newm)
+	db.MetaDb.GetConnection().Save(&newm)
 
 	resp, _ := json.Marshal(newm)
 	w.WriteHeader(200)
@@ -690,23 +575,23 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        source    body     models.DataSource  true  "Source info" true
+// @Param        source    body     ds.DataSource  true  "Source info" true
 // @Param        id    path     string  true  "Source info" id
-// @Success      200 {object} models.DataSource
+// @Success      200 {object} ds.DataSource
 // @Security bearerAuth
 //
 // @Router       /admin/ds/{id} [put]
 func UpdateDs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = models.DataSource{}.GetById(vars["id"]).(models.DataSource)
-	newm := models.DataSource{}
+	var exist = ds.DataSource{}.GetById(vars["id"]).(ds.DataSource)
+	newm := ds.DataSource{}
 
 	err := json.NewDecoder(r.Body).Decode(&newm)
 
 	newm.CreatedAt = exist.CreatedAt
 
-	server.MetaDb.GetConnection().Save(&newm)
+	db.MetaDb.GetConnection().Save(&newm)
 
 	resp, _ := json.Marshal(newm)
 	w.WriteHeader(200)
@@ -721,24 +606,24 @@ func UpdateDs(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        dse    body     models.DataSourceEndpoint  true  "Endpoint info" true
+// @Param        dse    body     ds.DataSourceEndpoint  true  "Endpoint info" true
 // @Param        id    path     string  true  "Endpoint id" id
 // @Param        dsId    path     string  true  "Data source id" id
-// @Success      200 {object} models.DataSourceEndpoint
+// @Success      200 {object} ds.DataSourceEndpoint
 // @Security bearerAuth
 //
 // @Router       /admin/ds/dse/{dsId}/{id} [put]
 func UpdateDse(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = models.DataSourceEndpoint{}.GetById(vars["id"]).(models.DataSourceEndpoint)
-	newm := models.DataSourceEndpoint{}
+	var exist = ds.DataSourceEndpoint{}.GetById(vars["id"]).(ds.DataSourceEndpoint)
+	newm := ds.DataSourceEndpoint{}
 
 	err := json.NewDecoder(r.Body).Decode(&newm)
 
 	newm.CreatedAt = exist.CreatedAt
 
-	server.MetaDb.GetConnection().Save(&newm)
+	db.MetaDb.GetConnection().Save(&newm)
 
 	resp, _ := json.Marshal(newm)
 	w.WriteHeader(200)
@@ -753,9 +638,9 @@ func UpdateDse(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        device    body     models.DataSource  true  "Source info" true
+// @Param        device    body     ds.DataSource  true  "Source info" true
 // @Param        id    path     string  true  "Function id" id
-// @Success      200 {object} models.DataSource
+// @Success      200 {object} ds.DataSource
 // @Security bearerAuth
 //
 // @Router       /admin/cf/{id} [put]
@@ -765,7 +650,7 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 
 	var projectId, _ = uuid.Parse(r.FormValue("project_id"))
 
-	uri, err := models.GetContainerUri(r.FormValue("container"))
+	uri, err := cf.GetContainerUri(r.FormValue("container"))
 	file, _, err := r.FormFile("dockerarc")
 	if err == nil {
 		err2.DebugErr(err)
@@ -779,7 +664,7 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 		server.PullDockerImage(uri.Vendor + "/" + uri.Image)
 	}
 
-	server.MetaDb.GetConnection().Table("cloud_functions").Where("id = ?", vars["id"]).Updates(
+	db.MetaDb.GetConnection().Table("cloud_functions").Where("id = ?", vars["id"]).Updates(
 		map[string]interface{}{
 			"title":      r.FormValue("title"),
 			"project_id": projectId,
@@ -789,7 +674,7 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 
-	resp, _ := json.Marshal(models.CloudFunction{}.GetById(vars["id"]))
+	resp, _ := json.Marshal(cf.CloudFunction{}.GetById(vars["id"]))
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
@@ -803,54 +688,23 @@ func UpdateCf(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        device    body     models.Pipeline  true  "Pipeline info" true
+// @Param        device    body     pipeline.Pipeline  true  "Pipeline info" true
 // @Param        id    path     string  true  "Pipeline id" id
-// @Success      200 {object} models.Pipeline
+// @Success      200 {object} pipeline.Pipeline
 // @Security bearerAuth
 //
 // @Router       /admin/pl/{id} [put]
 func UpdatePipeline(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = models.Pipeline{}.GetById(vars["id"]).(models.Pipeline)
-	newm := models.Pipeline{}
+	var exist = pipeline.Pipeline{}.GetById(vars["id"]).(pipeline.Pipeline)
+	newm := pipeline.Pipeline{}
 
 	err := json.NewDecoder(r.Body).Decode(&newm)
 
 	newm.CreatedAt = exist.CreatedAt
 
-	server.MetaDb.GetConnection().Save(&newm)
-
-	resp, _ := json.Marshal(newm)
-	w.WriteHeader(200)
-	_, err = w.Write(resp)
-	err2.DebugErr(err)
-}
-
-// UpdatePush
-// @Summary      Update push
-// @Description  Update push
-// @Tags         Push messages
-// @Tags         Admin
-// @Accept       json
-// @Produce      json
-// @Param        device    body     models.PushMessage  true  "push info" true
-// @Param        id    path     string  true  "push id" id
-// @Success      200 {object} models.PushMessage
-// @Security bearerAuth
-//
-// @Router       /admin/push/{id} [put]
-func UpdatePush(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-	vars := mux.Vars(r)
-	var exist = models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
-	newm := models.PushMessage{}
-
-	err := json.NewDecoder(r.Body).Decode(&newm)
-
-	newm.CreatedAt = exist.CreatedAt
-
-	server.MetaDb.GetConnection().Save(&newm)
+	db.MetaDb.GetConnection().Save(&newm)
 
 	resp, _ := json.Marshal(newm)
 	w.WriteHeader(200)
@@ -865,22 +719,22 @@ func UpdatePush(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        device    body     models.CronJob  true  "Cron job info" true
+// @Param        device    body     cron.CronJob  true  "Cron job info" true
 // @Param        id    path     string  true  "Cron id"
-// @Success      200 {object} models.CronJob
+// @Success      200 {object} cron.CronJob
 // @Security bearerAuth
 //
 // @Router       /admin/cron/{id} [put]
 func UpdateCron(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = models.CronJob{}.GetById(vars["id"]).(models.CronJob)
-	newm := models.CronJob{}
+	var exist = cron.CronJob{}.GetById(vars["id"]).(cron.CronJob)
+	newm := cron.CronJob{}
 
 	err := json.NewDecoder(r.Body).Decode(&newm)
 
 	newm.CreatedAt = exist.CreatedAt
-	server.MetaDb.GetConnection().Save(&newm)
+	db.MetaDb.GetConnection().Save(&newm)
 
 	c := server.Cron
 	c.GetScheduler().Remove(exist.CronId)
@@ -904,20 +758,7 @@ func UpdateCron(w http.ResponseWriter, r *http.Request) {
 //
 // @Router       /admin/topics/{id} [delete]
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {
-	deleteItem(models.Project{}, w, r)
-}
-
-func deleteItem(m models.Model, w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-
-	vars := mux.Vars(r)
-
-	m.Delete(vars["id"])
-
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-
-	w.WriteHeader(http.StatusNoContent)
+	utils.DeleteItem(project.Project{}, w, r)
 }
 
 // CreateTopic
@@ -927,15 +768,15 @@ func deleteItem(m models.Model, w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        topic    body     models.Project  true  "topic info" true
-// @Success      200 {object} models.Project
+/* @Param        topic    body     project.Project  true  "topic info" true
+// @Success      200 {object} project.Project */
 // @Security bearerAuth
 //
 // @Router       /admin/topics [post]
 func CreateTopic(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	var t models.Project
+	var t project.Project
 	t.Id, _ = uuid.NewUUID()
 
 	err := json.NewDecoder(r.Body).Decode(&t)
@@ -944,7 +785,7 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.MetaDb.GetConnection().Create(&t)
+	db.MetaDb.GetConnection().Create(&t)
 
 	resp, _ := json.Marshal(t)
 	w.WriteHeader(200)
@@ -959,15 +800,15 @@ func CreateTopic(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        user    body     models.CreateUserForm  true  "User info" true
-// @Success      200 {object} models.User
+// @Param        user    body     user.CreateUserForm  true  "User info" true
+// @Success      200 {object} user.User
 // @Security bearerAuth
 //
 // @Router       /admin/users [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	var t models.CreateUserForm
+	var t user.CreateUserForm
 
 	err := json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
@@ -975,8 +816,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := t.Save()
-	resp, _ := json.Marshal(user)
+	usr := t.Save()
+	resp, _ := json.Marshal(usr)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
@@ -989,14 +830,14 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        config    body     models.CreateUserForm  true  "Config info" true
-// @Success      200 {object} models.User
+// @Param        config    body     user.CreateUserForm  true  "Config info" true
+// @Success      200 {object} user.User
 // @Security bearerAuth
 //
 // @Router       /admin/config [post]
 func CreateConfig(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	model := models.Config{}
+	model := config.Config{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
@@ -1008,7 +849,7 @@ func CreateConfig(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	server.MetaDb.GetConnection().Create(&model)
+	db.MetaDb.GetConnection().Create(&model)
 
 	resp, _ := json.Marshal(model)
 	w.WriteHeader(200)
@@ -1024,14 +865,14 @@ func CreateConfig(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        ds    body     models.DataSource  true  "Data source info" true
-// @Success      200 {object} models.DataSource
+// @Param        ds    body     ds.DataSource  true  "Data source info" true
+// @Success      200 {object} ds.DataSource
 // @Security bearerAuth
 //
 // @Router       /admin/ds [post]
 func CreateDs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	model := models.DataSource{}
+	model := ds.DataSource{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
@@ -1043,7 +884,7 @@ func CreateDs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	server.MetaDb.GetConnection().Create(&model)
+	db.MetaDb.GetConnection().Create(&model)
 
 	resp, _ := json.Marshal(model)
 	w.WriteHeader(200)
@@ -1058,9 +899,9 @@ func CreateDs(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        dse    body     models.DataSourceEndpoint  true  "Data source info" true
+// @Param        dse    body     ds.DataSourceEndpoint  true  "Data source info" true
 // @Param        dsId    path     string  true  "Data source id" id
-// @Success      200 {object} models.DataSourceEndpoint
+// @Success      200 {object} ds.DataSourceEndpoint
 // @Security bearerAuth
 //
 // @Router       /admin/ds/dse/{dsId} [post]
@@ -1079,7 +920,7 @@ func CreateDse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := models.DataSourceEndpoint{
+	model := ds.DataSourceEndpoint{
 		DataSourceId: dsUuid,
 	}
 
@@ -1093,7 +934,7 @@ func CreateDse(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	server.MetaDb.GetConnection().Create(&model)
+	db.MetaDb.GetConnection().Create(&model)
 
 	resp, _ := json.Marshal(model)
 	w.WriteHeader(200)
@@ -1108,14 +949,14 @@ func CreateDse(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        cf    body     models.CloudFunction  true  "Function info" true
-// @Success      200 {object} models.CloudFunction
+// @Param        cf    body     cf.CloudFunction  true  "Function info" true
+// @Success      200 {object} cf.CloudFunction
 // @Security bearerAuth
 //
 // @Router       /admin/cf [post]
 func CreateCf(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	model := models.CloudFunction{}
+	model := cf.CloudFunction{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
@@ -1132,7 +973,7 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 
 	file, _, err := r.FormFile("dockerarc")
 	if err == nil {
-		uri, err := models.GetContainerUri(model.Container)
+		uri, err := cf.GetContainerUri(model.Container)
 		err2.DebugErr(err)
 
 		go func() {
@@ -1141,7 +982,7 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 		}()
 	}
 
-	server.MetaDb.GetConnection().Create(&model)
+	db.MetaDb.GetConnection().Create(&model)
 
 	resp, _ := json.Marshal(model)
 	w.WriteHeader(200)
@@ -1156,14 +997,14 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        pl    body     models.Pipeline  true  "Pipeline info" true
-// @Success      200 {object} models.Pipeline
+// @Param        pl    body     pipeline.Pipeline  true  "Pipeline info" true
+// @Success      200 {object} pipeline.Pipeline
 // @Security bearerAuth
 //
 // @Router       /admin/pl [post]
 func CreatePipeline(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	model := models.Pipeline{}
+	model := pipeline.Pipeline{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
@@ -1178,44 +1019,7 @@ func CreatePipeline(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.MetaDb.GetConnection().Create(&model)
-
-	resp, _ := json.Marshal(model)
-	w.WriteHeader(200)
-	_, err = w.Write(resp)
-	err2.DebugErr(err)
-}
-
-// CreatePush
-// @Summary      Create push message
-// @Description  Create push message
-// @Tags         Push messages
-// @Tags         Admin
-// @Accept       json
-// @Produce      json
-// @Param        push    body     models.PushMessage  true  "Push info" true
-// @Success      200 {object} models.PushMessage
-// @Security bearerAuth
-//
-// @Router       /admin/push [post]
-func CreatePush(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-	model := models.PushMessage{}
-
-	err := json.NewDecoder(r.Body).Decode(&model)
-	err2.DebugErr(err)
-	id, err := uuid.NewUUID()
-	model.Id = id
-	model.Sent = false
-
-	err2.DebugErr(err)
-
-	if err != nil {
-		log.Error(err)
-		http.Error(w, err.Error(), 400)
-		return
-	}
-	server.MetaDb.GetConnection().Create(&model)
+	db.MetaDb.GetConnection().Create(&model)
 
 	resp, _ := json.Marshal(model)
 	w.WriteHeader(200)
@@ -1230,14 +1034,14 @@ func CreatePush(w http.ResponseWriter, r *http.Request) {
 // @Tags         Admin
 // @Accept       json
 // @Produce      json
-// @Param        cron    body     models.CronJob  true  "Push info" true
-// @Success      200 {object} models.CronJob
+// @Param        cron    body     cron.CronJob  true  "Push info" true
+// @Success      200 {object} cron.CronJob
 // @Security bearerAuth
 //
 // @Router       /admin/cron [post]
 func CreateCron(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
-	model := models.CronJob{}
+	model := cron.CronJob{}
 
 	err := json.NewDecoder(r.Body).Decode(&model)
 	err2.DebugErr(err)
@@ -1251,7 +1055,7 @@ func CreateCron(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	server.MetaDb.GetConnection().Create(&model)
+	db.MetaDb.GetConnection().Create(&model)
 
 	model.Schedule(server.Cron.GetScheduler())
 
@@ -1269,27 +1073,27 @@ func CreateCron(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        email    query     string  false  "Email for login" gg
 // @Param        password    query     string  false  "Password for login" gg
-// @Success      200  {object}   models.User
+// @Success      200  {object}   user.User
 //
 // @Router       /admin/auth [post]
 func Auth(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	var l models.LoginForm
+	var l user.LoginForm
 	err := json.NewDecoder(r.Body).Decode(&l)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	user, err := l.AdminLogin()
+	usr, err := l.AdminLogin()
 
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	resp, _ := json.Marshal(user)
+	resp, _ := json.Marshal(usr)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)

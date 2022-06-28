@@ -1,9 +1,12 @@
-package models
+package cf
 
 import (
 	"context"
 	err2 "db-server/err"
+	"db-server/modules/pipeline"
+	"db-server/modules/project"
 	"db-server/server"
+	"db-server/server/db"
 	"errors"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -38,7 +41,7 @@ type CloudFunction struct {
 	UpdatedAt   time.Time      `json:"-"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
 	// Linked project
-	Project Project
+	Project project.Project
 	// Function run count
 	RunCount int64 `gorm:"-:all" json:"run_count"`
 }
@@ -70,7 +73,7 @@ func (p CloudFunctionLog) TableName() string {
 func ListCfLog(fId uuid.UUID, limit int, offset int, sort string, order string) []interface{} {
 	var sources []CloudFunctionLog
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.Find(&sources, CloudFunctionLog{FunctionId: fId}).Limit(limit).Offset(offset).Order(order + " " + sort)
 
@@ -83,7 +86,7 @@ func ListCfLog(fId uuid.UUID, limit int, offset int, sort string, order string) 
 }
 
 func LogsTotal(fId uuid.UUID) *int64 {
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	var sources []CloudFunctionLog
 	var cnt int64
 	conn.Count(&cnt).Find(&sources, CloudFunctionLog{FunctionId: fId})
@@ -124,7 +127,7 @@ func GetContainerUri(source string) (ContainerUri, error) {
 func (p CloudFunction) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var sources []CloudFunction
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	log.Debug(filter)
 
@@ -140,13 +143,13 @@ func (p CloudFunction) List(limit int, offset int, sort string, order string, fi
 }
 
 func (p CloudFunction) Total() *int64 {
-	return TotalRecords(&CloudFunction{})
+	return db.MetaDb.TotalRecords(&CloudFunction{})
 }
 
 func (p CloudFunction) GetById(id string) interface{} {
 	var source CloudFunction
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.First(&source, "id = ?", id)
 
@@ -158,7 +161,7 @@ func (p CloudFunction) GetById(id string) interface{} {
 }
 
 func (p CloudFunction) Delete(id string) {
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
@@ -189,7 +192,7 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 
 		p.ContainerId = cid
 
-		server.MetaDb.GetConnection().Model(CloudFunction{}).Where("id = ?", p.Id).Update("container_id", cid)
+		db.MetaDb.GetConnection().Model(CloudFunction{}).Where("id = ?", p.Id).Update("container_id", cid)
 	}
 
 	ctx := context.Background()
@@ -214,7 +217,7 @@ func (p CloudFunction) Run(runId uuid.UUID) {
 	result, err := makeResultFromStream(out)
 	p.checkErr(runId, err)
 
-	RunPipeline("func", p.Id, result)
+	pipeline.RunPipeline("func", p.Id, result)
 
 	log.Debug("Cf run result " + runId.String() + " " + result)
 
@@ -256,5 +259,5 @@ func (p CloudFunction) log(id uuid.UUID, result string) {
 	}
 	var err error
 	err2.DebugErr(err)
-	server.MetaDb.GetConnection().Create(&flog)
+	db.MetaDb.GetConnection().Create(&flog)
 }

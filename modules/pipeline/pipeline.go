@@ -1,7 +1,9 @@
-package models
+package pipeline
 
 import (
+	"db-server/modules/project"
 	"db-server/server"
+	"db-server/server/db"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -54,7 +56,7 @@ type PipelineProcess interface {
 func (p Pipeline) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var sources []Pipeline
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	log.Debug(filter)
 
@@ -70,28 +72,28 @@ func (p Pipeline) List(limit int, offset int, sort string, order string, filter 
 
 func (p Pipeline) GetById(id string) interface{} {
 	var source Pipeline
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	conn.First(&source, "id = ?", id)
 	return source
 }
 
 func (p Pipeline) Delete(id string) {
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
 func (p Pipeline) Total() *int64 {
-	return TotalRecords(&Pipeline{})
+	return db.MetaDb.TotalRecords(&Pipeline{})
 }
 
 func RunPipeline(inputName string, inputID uuid.UUID, data interface{}) {
 	var source Pipeline
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	tx := conn.First(&source, "input = ? AND input_id = ?", inputName, inputID.String())
 	if tx.RowsAffected > 0 {
 		switch source.Output {
 		case TopicOutput:
-			t := Project{}.GetById(source.OutputId.String()).(Project)
+			t := project.Project{}.GetById(source.OutputId.String()).(project.Project)
 			_ = server.SaveTopicMessage(os.Getenv("DB_NAME"), t.Topic, data)
 		}
 	}

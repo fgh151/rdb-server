@@ -2,27 +2,35 @@ package migrations
 
 import (
 	err2 "db-server/err"
-	"db-server/models"
+	"db-server/modules/cf"
+	"db-server/modules/config"
+	"db-server/modules/cron"
+	"db-server/modules/ds"
+	"db-server/modules/pipeline"
+	"db-server/modules/project"
+	"db-server/modules/push/models"
+	"db-server/modules/settings"
+	"db-server/modules/user"
 	"db-server/oauth"
 	"gorm.io/gorm"
 )
 
 func Migrate(db *gorm.DB) {
 	err := db.AutoMigrate(
-		&models.Project{},
-		&models.User{},
-		&models.Config{},
-		&models.DataSource{},
-		&models.DataSourceEndpoint{},
-		&models.CloudFunction{},
-		&models.CloudFunctionLog{},
+		&project.Project{},
+		&user.User{},
+		&config.Config{},
+		&ds.DataSource{},
+		&ds.DataSourceEndpoint{},
+		&cf.CloudFunction{},
+		&cf.CloudFunctionLog{},
 		&models.PushMessage{},
-		&models.UserDevice{},
+		&user.UserDevice{},
 		&models.PushLog{},
-		&models.CronJob{},
-		&models.Pipeline{},
+		&cron.CronJob{},
+		&pipeline.Pipeline{},
 		&oauth.UserOauth{},
-		&models.AppSettings{},
+		&settings.AppSettings{},
 	)
 
 	err2.PanicErr(err)

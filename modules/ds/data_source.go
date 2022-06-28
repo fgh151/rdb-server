@@ -1,8 +1,9 @@
-package models
+package ds
 
 import (
 	err2 "db-server/err"
-	"db-server/server"
+	"db-server/modules/project"
+	"db-server/server/db"
 	"github.com/google/uuid"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -39,7 +40,7 @@ type DataSource struct {
 	// Cache result in local db
 	Cache bool `json:"cache"`
 	// Linked project
-	Project   Project
+	Project   project.Project
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
@@ -55,7 +56,7 @@ func (p DataSource) TableName() string {
 func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var sources []DataSource
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Preload("Endpoints").Find(&sources)
 
@@ -68,13 +69,13 @@ func (p DataSource) List(limit int, offset int, sort string, order string, filte
 }
 
 func (p DataSource) Total() *int64 {
-	return TotalRecords(&DataSource{})
+	return db.MetaDb.TotalRecords(&DataSource{})
 }
 
 func (p DataSource) GetById(id string) interface{} {
 	var source DataSource
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.First(&source, "id = ?", id)
 
@@ -82,7 +83,7 @@ func (p DataSource) GetById(id string) interface{} {
 }
 
 func (p DataSource) Delete(id string) {
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
@@ -112,7 +113,7 @@ func (e DataSourceEndpoint) TableName() string {
 func (e DataSourceEndpoint) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var sources []DataSourceEndpoint
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Find(&sources)
 
@@ -162,7 +163,7 @@ func (e DataSourceEndpoint) attachConnectionToPool(conn *gorm.DB, err error) (*g
 func (e DataSourceEndpoint) GetById(id string) interface{} {
 	var source DataSourceEndpoint
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.First(&source, "id = ?", id)
 
@@ -186,6 +187,6 @@ func (e DataSourceEndpoint) Total() *int64 {
 }
 
 func (e DataSourceEndpoint) Delete(id string) {
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&e)
 }

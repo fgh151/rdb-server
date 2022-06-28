@@ -1,7 +1,9 @@
-package models
+package device
 
 import (
 	err2 "db-server/err"
+	"db-server/modules/push/models"
+	"db-server/modules/user"
 	"fmt"
 	apns "github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
@@ -12,7 +14,7 @@ import (
 type Ios struct {
 }
 
-func (p Ios) SendPush(message PushMessage, device UserDevice) error {
+func (p Ios) SendPush(message models.PushMessage, device user.UserDevice) error {
 
 	log.Debug("Send push " + message.Id.String() + " to " + device.Id.String())
 

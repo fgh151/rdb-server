@@ -1,8 +1,8 @@
-package models
+package user
 
 import (
 	"db-server/security"
-	"db-server/server"
+	"db-server/server/db"
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -42,7 +42,7 @@ func (p User) TableName() string {
 func (p User) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var users []User
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	query := conn.Limit(limit).Offset(offset).Order(sort + " " + order)
 
@@ -61,13 +61,13 @@ func (p User) List(limit int, offset int, sort string, order string, filter map[
 }
 
 func (p User) Total() *int64 {
-	return TotalRecords(&User{})
+	return db.MetaDb.TotalRecords(&User{})
 }
 
 func (p User) GetById(id string) interface{} {
 	var user User
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.Preload("Devices").First(&user, "id = ?", id)
 
@@ -77,7 +77,7 @@ func (p User) GetById(id string) interface{} {
 func (p User) GetByEmail(email string) (interface{}, error) {
 	var user User
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	tx := conn.First(&user, "email = ?", email)
 
@@ -89,7 +89,7 @@ func (p User) GetByEmail(email string) (interface{}, error) {
 }
 
 func (p User) Delete(id string) {
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
@@ -100,7 +100,7 @@ func (p User) ValidatePassword(password string) bool {
 func (p User) UpdateLastLogin() {
 	now := time.Now()
 	p.LastLogin = &now
-	server.MetaDb.GetConnection().Save(&p)
+	db.MetaDb.GetConnection().Save(&p)
 }
 
 // swagger:model
@@ -120,7 +120,7 @@ func (f CreateUserForm) Save() User {
 
 	u.Id, _ = uuid.NewUUID()
 
-	server.MetaDb.GetConnection().Create(&u)
+	db.MetaDb.GetConnection().Create(&u)
 
 	return u
 }
@@ -144,7 +144,7 @@ func (f LoginForm) ApiLogin() (User, error) {
 func (f LoginForm) login(condition *User) (User, error) {
 	var login User
 
-	server.MetaDb.GetConnection().Where(condition).First(&login)
+	db.MetaDb.GetConnection().Where(condition).First(&login)
 
 	if !login.ValidatePassword(f.Password) {
 		return login, errors.New("invalid login or password")

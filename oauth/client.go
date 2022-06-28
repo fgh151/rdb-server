@@ -2,8 +2,9 @@ package oauth
 
 import (
 	"context"
-	"db-server/models"
-	"db-server/server"
+	"db-server/modules/settings"
+	"db-server/modules/user"
+	"db-server/server/db"
 	"errors"
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
@@ -20,7 +21,7 @@ type UserOauth struct {
 	Id uuid.UUID `gorm:"primarykey" json:"id"`
 
 	UserId    uuid.UUID
-	User      models.User
+	User      user.User
 	ServiceId string
 	Data      datatypes.JSON
 }
@@ -30,22 +31,22 @@ func (o UserOauth) TableName() string {
 	return "user_oauth"
 }
 
-func (p UserOauth) GetUser() models.User {
-	return models.User{}.GetById(p.UserId.String()).(models.User)
+func (p UserOauth) GetUser() user.User {
+	return user.User{}.GetById(p.UserId.String()).(user.User)
 }
 
 func (p UserOauth) GetByExternalId(id string) (UserOauth, error) {
-	var user UserOauth
+	var u UserOauth
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
-	tx := conn.Preload("User").First(&user, "service_id = ?", id)
+	tx := conn.Preload("User").First(&u, "service_id = ?", id)
 
 	if tx.RowsAffected > 0 {
-		return user, nil
+		return u, nil
 	}
 
-	return user, errors.New("No user found")
+	return u, errors.New("No user found")
 }
 
 type ClientOauth struct {
@@ -68,9 +69,9 @@ func GetClient(provider string, projectId uuid.UUID) (ClientOauth, error) {
 			GetUserApi:   "https://api.github.com/user",
 			ExternalUser: GithubUser{},
 			Config: &oauth2.Config{
-				ClientID:     models.GetAppSettingsByName(projectId, "oauth_gh_client_id"),
-				ClientSecret: models.GetAppSettingsByName(projectId, "oauth_gh_client_secret"),
-				RedirectURL:  models.GetAppSettingsByName(projectId, "oauth_gh_client_redirect"),
+				ClientID:     settings.GetAppSettingsByName(projectId, "oauth_gh_client_id"),
+				ClientSecret: settings.GetAppSettingsByName(projectId, "oauth_gh_client_secret"),
+				RedirectURL:  settings.GetAppSettingsByName(projectId, "oauth_gh_client_redirect"),
 				Scopes:       []string{"user"},
 				Endpoint:     github.Endpoint,
 			},
@@ -81,9 +82,9 @@ func GetClient(provider string, projectId uuid.UUID) (ClientOauth, error) {
 			GetUserApi:   "https://api.vk.com/method/users.get.json",
 			ExternalUser: VkUser{},
 			Config: &oauth2.Config{
-				ClientID:     models.GetAppSettingsByName(projectId, "oauth_vk_client_id"),
-				ClientSecret: models.GetAppSettingsByName(projectId, "oauth_vk_client_secret"),
-				RedirectURL:  models.GetAppSettingsByName(projectId, "oauth_vk_client_redirect"),
+				ClientID:     settings.GetAppSettingsByName(projectId, "oauth_vk_client_id"),
+				ClientSecret: settings.GetAppSettingsByName(projectId, "oauth_vk_client_secret"),
+				RedirectURL:  settings.GetAppSettingsByName(projectId, "oauth_vk_client_redirect"),
 				Scopes:       []string{"email"},
 				Endpoint:     vk.Endpoint,
 			},
@@ -94,9 +95,9 @@ func GetClient(provider string, projectId uuid.UUID) (ClientOauth, error) {
 			GetUserApi:   "https://login.yandex.ru/info?format=json",
 			ExternalUser: YandexUser{},
 			Config: &oauth2.Config{
-				ClientID:     models.GetAppSettingsByName(projectId, "oauth_yandex_client_id"),
-				ClientSecret: models.GetAppSettingsByName(projectId, "oauth_yandex_client_secret"),
-				RedirectURL:  models.GetAppSettingsByName(projectId, "oauth_yandex_client_redirect"),
+				ClientID:     settings.GetAppSettingsByName(projectId, "oauth_yandex_client_id"),
+				ClientSecret: settings.GetAppSettingsByName(projectId, "oauth_yandex_client_secret"),
+				RedirectURL:  settings.GetAppSettingsByName(projectId, "oauth_yandex_client_redirect"),
 				Scopes:       []string{"email", "profile"},
 				Endpoint:     yandex.Endpoint,
 			},

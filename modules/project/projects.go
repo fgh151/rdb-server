@@ -1,13 +1,14 @@
-package models
+package project
 
 import (
-	"db-server/server"
+	"db-server/server/db"
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
 )
 
+// swagger:model
 type Project struct {
 	Id        uuid.UUID      `gorm:"primarykey" json:"id"`
 	Topic     string         `json:"topic"`
@@ -21,7 +22,7 @@ type Project struct {
 func (p Project) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var projects []Project
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.Offset(offset).Limit(limit).Order(sort + " " + order).Where(filter).Find(&projects)
 
@@ -34,13 +35,13 @@ func (p Project) List(limit int, offset int, sort string, order string, filter m
 }
 
 func (p Project) Total() *int64 {
-	return TotalRecords(&Project{})
+	return db.MetaDb.TotalRecords(&Project{})
 }
 
 func (p Project) GetById(id string) interface{} {
 	var project Project
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.First(&project, "id = ?", id)
 
@@ -50,7 +51,7 @@ func (p Project) GetById(id string) interface{} {
 func (p Project) GetByKey(key string) (interface{}, error) {
 	var project Project
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	tx := conn.First(&project, "key = ?", key)
 
@@ -64,7 +65,7 @@ func (p Project) GetByKey(key string) (interface{}, error) {
 func (p Project) GetByTopic(topic string) interface{} {
 	var project Project
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.First(&project, "topic = ?", topic)
 
@@ -72,14 +73,14 @@ func (p Project) GetByTopic(topic string) interface{} {
 }
 
 func (p Project) Delete(id string) {
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
 }
 
 func (p Project) GetKey(topic string) string {
 	var project Project
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.First(&project, "topic = ?", topic)
 

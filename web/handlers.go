@@ -4,8 +4,9 @@ import (
 	"db-server/drivers"
 	err2 "db-server/err"
 	"db-server/events"
-	"db-server/models"
+	"db-server/modules/project"
 	"db-server/server"
+	"db-server/utils"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -34,7 +35,7 @@ func getPayload(r *http.Request) map[string]interface{} {
 
 func checkAccess(w http.ResponseWriter, r *http.Request) bool {
 	topic := GetTopic(r)
-	p := models.Project{}.GetByTopic(topic).(models.Project)
+	p := project.Project{}.GetByTopic(topic).(project.Project)
 
 	if !validateOrigin(p, r.Header.Get("Origin")) {
 		Send403Error(w, "Cors error. Origin not allowed")
@@ -49,7 +50,7 @@ func checkAccess(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
-func validateOrigin(p models.Project, origin string) bool {
+func validateOrigin(p project.Project, origin string) bool {
 	pOrigins := strings.Split(p.Origins, ";")
 	for _, pOrigin := range pOrigins {
 		if pOrigin == origin {
@@ -121,7 +122,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	rkey := vars["key"]
 
-	if !validateKey(models.Project{}.GetKey(topic), rkey) {
+	if !validateKey(project.Project{}.GetKey(topic), rkey) {
 		Send403Error(w, "db-key not Valid")
 	} else {
 		c, err := upgrader.Upgrade(w, r, nil)
@@ -214,7 +215,7 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 	requestPayload := getPayload(r)
 
 	if checkAccess(w, r) {
-		limit, offset, _, _ := GetPagination(r)
+		limit, offset, _, _ := utils.GetPagination(r)
 
 		res, err := drivers.GetDbInstance().Find(os.Getenv("DB_NAME"), topic, requestPayload, int64(limit), int64(offset))
 
@@ -240,7 +241,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 	if checkAccess(w, r) {
 
-		limit, offset, rorder, sort := GetPagination(r)
+		limit, offset, rorder, sort := utils.GetPagination(r)
 
 		v := r.URL.Query()
 		filter := bson.D{{}}
@@ -283,7 +284,7 @@ func AdminListHandler(w http.ResponseWriter, r *http.Request) {
 
 	topic := GetTopic(r)
 
-	limit, offset, rorder, sort := GetPagination(r)
+	limit, offset, rorder, sort := utils.GetPagination(r)
 
 	v := r.URL.Query()
 	filter := bson.D{{}}

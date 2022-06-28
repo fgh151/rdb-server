@@ -3,9 +3,13 @@ package web
 import (
 	"db-server/auth"
 	err2 "db-server/err"
-	"db-server/models"
+	"db-server/modules/cf"
+	"db-server/modules/config"
+	"db-server/modules/ds"
+	"db-server/modules/project"
+	"db-server/modules/user"
 	"db-server/oauth"
-	"db-server/server"
+	"db-server/server/db"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -25,20 +29,20 @@ import (
 // @Produce      json
 // @Param        email    query     string  false  "Email for login" gg
 // @Param        password    query     string  false  "Password for login" gg
-// @Success      200  {object}   models.User
+// @Success      200  {object}   user.User
 //
 // @Router       /api/user/auth [post]
 func ApiAuth(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	var l models.LoginForm
+	var l user.LoginForm
 	err := json.NewDecoder(r.Body).Decode(&l)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	user, err := l.ApiLogin()
+	usr, err := l.ApiLogin()
 
 	if err != nil {
 		err2.DebugErr(err)
@@ -46,7 +50,7 @@ func ApiAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, _ := json.Marshal(user)
+	resp, _ := json.Marshal(usr)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
@@ -72,14 +76,14 @@ func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {
 	provider := vars["provider"]
 
 	rKey := r.Header.Get("db-key")
-	p, err := models.Project{}.GetByKey(rKey)
+	p, err := project.Project{}.GetByKey(rKey)
 
 	if err != nil {
 		payload := map[string]string{"code": "not acceptable", "message": err.Error()}
 		sendResponse(w, 500, payload, nil)
 	}
 
-	client, _ := oauth.GetClient(provider, p.(models.Project).Id)
+	client, _ := oauth.GetClient(provider, p.(project.Project).Id)
 
 	url := client.Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
 
@@ -97,7 +101,7 @@ func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {
 // @Param        provider    path     string  true  "Provider name"
 // @Param        code    path     string  true  "Code"
 // @Param        db-key    header     string  true  "Auth key" gg
-// @Success      200  {object} models.User
+// @Success      200  {object} user.User
 //
 // @Router       /api/user/oauth/{provider}/{code} [get]
 func ApiOAuthCode(w http.ResponseWriter, r *http.Request) {
@@ -107,14 +111,14 @@ func ApiOAuthCode(w http.ResponseWriter, r *http.Request) {
 	code := vars["code"]
 
 	rKey := r.Header.Get("db-key")
-	p, err := models.Project{}.GetByKey(rKey)
+	p, err := project.Project{}.GetByKey(rKey)
 
 	if err != nil {
 		payload := map[string]string{"code": "not acceptable", "message": err.Error()}
 		sendResponse(w, 500, payload, nil)
 	}
 
-	client, _ := oauth.GetClient(provider, p.(models.Project).Id)
+	client, _ := oauth.GetClient(provider, p.(project.Project).Id)
 
 	u, err := client.GetUserByCode(code)
 
@@ -125,10 +129,10 @@ func ApiOAuthCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := u.GetUser()
-	user.UpdateLastLogin()
+	usr := u.GetUser()
+	usr.UpdateLastLogin()
 
-	rresp, _ := json.Marshal(user)
+	rresp, _ := json.Marshal(usr)
 	w.WriteHeader(200)
 	_, err = w.Write(rresp)
 	err2.DebugErr(err)
@@ -145,13 +149,13 @@ func ApiOAuthCode(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        email    query     string  false  "Email for login" gg
 // @Param        password    query     string  false  "Password for login" gg
-// @Success      200  {object}   models.User
+// @Success      200  {object}   user.User
 //
 // @Router       /api/user/register [post]
 func ApiRegister(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	var t models.CreateUserForm
+	var t user.CreateUserForm
 
 	err := json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
@@ -159,12 +163,12 @@ func ApiRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := t.Save()
+	usr := t.Save()
 	now := time.Now()
-	user.LastLogin = &now
-	server.MetaDb.GetConnection().Save(&user)
+	usr.LastLogin = &now
+	db.MetaDb.GetConnection().Save(&usr)
 
-	resp, _ := json.Marshal(user)
+	resp, _ := json.Marshal(usr)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
@@ -180,14 +184,14 @@ func ApiRegister(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 // @Param        email    query     string  false  "Email for login" gg
 // @Param        password    query     string  false  "Password for login" gg
-// @Success      200  {object}   models.User
+// @Success      200  {object}   user.User
 //
 // @Router       /api/user/me [get]
 func ApiMe(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	user := auth.GetUserFromRequest(r)
-	resp, _ := json.Marshal(user)
+	usr := auth.GetUserFromRequest(r)
+	resp, _ := json.Marshal(usr)
 	w.WriteHeader(200)
 	_, err := w.Write(resp)
 	err2.DebugErr(err)
@@ -209,7 +213,7 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
-	model := models.Config{}.GetById(vars["id"]).(models.Config)
+	model := config.Config{}.GetById(vars["id"]).(config.Config)
 
 	rKey := r.Header.Get("db-key")
 
@@ -232,14 +236,14 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        db-key    header     string  true  "Auth key" gg
 // @Param        id    path     string  true  "Source id"
-// @Success      200  {object}   models.Project
+// @Success      200  {object}   project.Project
 //
 // @Router       /dse/{id} [get]
 func DSEItem(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
-	model := models.DataSourceEndpoint{}.GetById(vars["id"]).(models.DataSourceEndpoint)
+	model := ds.DataSourceEndpoint{}.GetById(vars["id"]).(ds.DataSourceEndpoint)
 
 	arr := model.List(10, 0, "id", "ASC", make(map[string]interface{}))
 	total := model.Total()
@@ -270,11 +274,11 @@ func CfRun(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
-	cf := models.CloudFunction{}.GetById(vars["id"]).(models.CloudFunction)
+	cfu := cf.CloudFunction{}.GetById(vars["id"]).(cf.CloudFunction)
 
 	id, _ := uuid.NewUUID()
 
-	go cf.Run(id)
+	go cfu.Run(id)
 	m := make(map[string]string)
 	m["id"] = id.String()
 
@@ -282,26 +286,6 @@ func CfRun(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	_, err := w.Write(resp)
 	err2.DebugErr(err)
-}
-
-// PushRun
-// @Summary      Send push
-// @Description  Send push with id
-// @Tags         Push messages
-// @Tags         Public Api
-// @Accept       json
-// @Produce      json
-// @Param        db-key    header     string  true  "Auth key" true
-// @Param        id    path     string  true  "Push id"
-// @Success      200
-//
-// @Router       /api/push/{id}/run [get]
-func PushRun(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-	vars := mux.Vars(r)
-	message := models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
-	go message.Send()
-	w.WriteHeader(200)
 }
 
 // CfRunLog
@@ -314,7 +298,7 @@ func PushRun(w http.ResponseWriter, r *http.Request) {
 // @Param        db-key    header     string  false  "Auth key" true
 // @Param        id    path     string  true  "Function id"
 // @Param        rid    path     string  true  "Run id"
-// @Success      200 {object} models.CloudFunctionLog
+// @Success      200 {object} cf.CloudFunctionLog
 //
 // @Router       /api/cf/{id}/run/{rid} [get]
 func CfRunLog(w http.ResponseWriter, r *http.Request) {
@@ -322,9 +306,9 @@ func CfRunLog(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	var logModel models.CloudFunctionLog
+	var logModel cf.CloudFunctionLog
 
-	conn := server.MetaDb.GetConnection()
+	conn := db.MetaDb.GetConnection()
 
 	conn.First(&logModel, "id = ? AND function_id = ?", vars["rid"], vars["id"])
 
@@ -341,8 +325,8 @@ func CfRunLog(w http.ResponseWriter, r *http.Request) {
 // @Tags         Public Api
 // @Accept       json
 // @Produce      json
-// @Param        device    body     models.UserDevice  true  "Device info" true
-// @Success      200 {object} models.UserDevice
+// @Param        device    body     user.UserDevice  true  "Device info" true
+// @Success      200 {object} user.UserDevice
 //
 // @Router       /api/device/register [post]
 func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
@@ -355,8 +339,8 @@ func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 
 	err2.DebugErr(err)
 
-	var device models.UserDevice
-	conn := server.MetaDb.GetConnection()
+	var device user.UserDevice
+	conn := db.MetaDb.GetConnection()
 	res := conn.First(&device, "device_token = ?", result["device_token"])
 
 	log.Debug(res.RowsAffected)
@@ -368,7 +352,7 @@ func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 		userId, err := uuid.Parse(result["user_id"])
 		err2.DebugErr(err)
 
-		device = models.UserDevice{
+		device = user.UserDevice{
 			Id:          id,
 			DeviceToken: result["device_token"],
 			UserId:      userId,
