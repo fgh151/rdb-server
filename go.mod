@@ -22,10 +22,10 @@ require (
 	go.mongodb.org/mongo-driver v1.8.3
 	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
 	gorm.io/datatypes v1.0.6
-	gorm.io/driver/mysql v1.3.2
+	gorm.io/driver/mysql v1.3.4
 	gorm.io/driver/postgres v1.3.1
 	gorm.io/driver/sqlite v1.3.1
-	gorm.io/gorm v1.23.2
+	gorm.io/gorm v1.23.4
 )
 
 require (
