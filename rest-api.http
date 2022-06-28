@@ -133,3 +133,9 @@ GET http://localhost:9090/api/user/oauth/github/link
 
 ### OAuth user
 GET http://localhost:9090/api/user/oauth/github/af5b6435760a4b7ef71f
+
+
+### List oauth settings
+GET http://localhost:9090/admin/settings/bb0b5e3a-c6cd-11ec-88e1-acde48001122/oauth
+Accept: */*
+Authorization: Bearer 123

@@ -48,7 +48,7 @@ func (p Project) GetById(id string) interface{} {
 	return project
 }
 
-func (p Project) GetByKey(key string) (interface{}, error) {
+func (p Project) GetByKey(key string) (Project, error) {
 	var project Project
 
 	conn := db.MetaDb.GetConnection()
