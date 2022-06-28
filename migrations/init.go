@@ -6,12 +6,12 @@ import (
 	"db-server/modules/config"
 	"db-server/modules/cron"
 	"db-server/modules/ds"
+	"db-server/modules/oauth"
 	"db-server/modules/pipeline"
 	"db-server/modules/project"
 	"db-server/modules/push/models"
 	"db-server/modules/settings"
 	"db-server/modules/user"
-	"db-server/oauth"
 	"gorm.io/gorm"
 )
 

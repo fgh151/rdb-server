@@ -3,8 +3,8 @@ package subcommands
 import (
 	"context"
 	"db-server/modules/user"
-	"db-server/security"
 	"db-server/server/db"
+	"db-server/utils"
 	"flag"
 	"github.com/google/subcommands"
 	"github.com/google/uuid"
@@ -33,7 +33,7 @@ func (p *Demo) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) sub
 func CreateDemo() {
 	var u = user.User{
 		Email:        "test@example.com",
-		PasswordHash: security.HashPassword("test"),
+		PasswordHash: utils.HashPassword("test"),
 		Token:        "123",
 		Active:       true,
 		Admin:        true,
