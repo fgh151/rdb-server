@@ -34,6 +34,11 @@ type User struct {
 	Devices []UserDevice `gorm:"foreignKey:user_id" json:"devices"`
 }
 
+// TableName Gorm table name
+func (p User) TableName() string {
+	return "user"
+}
+
 func (p User) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var users []User
 

@@ -32,6 +32,11 @@ type PushLog struct {
 	SentAt        time.Time
 }
 
+// TableName Gorm table name
+func (p PushLog) TableName() string {
+	return "push_log"
+}
+
 type Sender interface {
 	SendPush(message PushMessage, device UserDevice) error
 }
@@ -101,6 +106,11 @@ func (p PushMessage) Send() {
 	server.MetaDb.GetConnection().Save(&p)
 }
 
+// TableName Gorm table name
+func (p PushMessage) TableName() string {
+	return "push_message"
+}
+
 func createPushLog(message PushMessage, device UserDevice, err error) {
 
 	id, _ := uuid.NewUUID()
@@ -134,4 +144,9 @@ type UserDevice struct {
 	CreatedAt   time.Time      `json:"-"`
 	UpdatedAt   time.Time      `json:"-"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+// TableName Gorm table name
+func (d UserDevice) TableName() string {
+	return "user_device"
 }

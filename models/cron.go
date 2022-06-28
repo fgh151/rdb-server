@@ -21,6 +21,11 @@ type CronJob struct {
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
+// TableName Gorm table name
+func (j CronJob) TableName() string {
+	return "cron_job"
+}
+
 func (j CronJob) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var jobs []CronJob
 

@@ -76,7 +76,7 @@ func (p Project) Delete(id string) {
 	conn.Where("id = ?", id).Delete(&p)
 }
 
-func (c Project) GetKey(topic string) string {
+func (p Project) GetKey(topic string) string {
 	var project Project
 
 	conn := server.MetaDb.GetConnection()
@@ -84,4 +84,9 @@ func (c Project) GetKey(topic string) string {
 	conn.First(&project, "topic = ?", topic)
 
 	return project.Key
+}
+
+// TableName Gorm table name
+func (p Project) TableName() string {
+	return "project"
 }

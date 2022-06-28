@@ -14,6 +14,11 @@ type Config struct {
 	Project   Project        `json:"project"`
 }
 
+// TableName Gorm table name
+func (p Config) TableName() string {
+	return "config"
+}
+
 func (p Config) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var configs []Config
 

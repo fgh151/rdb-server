@@ -17,9 +17,9 @@ const (
 
 type PipelineInputType string
 
-const (
-	FunctionInput PipelineInputType = "func"
-)
+//const (
+//	FunctionInput PipelineInputType = "func"
+//)
 
 type Pipeline struct {
 	// The pipeline UUID
@@ -40,6 +40,11 @@ type Pipeline struct {
 	CreatedAt time.Time      `json:"-"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+// TableName Gorm table name
+func (p Pipeline) TableName() string {
+	return "pipeline"
 }
 
 type PipelineProcess interface {

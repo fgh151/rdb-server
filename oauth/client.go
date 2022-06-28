@@ -25,6 +25,11 @@ type UserOauth struct {
 	Data      datatypes.JSON
 }
 
+// TableName Gorm table name
+func (o UserOauth) TableName() string {
+	return "user_oauth"
+}
+
 func (p UserOauth) GetUser() models.User {
 	return models.User{}.GetById(p.UserId.String()).(models.User)
 }

@@ -47,6 +47,11 @@ type DataSource struct {
 	Endpoints []DataSourceEndpoint `json:"endpoints"`
 }
 
+// TableName Gorm table name
+func (p DataSource) TableName() string {
+	return "ds_source"
+}
+
 func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
 	var sources []DataSource
 
@@ -88,7 +93,7 @@ type DataSourceEndpoint struct {
 	// Data source endpoint title
 	Title string `json:"title"`
 	// Endpoint table name
-	TableName string `json:"table_name"`
+	SourceTable string `json:"table_name"`
 	// Linked data source UUID
 	// example: 6204011c-33e6-408b-8aaa-dd8214860b4b
 	DataSourceId uuid.UUID `json:"data_source"`
@@ -97,6 +102,11 @@ type DataSourceEndpoint struct {
 	CreatedAt  time.Time      `json:"-"`
 	UpdatedAt  time.Time      `json:"-"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+// TableName Gorm table name
+func (e DataSourceEndpoint) TableName() string {
+	return "ds_endpoint"
 }
 
 func (e DataSourceEndpoint) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
@@ -170,7 +180,7 @@ func (e DataSourceEndpoint) Total() *int64 {
 		return &cnt
 	}
 
-	conn.Table(e.TableName).Count(&cnt)
+	conn.Table(e.SourceTable).Count(&cnt)
 
 	return &cnt
 }

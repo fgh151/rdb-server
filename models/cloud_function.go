@@ -43,6 +43,11 @@ type CloudFunction struct {
 	RunCount int64 `gorm:"-:all" json:"run_count"`
 }
 
+// TableName Gorm table name
+func (p CloudFunction) TableName() string {
+	return "cf_function"
+}
+
 // swagger:model
 type CloudFunctionLog struct {
 	// The log UUID
@@ -55,6 +60,11 @@ type CloudFunctionLog struct {
 	RunAt time.Time `json:"run_at"`
 	// Run result
 	Result string `json:"result"`
+}
+
+// TableName Gorm table name
+func (p CloudFunctionLog) TableName() string {
+	return "cf_log"
 }
 
 func ListCfLog(fId uuid.UUID, limit int, offset int, sort string, order string) []interface{} {
