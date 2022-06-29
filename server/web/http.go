@@ -10,6 +10,7 @@ import (
 	"db-server/modules/em"
 	"db-server/modules/oauth"
 	"db-server/modules/pipeline"
+	"db-server/modules/project"
 	"db-server/modules/push"
 	"db-server/modules/storage"
 	"db-server/modules/user"
@@ -77,6 +78,7 @@ func StartServer(enableDocs *bool) {
 	admin := r.PathPrefix("/admin").Subrouter()
 	admin.Use(auth.AdminVerify)
 
+	project.AddAdminRoutes(admin)
 	em.AddAdminRoutes(admin)
 	user.AddAdminRoutes(admin)
 	config.AddAdminRoutes(admin)

@@ -10,6 +10,7 @@ import (
 	"db-server/modules/pipeline"
 	"db-server/modules/project"
 	"db-server/modules/push/models"
+	"db-server/modules/rdb"
 	"db-server/modules/settings"
 	"db-server/modules/user"
 	"gorm.io/gorm"
@@ -31,6 +32,7 @@ func Migrate(db *gorm.DB) {
 		&pipeline.Pipeline{},
 		&oauth.UserOauth{},
 		&settings.AppSettings{},
+		&rdb.Rdb{},
 	)
 
 	err2.PanicErr(err)

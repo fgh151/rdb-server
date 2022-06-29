@@ -1,7 +1,7 @@
 package pipeline
 
 import (
-	"db-server/modules/project"
+	"db-server/modules/rdb"
 	"db-server/server"
 	"db-server/server/db"
 	"github.com/google/uuid"
@@ -93,8 +93,8 @@ func RunPipeline(inputName string, inputID uuid.UUID, data interface{}) {
 	if tx.RowsAffected > 0 {
 		switch source.Output {
 		case TopicOutput:
-			t := project.Project{}.GetById(source.OutputId.String()).(project.Project)
-			_ = server.SaveTopicMessage(os.Getenv("DB_NAME"), t.Topic, data)
+			t := rdb.Rdb{}.GetById(source.OutputId.String()).(rdb.Rdb)
+			_ = server.SaveTopicMessage(os.Getenv("DB_NAME"), t.Collection, data)
 		}
 	}
 	return

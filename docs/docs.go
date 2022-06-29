@@ -1256,6 +1256,186 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/projects": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "List projects",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "List projects",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.Project"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Create project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects",
+                    "Admin"
+                ],
+                "summary": "Create project",
+                "parameters": [
+                    {
+                        "description": "project info",
+                        "name": "project",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/projects/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Project detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects",
+                    "Admin"
+                ],
+                "summary": "Projects item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Update project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects",
+                    "Admin"
+                ],
+                "summary": "Update project",
+                "parameters": [
+                    {
+                        "description": "Project info",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects",
+                    "Admin"
+                ],
+                "summary": "Delete project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/admin/push": {
             "get": {
                 "security": [
@@ -1442,186 +1622,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/topics": {
-            "get": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "description": "List topics",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TopicOutput"
-                ],
-                "summary": "List topics",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/project.Project"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "description": "Create topic",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Entity manager",
-                    "Admin"
-                ],
-                "summary": "Create topic",
-                "parameters": [
-                    {
-                        "description": "topic info",
-                        "name": "topic",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/project.Project"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/project.Project"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/topics/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "description": "topic detail info",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Entity manager",
-                    "Admin"
-                ],
-                "summary": "TopicOutput",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "TopicOutput id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/project.Project"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "description": "Update topic",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Entity manager",
-                    "Admin"
-                ],
-                "summary": "Update topic",
-                "parameters": [
-                    {
-                        "description": "Project info",
-                        "name": "device",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/project.Project"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Project id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/project.Project"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete topic",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Entity manager",
-                    "Admin"
-                ],
-                "summary": "Delete topic",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "TopicOutput id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    }
-                }
-            }
-        },
         "/admin/topics/{topic}/data": {
             "get": {
                 "security": [
@@ -1640,11 +1640,11 @@ const docTemplate = `{
                     "Entity manager",
                     "Admin"
                 ],
-                "summary": "TopicOutput data",
+                "summary": "Topic output data",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "TopicOutput name",
+                        "description": "Topic name",
                         "name": "topic",
                         "in": "path",
                         "required": true
@@ -2865,10 +2865,10 @@ const docTemplate = `{
                 "key": {
                     "type": "string"
                 },
-                "origins": {
+                "name": {
                     "type": "string"
                 },
-                "topic": {
+                "origins": {
                     "type": "string"
                 }
             }

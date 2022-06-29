@@ -1,0 +1,39 @@
+package rdb
+
+import (
+	"db-server/modules/project"
+	"db-server/server/db"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+	"time"
+)
+
+type Rdb struct {
+	Id        uuid.UUID `gorm:"primarykey" json:"id"`
+	ProjectId uuid.UUID `json:"project_id"`
+
+	Project    project.Project
+	Collection string         `json:"collection"`
+	CreatedAt  time.Time      `json:"-"`
+	UpdatedAt  time.Time      `json:"-"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+func (p Rdb) GetById(id string) interface{} {
+	var source Rdb
+	conn := db.MetaDb.GetConnection()
+	conn.First(&source, "id = ?", id)
+	return source
+}
+
+func (p Rdb) GetByCollection(collection string) Rdb {
+	var source Rdb
+	conn := db.MetaDb.GetConnection()
+	conn.Preload("Project").First(&source, "collection = ?", collection)
+	return source
+}
+
+// TableName Gorm table name
+func (p Rdb) TableName() string {
+	return "rdb"
+}

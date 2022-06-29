@@ -11,7 +11,7 @@ import (
 // swagger:model
 type Project struct {
 	Id        uuid.UUID      `gorm:"primarykey" json:"id"`
-	Topic     string         `json:"topic"`
+	Name      string         `json:"name"`
 	Key       string         `json:"key"`
 	Origins   string         `json:"origins"`
 	CreatedAt time.Time      `json:"-"`
@@ -62,29 +62,9 @@ func (p Project) GetByKey(key string) (Project, error) {
 	return project, nil
 }
 
-func (p Project) GetByTopic(topic string) interface{} {
-	var project Project
-
-	conn := db.MetaDb.GetConnection()
-
-	conn.First(&project, "topic = ?", topic)
-
-	return project
-}
-
 func (p Project) Delete(id string) {
 	conn := db.MetaDb.GetConnection()
 	conn.Where("id = ?", id).Delete(&p)
-}
-
-func (p Project) GetKey(topic string) string {
-	var project Project
-
-	conn := db.MetaDb.GetConnection()
-
-	conn.First(&project, "topic = ?", topic)
-
-	return project.Key
 }
 
 // TableName Gorm table name

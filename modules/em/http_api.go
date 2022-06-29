@@ -2,15 +2,12 @@ package em
 
 import (
 	"db-server/drivers"
-	err2 "db-server/err"
 	"db-server/events"
 	"db-server/modules/project"
+	"db-server/modules/rdb"
 	"db-server/server"
-	"db-server/server/db"
 	"db-server/utils"
-	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
@@ -32,13 +29,7 @@ func AddPublicApiRoutes(em *mux.Router) {
 }
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/topics", ListTopics).Methods(http.MethodGet, http.MethodOptions)             // each request calls PushHandler
-	admin.HandleFunc("/topics", CreateTopic).Methods(http.MethodPost, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/topics/{topic}/data", TopicData).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/topics/{id}", TopicItem).Methods(http.MethodGet, http.MethodOptions)         // each request calls PushHandler
-	admin.HandleFunc("/topics/{id}", DeleteTopic).Methods(http.MethodDelete, http.MethodOptions)    // each request calls PushHandler
-	admin.HandleFunc("/topics/{id}", UpdateTopic).Methods(http.MethodPut, http.MethodOptions)       // each request calls PushHandler
-
+	admin.HandleFunc("/topics/{topic}/data", TopicData).Methods(http.MethodGet, http.MethodOptions)    // each request calls PushHandler
 	admin.HandleFunc("/em/list/{topic}", AdminListHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 }
 
@@ -49,7 +40,10 @@ func GetTopic(r *http.Request) string {
 
 func checkAccess(w http.ResponseWriter, r *http.Request) bool {
 	topic := GetTopic(r)
-	p := project.Project{}.GetByTopic(topic).(project.Project)
+
+	dbi := rdb.Rdb{}.GetByCollection(topic)
+
+	p := dbi.Project
 
 	if !validateOrigin(p, r.Header.Get("Origin")) {
 		utils.Send403Error(w, "Cors error. Origin not allowed")
@@ -126,7 +120,11 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	rkey := vars["key"]
 
-	if !utils.ValidateKey(project.Project{}.GetKey(topic), rkey) {
+	dbi := rdb.Rdb{}.GetByCollection(topic)
+
+	p := dbi.Project
+
+	if !utils.ValidateKey(p.Key, rkey) {
 		utils.Send403Error(w, "db-key not Valid")
 	} else {
 		c, err := upgrader.Upgrade(w, r, nil)
@@ -325,44 +323,14 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// ListTopics godoc
-// @Summary      List topics
-// @Description  List topics
-// @Tags         TopicOutput
-// @Accept       json
-// @Produce      json
-// @Security bearerAuth
-// @Success      200  {array}   project.Project
-//
-// @Router       /admin/topics [get]
-func ListTopics(w http.ResponseWriter, r *http.Request) {
-	utils.ListItems(project.Project{}, []string{}, r, w)
-}
-
-// TopicItem godoc
-// @Summary      TopicOutput
-// @Description  topic detail info
-// @Tags         Entity manager
-// @tags Admin
-// @Accept       json
-// @Produce      json
-// @Param        id path    string  true  "TopicOutput id" id
-// @Security bearerAuth
-// @Success      200  {object}   project.Project
-//
-// @Router       /admin/topics/{id} [get]
-func TopicItem(w http.ResponseWriter, r *http.Request) {
-	utils.GetItem(project.Project{}, w, r)
-}
-
 // TopicData godoc
-// @Summary      TopicOutput data
+// @Summary      Topic output data
 // @Description  topic data
 // @Tags         Entity manager
 // @tags Admin
 // @Accept       json
 // @Produce      json
-// @Param        topic path    string  true  "TopicOutput name"
+// @Param        topic path    string  true  "Topic name"
 // @Security bearerAuth
 // @Success      200  {array} object
 //
@@ -398,85 +366,4 @@ func TopicData(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("X-Total-Count", strconv.FormatInt(count, 10))
 
 	utils.SendResponse(w, 200, result, err)
-}
-
-// UpdateTopic
-// @Summary      Update topic
-// @Description  Update topic
-// @Tags         Entity manager
-// @Tags         Admin
-// @Accept       json
-// @Produce      json
-// @Param        device    body     project.Project  true  "Project info" true
-// @Param        id    path     string  true  "Project id" true
-// @Success      200 {object} project.Project */
-// @Security bearerAuth
-//
-// @Router       /admin/topics/{id} [put]
-func UpdateTopic(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-
-	vars := mux.Vars(r)
-
-	var t = project.Project{}.GetById(vars["id"]).(project.Project)
-
-	err := json.NewDecoder(r.Body).Decode(&t)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	db.MetaDb.GetConnection().Save(&t)
-
-	resp, _ := json.Marshal(t)
-	w.WriteHeader(200)
-	_, err = w.Write(resp)
-	err2.DebugErr(err)
-}
-
-// DeleteTopic godoc
-// @Summary      Delete topic
-// @Description  Delete topic
-// @Tags         Entity manager
-// @Tags         Admin
-// @Accept       json
-// @Produce      json
-// @Param        id    path     string  true  "TopicOutput id" string
-// @Success      204
-//
-// @Router       /admin/topics/{id} [delete]
-func DeleteTopic(w http.ResponseWriter, r *http.Request) {
-	utils.DeleteItem(project.Project{}, w, r)
-}
-
-// CreateTopic
-// @Summary      Create topic
-// @Description  Create topic
-// @Tags         Entity manager
-// @Tags         Admin
-// @Accept       json
-// @Produce      json
-// @Param        topic    body     project.Project  true  "topic info" true
-// @Success      200 {object} project.Project */
-// @Security bearerAuth
-//
-// @Router       /admin/topics [post]
-func CreateTopic(w http.ResponseWriter, r *http.Request) {
-	log.Debug(r.Method, r.RequestURI)
-
-	var t project.Project
-	t.Id, _ = uuid.NewUUID()
-
-	err := json.NewDecoder(r.Body).Decode(&t)
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	db.MetaDb.GetConnection().Create(&t)
-
-	resp, _ := json.Marshal(t)
-	w.WriteHeader(200)
-	_, err = w.Write(resp)
-	err2.DebugErr(err)
 }

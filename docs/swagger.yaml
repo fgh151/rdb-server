@@ -188,9 +188,9 @@ definitions:
         type: string
       key:
         type: string
-      origins:
+      name:
         type: string
-      topic:
+      origins:
         type: string
     type: object
   user.CreateUserForm:
@@ -1052,6 +1052,121 @@ paths:
       tags:
       - Pipeline
       - Admin
+  /admin/projects:
+    get:
+      consumes:
+      - application/json
+      description: List projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/project.Project'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List projects
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Create project
+      parameters:
+      - description: project info
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/project.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Project'
+      security:
+      - bearerAuth: []
+      summary: Create project
+      tags:
+      - Projects
+      - Admin
+  /admin/projects/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete project
+      parameters:
+      - description: Project id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete project
+      tags:
+      - Projects
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Project detail info
+      parameters:
+      - description: Project id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Project'
+      security:
+      - bearerAuth: []
+      summary: Projects item
+      tags:
+      - Projects
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update project
+      parameters:
+      - description: Project info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/project.Project'
+      - description: Project id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/project.Project'
+      security:
+      - bearerAuth: []
+      summary: Update project
+      tags:
+      - Projects
+      - Admin
   /admin/push:
     get:
       consumes:
@@ -1170,128 +1285,13 @@ paths:
       tags:
       - Push messages
       - Admin
-  /admin/topics:
-    get:
-      consumes:
-      - application/json
-      description: List topics
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/project.Project'
-            type: array
-      security:
-      - bearerAuth: []
-      summary: List topics
-      tags:
-      - TopicOutput
-    post:
-      consumes:
-      - application/json
-      description: Create topic
-      parameters:
-      - description: topic info
-        in: body
-        name: topic
-        required: true
-        schema:
-          $ref: '#/definitions/project.Project'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/project.Project'
-      security:
-      - bearerAuth: []
-      summary: Create topic
-      tags:
-      - Entity manager
-      - Admin
-  /admin/topics/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete topic
-      parameters:
-      - description: TopicOutput id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-      summary: Delete topic
-      tags:
-      - Entity manager
-      - Admin
-    get:
-      consumes:
-      - application/json
-      description: topic detail info
-      parameters:
-      - description: TopicOutput id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/project.Project'
-      security:
-      - bearerAuth: []
-      summary: TopicOutput
-      tags:
-      - Entity manager
-      - Admin
-    put:
-      consumes:
-      - application/json
-      description: Update topic
-      parameters:
-      - description: Project info
-        in: body
-        name: device
-        required: true
-        schema:
-          $ref: '#/definitions/project.Project'
-      - description: Project id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/project.Project'
-      security:
-      - bearerAuth: []
-      summary: Update topic
-      tags:
-      - Entity manager
-      - Admin
   /admin/topics/{topic}/data:
     get:
       consumes:
       - application/json
       description: topic data
       parameters:
-      - description: TopicOutput name
+      - description: Topic name
         in: path
         name: topic
         required: true
@@ -1307,7 +1307,7 @@ paths:
             type: array
       security:
       - bearerAuth: []
-      summary: TopicOutput data
+      summary: Topic output data
       tags:
       - Entity manager
       - Admin
