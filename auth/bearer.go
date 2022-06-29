@@ -2,7 +2,7 @@ package auth
 
 import (
 	err2 "db-server/err"
-	"db-server/utils"
+	"db-server/modules/user"
 	"encoding/json"
 	"net/http"
 )
@@ -11,11 +11,11 @@ import (
 func BearerVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		_, err := utils.GetUserFromRequest(r)
+		_, err := user.GetUserFromRequest(r)
 
 		if err != nil {
 			w.WriteHeader(http.StatusForbidden)
-			err := json.NewEncoder(w).Encode("Wrong auth token")
+			err := json.NewEncoder(w).Encode("Wrong auth token e:" + err.Error())
 			err2.DebugErr(err)
 			return
 		}

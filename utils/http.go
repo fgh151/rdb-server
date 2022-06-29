@@ -2,13 +2,10 @@ package utils
 
 import (
 	err2 "db-server/err"
-	"db-server/server/db"
 	"encoding/json"
-	"errors"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 func GetPagination(r *http.Request) (int, int, string, string) {
@@ -56,27 +53,6 @@ func SendResponse(w http.ResponseWriter, statusCode int, payload interface{}, er
 		_, err = w.Write([]byte(err.Error()))
 		err2.DebugErr(err)
 	}
-}
-
-// GetUserFromRequest Fetch user model from request
-func GetUserFromRequest(r *http.Request) (interface{}, error) {
-	reqToken := r.Header.Get("Authorization")
-	splitToken := strings.Split(reqToken, "Bearer ")
-
-	if len(splitToken) < 2 {
-		return nil, nil
-	}
-
-	reqToken = splitToken[1]
-
-	var usr *interface{}
-	tx := db.MetaDb.GetConnection().Find(&usr, "token = ? ", reqToken)
-
-	if tx.RowsAffected < 1 {
-		return usr, errors.New("invalid credentials")
-	}
-
-	return usr, nil
 }
 
 func GetPayload(r *http.Request) map[string]interface{} {

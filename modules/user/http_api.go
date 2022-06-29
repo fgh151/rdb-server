@@ -5,10 +5,12 @@ import (
 	"db-server/server/db"
 	"db-server/utils"
 	"encoding/json"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -264,7 +266,7 @@ func ApiRegister(w http.ResponseWriter, r *http.Request) {
 func ApiMe(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	usr, err := utils.GetUserFromRequest(r)
+	usr, err := GetUserFromRequest(r)
 	resp, _ := json.Marshal(usr)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
@@ -327,4 +329,26 @@ func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
+}
+
+// GetUserFromRequest Fetch user model from request
+func GetUserFromRequest(r *http.Request) (User, error) {
+	reqToken := r.Header.Get("Authorization")
+	splitToken := strings.Split(reqToken, "Bearer ")
+
+	var usr = User{}
+
+	if len(splitToken) < 2 {
+		return usr, nil
+	}
+
+	reqToken = splitToken[1]
+
+	tx := db.MetaDb.GetConnection().Table("user").Find(&usr, "token = ? ", reqToken)
+
+	if tx.RowsAffected < 1 {
+		return usr, errors.New("invalid credentials")
+	}
+
+	return usr, nil
 }
