@@ -12,6 +12,7 @@ import (
 	"db-server/modules/pipeline"
 	"db-server/modules/project"
 	"db-server/modules/push"
+	"db-server/modules/rdb"
 	"db-server/modules/storage"
 	"db-server/modules/user"
 	"github.com/gorilla/handlers"
@@ -79,6 +80,7 @@ func StartServer(enableDocs *bool) {
 	admin.Use(auth.AdminVerify)
 
 	project.AddAdminRoutes(admin)
+	rdb.AddAdminRoutes(admin)
 	em.AddAdminRoutes(admin)
 	user.AddAdminRoutes(admin)
 	config.AddAdminRoutes(admin)

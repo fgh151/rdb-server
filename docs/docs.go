@@ -1622,6 +1622,186 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/rdb": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "List rdb",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RDB"
+                ],
+                "summary": "List rdb",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/rdb.Rdb"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Create rdb",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RDB",
+                    "Admin"
+                ],
+                "summary": "Create rdb",
+                "parameters": [
+                    {
+                        "description": "rdb info",
+                        "name": "rdb",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rdb.Rdb"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rdb.Rdb"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/rdb/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Rdb detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RDB",
+                    "Admin"
+                ],
+                "summary": "Rdbs item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Rdb id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rdb.Rdb"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Update rdb",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RDB",
+                    "Admin"
+                ],
+                "summary": "Update rdb",
+                "parameters": [
+                    {
+                        "description": "Rdb info",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rdb.Rdb"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Rdb id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rdb.Rdb"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete rdb",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RDB",
+                    "Admin"
+                ],
+                "summary": "Delete rdb",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Rdb id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/admin/topics/{topic}/data": {
             "get": {
                 "security": [
@@ -2869,6 +3049,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "origins": {
+                    "type": "string"
+                }
+            }
+        },
+        "rdb.Rdb": {
+            "type": "object",
+            "properties": {
+                "collection": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "project": {
+                    "$ref": "#/definitions/project.Project"
+                },
+                "project_id": {
                     "type": "string"
                 }
             }

@@ -193,6 +193,17 @@ definitions:
       origins:
         type: string
     type: object
+  rdb.Rdb:
+    properties:
+      collection:
+        type: string
+      id:
+        type: string
+      project:
+        $ref: '#/definitions/project.Project'
+      project_id:
+        type: string
+    type: object
   user.CreateUserForm:
     properties:
       Email:
@@ -1284,6 +1295,121 @@ paths:
       summary: Update push
       tags:
       - Push messages
+      - Admin
+  /admin/rdb:
+    get:
+      consumes:
+      - application/json
+      description: List rdb
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/rdb.Rdb'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List rdb
+      tags:
+      - RDB
+    post:
+      consumes:
+      - application/json
+      description: Create rdb
+      parameters:
+      - description: rdb info
+        in: body
+        name: rdb
+        required: true
+        schema:
+          $ref: '#/definitions/rdb.Rdb'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rdb.Rdb'
+      security:
+      - bearerAuth: []
+      summary: Create rdb
+      tags:
+      - RDB
+      - Admin
+  /admin/rdb/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete rdb
+      parameters:
+      - description: Rdb id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      summary: Delete rdb
+      tags:
+      - RDB
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Rdb detail info
+      parameters:
+      - description: Rdb id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rdb.Rdb'
+      security:
+      - bearerAuth: []
+      summary: Rdbs item
+      tags:
+      - RDB
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update rdb
+      parameters:
+      - description: Rdb info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/rdb.Rdb'
+      - description: Rdb id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rdb.Rdb'
+      security:
+      - bearerAuth: []
+      summary: Update rdb
+      tags:
+      - RDB
       - Admin
   /admin/topics/{topic}/data:
     get:
