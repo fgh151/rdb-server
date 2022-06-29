@@ -8,24 +8,24 @@ require (
 	github.com/evalphobia/logrus_sentry v0.8.2
 	github.com/getsentry/sentry-go v0.12.0
 	github.com/google/subcommands v1.2.0
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
-	github.com/gorilla/websocket v1.4.1
+	github.com/gorilla/websocket v1.5.0
 	github.com/joho/godotenv v1.4.0
 	github.com/minio/minio-go/v7 v7.0.24
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sideshow/apns2 v0.23.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/swaggo/http-swagger v1.2.8
-	github.com/swaggo/swag v1.8.2
-	go.mongodb.org/mongo-driver v1.8.3
+	github.com/swaggo/swag v1.8.3
+	go.mongodb.org/mongo-driver v1.9.1
 	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
 	gorm.io/datatypes v1.0.6
-	gorm.io/driver/mysql v1.3.2
+	gorm.io/driver/mysql v1.3.4
 	gorm.io/driver/postgres v1.3.1
 	gorm.io/driver/sqlite v1.3.1
-	gorm.io/gorm v1.23.2
+	gorm.io/gorm v1.23.4
 )
 
 require (
