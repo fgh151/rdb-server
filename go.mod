@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/appleboy/go-fcm v0.1.5
-	github.com/docker/docker v20.10.16+incompatible
+	github.com/docker/docker v20.10.17+incompatible
 	github.com/evalphobia/logrus_sentry v0.8.2
 	github.com/getsentry/sentry-go v0.12.0
 	github.com/google/subcommands v1.2.0
