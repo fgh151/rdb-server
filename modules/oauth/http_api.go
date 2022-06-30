@@ -55,10 +55,7 @@ func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {
 
 func generateStateOauthCookie() string {
 	b := make([]byte, 128)
-	i, _ := rand.Read(b)
-	if i < 1 {
-		return "state"
-	}
+	_, _ = rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
 	return state
 }
