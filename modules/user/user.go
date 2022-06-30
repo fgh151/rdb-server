@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -43,15 +42,7 @@ func (p User) TableName() string {
 func (p User) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var users []User
 
-	conn := db.MetaDb.GetConnection()
-
-	query := conn.Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"})
-
-	if len(filter) > 0 {
-		query.Where(filter)
-	}
-
-	query.Preload("Devices").Find(&users)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, users, []string{"Devices"})
 
 	y := make([]interface{}, len(users))
 	for i, v := range users {

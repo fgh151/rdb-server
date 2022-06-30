@@ -22,7 +22,7 @@ type Project struct {
 func (p Project) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var projects []Project
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &projects)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &projects, make([]string, 0))
 
 	y := make([]interface{}, len(projects))
 	for i, v := range projects {

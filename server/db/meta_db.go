@@ -62,7 +62,7 @@ func (c connection) TotalRecords(m modules.Model) *int64 {
 	return &cnt
 }
 
-func (c connection) ListQuery(limit int, offset int, sort string, order string, filter map[string]string, dest interface{}) {
+func (c connection) ListQuery(limit int, offset int, sort string, order string, filter map[string]string, dest interface{}, preload []string) {
 
 	query := c.GetConnection().Offset(offset).Limit(limit).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}})
 
@@ -70,6 +70,10 @@ func (c connection) ListQuery(limit int, offset int, sort string, order string, 
 		for k, v := range filter {
 			query.Where(k+" = ?", v)
 		}
+	}
+
+	for _, relation := range preload {
+		query.Preload(relation)
 	}
 
 	query.Find(dest)

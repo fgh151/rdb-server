@@ -55,7 +55,7 @@ type PipelineProcess interface {
 func (p Pipeline) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []Pipeline
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources, make([]string, 0))
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

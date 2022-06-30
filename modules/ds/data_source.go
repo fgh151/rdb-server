@@ -56,7 +56,7 @@ func (p DataSource) TableName() string {
 func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []DataSource
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources, make([]string, 0))
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {
@@ -111,7 +111,7 @@ func (e DataSourceEndpoint) TableName() string {
 func (e DataSourceEndpoint) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []DataSourceEndpoint
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources, make([]string, 0))
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

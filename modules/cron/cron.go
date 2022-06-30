@@ -4,6 +4,7 @@ import (
 	"db-server/modules/cf"
 	"db-server/server"
 	"db-server/server/db"
+	"db-server/utils"
 	"github.com/google/uuid"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
@@ -31,7 +32,7 @@ func (j CronJob) TableName() string {
 func (j CronJob) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var jobs []CronJob
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &jobs)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &jobs, make([]string, 0))
 
 	y := make([]interface{}, len(jobs))
 	for i, v := range jobs {
@@ -64,7 +65,7 @@ func (j CronJob) Schedule(cron *cron.Cron) {
 	var err error
 
 	j.CronId, err = cron.AddFunc(j.TimeParams, func() {
-		log.Debug("Run cron " + j.Id.String())
+		log.Debug("Run cron " + utils.CleanInputString(j.Id.String()))
 		function := cf.CloudFunction{}.GetById(j.FunctionId.String()).(cf.CloudFunction)
 		id, _ := uuid.NewUUID()
 		function.Run(id)

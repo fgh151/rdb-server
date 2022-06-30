@@ -7,6 +7,7 @@ import (
 	"db-server/modules/project"
 	"db-server/server"
 	"db-server/server/db"
+	"db-server/utils"
 	"errors"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -104,7 +105,7 @@ type ContainerUri struct {
 
 func GetContainerUri(source string) (ContainerUri, error) {
 
-	log.Debug("Parse uri " + source)
+	log.Debug("Parse uri " + utils.CleanInputString(source))
 	uri := ContainerUri{}
 	parts := strings.Split(source, ":")
 
@@ -128,11 +129,7 @@ func GetContainerUri(source string) (ContainerUri, error) {
 func (p CloudFunction) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []CloudFunction
 
-	conn := db.MetaDb.GetConnection()
-
-	log.Debug(filter)
-
-	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Find(&sources)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, sources, make([]string, 0))
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

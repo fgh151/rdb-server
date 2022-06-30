@@ -3,6 +3,7 @@ package storage
 import (
 	err2 "db-server/err"
 	"db-server/server"
+	"db-server/utils"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -30,7 +31,7 @@ func StoragePut(w http.ResponseWriter, r *http.Request) {
 
 	file, fileHeader, err := r.FormFile("file")
 	defer func() { _ = file.Close() }()
-	objectName := fileHeader.Filename
+	objectName := utils.CleanInputString(fileHeader.Filename)
 	contentType := fileHeader.Header["Content-Type"][0]
 	path, info := server.UploadToS3(file, "", objectName, contentType)
 

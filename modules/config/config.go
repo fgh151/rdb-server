@@ -23,7 +23,7 @@ func (p Config) TableName() string {
 func (p Config) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var configs []Config
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &configs)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &configs, make([]string, 0))
 
 	y := make([]interface{}, len(configs))
 	for i, v := range configs {

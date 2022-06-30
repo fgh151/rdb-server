@@ -45,7 +45,7 @@ type Sender interface {
 func (p PushMessage) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var pushMessages []PushMessage
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &pushMessages)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &pushMessages, make([]string, 0))
 
 	y := make([]interface{}, len(pushMessages))
 	for i, v := range pushMessages {
