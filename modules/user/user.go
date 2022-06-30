@@ -42,7 +42,7 @@ func (p User) TableName() string {
 func (p User) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var users []User
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, users, []string{"Devices"})
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &users, []string{"Devices"})
 
 	y := make([]interface{}, len(users))
 	for i, v := range users {
