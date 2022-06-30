@@ -10,8 +10,8 @@ import (
 	"strconv"
 )
 
-func FormatQuery(r *http.Request, params []string) map[string]interface{} {
-	result := make(map[string]interface{})
+func FormatQuery(r *http.Request, params []string) map[string]string {
+	result := make(map[string]string)
 
 	if len(params) < 1 {
 		return result
@@ -22,7 +22,7 @@ func FormatQuery(r *http.Request, params []string) map[string]interface{} {
 		if v.Has(param) {
 			val := v.Get(param)
 			if val != "" {
-				result[param] = val
+				result[CleanInputString(param)] = CleanInputString(val)
 			}
 		}
 	}

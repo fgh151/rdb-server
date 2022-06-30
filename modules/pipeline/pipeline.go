@@ -5,9 +5,7 @@ import (
 	"db-server/server"
 	"db-server/server/db"
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"os"
 	"time"
 )
@@ -54,14 +52,10 @@ type PipelineProcess interface {
 	PipelineProcess(data interface{})
 }
 
-func (p Pipeline) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (p Pipeline) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []Pipeline
 
-	conn := db.MetaDb.GetConnection()
-
-	log.Debug(filter)
-
-	conn.Limit(limit).Offset(offset).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&sources)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

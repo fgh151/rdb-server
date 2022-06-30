@@ -8,6 +8,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"os"
 )
 
@@ -59,4 +60,17 @@ func (c connection) TotalRecords(m modules.Model) *int64 {
 	var cnt int64
 	conn.Model(&m).Count(&cnt)
 	return &cnt
+}
+
+func (c connection) ListQuery(limit int, offset int, sort string, order string, filter map[string]string, dest interface{}) {
+
+	query := c.GetConnection().Offset(offset).Limit(limit).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}})
+
+	if filter != nil {
+		for k, v := range filter {
+			query.Where(k+" = ?", v)
+		}
+	}
+
+	query.Find(dest)
 }

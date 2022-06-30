@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -43,12 +42,10 @@ type Sender interface {
 	SendPush(message PushMessage, device user.UserDevice) error
 }
 
-func (p PushMessage) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (p PushMessage) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var pushMessages []PushMessage
 
-	conn := db.MetaDb.GetConnection()
-
-	conn.Offset(offset).Limit(limit).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&pushMessages)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &pushMessages)
 
 	y := make([]interface{}, len(pushMessages))
 	for i, v := range pushMessages {

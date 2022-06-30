@@ -125,7 +125,7 @@ func GetContainerUri(source string) (ContainerUri, error) {
 	return uri, nil
 }
 
-func (p CloudFunction) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (p CloudFunction) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []CloudFunction
 
 	conn := db.MetaDb.GetConnection()

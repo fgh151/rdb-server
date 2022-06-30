@@ -306,7 +306,7 @@ func DSEItem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	model := DataSourceEndpoint{}.GetById(vars["id"]).(DataSourceEndpoint)
 
-	arr := model.List(10, 0, "id", "ASC", make(map[string]interface{}))
+	arr := model.List(10, 0, "id", "ASC", make(map[string]string))
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

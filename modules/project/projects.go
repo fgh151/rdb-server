@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -20,12 +19,10 @@ type Project struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
-func (p Project) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (p Project) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var projects []Project
 
-	conn := db.MetaDb.GetConnection()
-
-	conn.Offset(offset).Limit(limit).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&projects)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &projects)
 
 	y := make([]interface{}, len(projects))
 	for i, v := range projects {

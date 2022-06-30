@@ -1,7 +1,7 @@
 package modules
 
 type Model interface {
-	List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{}
+	List(limit int, offset int, sort string, order string, filter map[string]string) []interface{}
 
 	GetById(id string) interface{}
 

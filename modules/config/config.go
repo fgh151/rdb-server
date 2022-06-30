@@ -21,7 +21,7 @@ func (p Config) TableName() string {
 	return "config"
 }
 
-func (p Config) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (p Config) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var configs []Config
 
 	conn := db.MetaDb.GetConnection()

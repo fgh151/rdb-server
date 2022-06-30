@@ -54,7 +54,7 @@ func (p DataSource) TableName() string {
 	return "ds_source"
 }
 
-func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []DataSource
 
 	conn := db.MetaDb.GetConnection()
@@ -111,12 +111,10 @@ func (e DataSourceEndpoint) TableName() string {
 	return "ds_endpoint"
 }
 
-func (e DataSourceEndpoint) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (e DataSourceEndpoint) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []DataSourceEndpoint
 
-	conn := db.MetaDb.GetConnection()
-
-	conn.Limit(limit).Offset(offset).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&sources)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

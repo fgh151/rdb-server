@@ -40,7 +40,7 @@ func (p User) TableName() string {
 	return "user"
 }
 
-func (p User) List(limit int, offset int, sort string, order string, filter map[string]interface{}) []interface{} {
+func (p User) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var users []User
 
 	conn := db.MetaDb.GetConnection()
