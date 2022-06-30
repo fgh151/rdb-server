@@ -8,6 +8,7 @@ import (
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -33,7 +34,7 @@ func (j CronJob) List(limit int, offset int, sort string, order string, filter m
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Find(&jobs)
+	conn.Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"}).Where(filter).Find(&jobs)
 
 	y := make([]interface{}, len(jobs))
 	for i, v := range jobs {

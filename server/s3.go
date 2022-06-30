@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"context"
+	"db-server/utils"
 	"github.com/getsentry/sentry-go"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -10,11 +11,10 @@ import (
 	"io"
 	"os"
 	"strconv"
-	"strings"
 )
 
 func UploadToS3(file io.Reader, path string, name string, contentType string) (string, minio.UploadInfo) {
-	name = strings.Replace(name, "\n", "", -1)
+	name = utils.CleanInputString(name)
 	minioClient, err := getClient()
 	ctx := context.Background()
 

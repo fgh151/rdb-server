@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -24,7 +25,7 @@ func (p Project) List(limit int, offset int, sort string, order string, filter m
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Offset(offset).Limit(limit).Order(sort + " " + order).Where(filter).Find(&projects)
+	conn.Offset(offset).Limit(limit).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"}).Where(filter).Find(&projects)
 
 	y := make([]interface{}, len(projects))
 	for i, v := range projects {

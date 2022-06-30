@@ -254,7 +254,6 @@ func SubscribePushHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("read:", err)
 			break
 		}
-		log.Printf("recv: %s", message)
 		err = c.WriteMessage(mt, message)
 		if err != nil {
 			log.Println("write:", err)

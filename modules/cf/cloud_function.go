@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"io"
 	"strings"
 	"time"
@@ -75,7 +76,7 @@ func ListCfLog(fId uuid.UUID, limit int, offset int, sort string, order string) 
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Find(&sources, CloudFunctionLog{FunctionId: fId}).Limit(limit).Offset(offset).Order(order + " " + sort)
+	conn.Find(&sources, CloudFunctionLog{FunctionId: fId}).Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"})
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

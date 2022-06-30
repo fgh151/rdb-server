@@ -9,6 +9,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -58,7 +59,7 @@ func (p DataSource) List(limit int, offset int, sort string, order string, filte
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Preload("Endpoints").Find(&sources)
+	conn.Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"}).Where(filter).Preload("Endpoints").Find(&sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {
@@ -115,7 +116,7 @@ func (e DataSourceEndpoint) List(limit int, offset int, sort string, order strin
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(sort + " " + order).Where(filter).Find(&sources)
+	conn.Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"}).Where(filter).Find(&sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

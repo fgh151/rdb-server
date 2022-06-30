@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"math/rand"
+	"strings"
 )
 
 func HashPassword(password string) string {
@@ -23,4 +24,8 @@ func GenerateRandomString(n int) string {
 
 func ValidateKey(k1 string, k2 string) bool {
 	return k1 == k2
+}
+
+func CleanInputString(str string) string {
+	return strings.Replace(str, "\n", "", -1)
 }

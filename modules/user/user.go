@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -44,7 +45,7 @@ func (p User) List(limit int, offset int, sort string, order string, filter map[
 
 	conn := db.MetaDb.GetConnection()
 
-	query := conn.Limit(limit).Offset(offset).Order(sort + " " + order)
+	query := conn.Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"})
 
 	if len(filter) > 0 {
 		query.Where(filter)

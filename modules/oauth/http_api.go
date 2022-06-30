@@ -1,9 +1,11 @@
 package oauth
 
 import (
+	"crypto/rand"
 	err2 "db-server/err"
 	"db-server/modules/project"
 	"db-server/utils"
+	"encoding/base64"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -44,10 +46,18 @@ func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {
 
 	client, _ := GetClient(provider, p.Id)
 
-	url := client.Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	state := generateStateOauthCookie()
+	url := client.Config.AuthCodeURL(state, oauth2.AccessTypeOffline)
 
 	w.WriteHeader(200)
 	w.Write([]byte(url))
+}
+
+func generateStateOauthCookie() string {
+	b := make([]byte, 128)
+	rand.Read(b)
+	state := base64.URLEncoding.EncodeToString(b)
+	return state
 }
 
 // ApiOAuthCode godoc
