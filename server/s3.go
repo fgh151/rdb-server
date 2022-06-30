@@ -10,9 +10,11 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func UploadToS3(file io.Reader, path string, name string, contentType string) (string, minio.UploadInfo) {
+	name = strings.Replace(name, "\n", "", -1)
 	minioClient, err := getClient()
 	ctx := context.Background()
 
@@ -67,6 +69,11 @@ func getClient() (*minio.Client, error) {
 
 func getSize(stream io.Reader) int64 {
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(stream)
+	_, err := buf.ReadFrom(stream)
+
+	if err != nil {
+		return 0
+	}
+
 	return int64(buf.Len())
 }
