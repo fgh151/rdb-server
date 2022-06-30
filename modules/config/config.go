@@ -5,7 +5,6 @@ import (
 	"db-server/server/db"
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
-	"gorm.io/gorm/clause"
 )
 
 type Config struct {
@@ -24,9 +23,7 @@ func (p Config) TableName() string {
 func (p Config) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var configs []Config
 
-	conn := db.MetaDb.GetConnection()
-
-	conn.Limit(limit).Offset(offset).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&configs)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &configs)
 
 	y := make([]interface{}, len(configs))
 	for i, v := range configs {

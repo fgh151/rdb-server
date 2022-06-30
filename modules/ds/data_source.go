@@ -9,7 +9,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -57,9 +56,7 @@ func (p DataSource) TableName() string {
 func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
 	var sources []DataSource
 
-	conn := db.MetaDb.GetConnection()
-
-	conn.Limit(limit).Offset(offset).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Preload("Endpoints").Find(&sources)
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {
