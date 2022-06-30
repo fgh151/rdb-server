@@ -34,7 +34,7 @@ func (j CronJob) List(limit int, offset int, sort string, order string, filter m
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"}).Where(filter).Find(&jobs)
+	conn.Limit(limit).Offset(offset).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&jobs)
 
 	y := make([]interface{}, len(jobs))
 	for i, v := range jobs {

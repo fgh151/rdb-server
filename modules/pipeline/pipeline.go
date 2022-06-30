@@ -61,7 +61,7 @@ func (p Pipeline) List(limit int, offset int, sort string, order string, filter 
 
 	log.Debug(filter)
 
-	conn.Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"}).Where(filter).Find(&sources)
+	conn.Limit(limit).Offset(offset).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&sources)
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

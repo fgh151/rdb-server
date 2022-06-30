@@ -26,7 +26,7 @@ func (p Config) List(limit int, offset int, sort string, order string, filter ma
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Limit(limit).Offset(offset).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"}).Where(filter).Find(&configs)
+	conn.Limit(limit).Offset(offset).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&configs)
 
 	y := make([]interface{}, len(configs))
 	for i, v := range configs {

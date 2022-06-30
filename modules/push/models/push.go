@@ -48,7 +48,7 @@ func (p PushMessage) List(limit int, offset int, sort string, order string, filt
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Offset(offset).Limit(limit).Order(clause.OrderByColumn{Column: clause.Column{Name: sort}, Desc: order != "ASC"}).Where(filter).Find(&pushMessages)
+	conn.Offset(offset).Limit(limit).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}}).Where(filter).Find(&pushMessages)
 
 	y := make([]interface{}, len(pushMessages))
 	for i, v := range pushMessages {
