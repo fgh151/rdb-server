@@ -126,7 +126,7 @@ func GetContainerUri(source string) (ContainerUri, error) {
 	return uri, nil
 }
 
-func (p CloudFunction) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (p CloudFunction) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var sources []CloudFunction
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, sources, make([]string, 0))
@@ -137,25 +137,29 @@ func (p CloudFunction) List(limit int, offset int, sort string, order string, fi
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
 func (p CloudFunction) Total() *int64 {
 	return db.MetaDb.TotalRecords(&CloudFunction{})
 }
 
-func (p CloudFunction) GetById(id string) interface{} {
+func (p CloudFunction) GetById(id string) (interface{}, error) {
 	var source CloudFunction
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.First(&source, "id = ?", id)
+	tx := conn.First(&source, "id = ?", id)
+
+	if tx.RowsAffected < 1 {
+		return source, errors.New("no found")
+	}
 
 	uid, _ := uuid.Parse(id)
 
 	source.RunCount = *LogsTotal(uid)
 
-	return source
+	return source, nil
 }
 
 func (p CloudFunction) Delete(id string) {

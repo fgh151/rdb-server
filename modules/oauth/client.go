@@ -31,8 +31,10 @@ func (o UserOauth) TableName() string {
 	return "user_oauth"
 }
 
-func (p UserOauth) GetUser() user.User {
-	return user.User{}.GetById(p.UserId.String()).(user.User)
+func (p UserOauth) GetUser() (user.User, error) {
+	u, err := user.User{}.GetById(p.UserId.String())
+
+	return u.(user.User), err
 }
 
 func (p UserOauth) GetByExternalId(id string) (UserOauth, error) {
@@ -46,7 +48,7 @@ func (p UserOauth) GetByExternalId(id string) (UserOauth, error) {
 		return u, nil
 	}
 
-	return u, errors.New("No user found")
+	return u, errors.New("no found")
 }
 
 type ClientOauth struct {

@@ -19,7 +19,7 @@ type Project struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
-func (p Project) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (p Project) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var projects []Project
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &projects, make([]string, 0))
@@ -29,21 +29,25 @@ func (p Project) List(limit int, offset int, sort string, order string, filter m
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
 func (p Project) Total() *int64 {
 	return db.MetaDb.TotalRecords(&Project{})
 }
 
-func (p Project) GetById(id string) interface{} {
+func (p Project) GetById(id string) (interface{}, error) {
 	var project Project
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.First(&project, "id = ?", id)
+	tx := conn.First(&project, "id = ?", id)
 
-	return project
+	if tx.RowsAffected < 1 {
+		return project, errors.New("no found")
+	}
+
+	return project, nil
 }
 
 func (p Project) GetByKey(key string) (Project, error) {

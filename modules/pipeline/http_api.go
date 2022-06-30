@@ -119,12 +119,18 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = Pipeline{}.GetById(vars["id"]).(Pipeline)
+	exist, err := Pipeline{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
 	newm := Pipeline{}
 
-	err := json.NewDecoder(r.Body).Decode(&newm)
+	err = json.NewDecoder(r.Body).Decode(&newm)
 
-	newm.CreatedAt = exist.CreatedAt
+	newm.CreatedAt = exist.(Pipeline).CreatedAt
 
 	db.MetaDb.GetConnection().Save(&newm)
 

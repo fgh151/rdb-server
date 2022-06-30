@@ -67,9 +67,16 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	var t = Project{}.GetById(vars["id"]).(Project)
+	m, err := Project{}.GetById(vars["id"])
 
-	err := json.NewDecoder(r.Body).Decode(&t)
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	t := m.(Project)
+
+	err = json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return

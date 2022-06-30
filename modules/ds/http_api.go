@@ -63,7 +63,7 @@ func listDse(w http.ResponseWriter, r *http.Request) {
 	l, o, or, so := utils.GetPagination(r)
 	f := utils.FormatQuery(r, []string{"data_source_id"})
 
-	arr := DataSourceEndpoint{}.List(l, o, so, or, f)
+	arr, _ := DataSourceEndpoint{}.List(l, o, so, or, f)
 	total := len(arr)
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json")
@@ -241,12 +241,18 @@ func deleteDse(w http.ResponseWriter, r *http.Request) {
 func updateDs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = DataSource{}.GetById(vars["id"]).(DataSource)
+	exist, err := DataSource{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
 	newm := DataSource{}
 
-	err := json.NewDecoder(r.Body).Decode(&newm)
+	err = json.NewDecoder(r.Body).Decode(&newm)
 
-	newm.CreatedAt = exist.CreatedAt
+	newm.CreatedAt = exist.(DataSource).CreatedAt
 
 	db.MetaDb.GetConnection().Save(&newm)
 
@@ -273,12 +279,18 @@ func updateDs(w http.ResponseWriter, r *http.Request) {
 func updateDse(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = DataSourceEndpoint{}.GetById(vars["id"]).(DataSourceEndpoint)
+	exist, err := DataSourceEndpoint{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
 	newm := DataSourceEndpoint{}
 
-	err := json.NewDecoder(r.Body).Decode(&newm)
+	err = json.NewDecoder(r.Body).Decode(&newm)
 
-	newm.CreatedAt = exist.CreatedAt
+	newm.CreatedAt = exist.(DataSourceEndpoint).CreatedAt
 
 	db.MetaDb.GetConnection().Save(&newm)
 
@@ -304,9 +316,16 @@ func publicDesItem(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
-	model := DataSourceEndpoint{}.GetById(vars["id"]).(DataSourceEndpoint)
+	m, err := DataSourceEndpoint{}.GetById(vars["id"])
 
-	arr := model.List(10, 0, "id", "ASC", make(map[string]string))
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	model := m.(DataSourceEndpoint)
+
+	arr, _ := model.List(10, 0, "id", "ASC", make(map[string]string))
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -315,6 +334,6 @@ func publicDesItem(w http.ResponseWriter, r *http.Request) {
 	resp, _ := json.Marshal(arr)
 
 	w.WriteHeader(200)
-	_, err := w.Write(resp)
+	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }

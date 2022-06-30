@@ -125,11 +125,16 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = User{}.GetById(vars["id"]).(User)
+	e, err := User{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	exist := e.(User)
 	newm := User{}
-
-	err := json.NewDecoder(r.Body).Decode(&newm)
-
+	err = json.NewDecoder(r.Body).Decode(&newm)
 	newm.CreatedAt = exist.CreatedAt
 	newm.LastLogin = exist.LastLogin
 	newm.PasswordHash = exist.PasswordHash

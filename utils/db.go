@@ -36,7 +36,7 @@ func ListItems(model modules.Model, filter []string, r *http.Request, w http.Res
 	l, o, or, so := GetPagination(r)
 	f := FormatQuery(r, filter)
 
-	arr := model.List(l, o, so, or, f)
+	arr, _ := model.List(l, o, so, or, f)
 	total := model.Total()
 	w.Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 	w.Header().Set("Content-Type", "application/json")
@@ -54,9 +54,16 @@ func GetItem(m modules.Model, w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
-	resp, _ := json.Marshal(m.GetById(vars["id"]))
+
+	model, err := m.GetById(vars["id"])
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	resp, _ := json.Marshal(model)
 	w.WriteHeader(200)
-	_, err := w.Write(resp)
+	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }
 

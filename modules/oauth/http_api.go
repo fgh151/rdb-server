@@ -50,12 +50,15 @@ func ApiOAuthLink(w http.ResponseWriter, r *http.Request) {
 	url := client.Config.AuthCodeURL(state, oauth2.AccessTypeOffline)
 
 	w.WriteHeader(200)
-	w.Write([]byte(url))
+	_, _ = w.Write([]byte(url))
 }
 
 func generateStateOauthCookie() string {
 	b := make([]byte, 128)
-	rand.Read(b)
+	i, _ := rand.Read(b)
+	if i < 1 {
+		return "state"
+	}
 	state := base64.URLEncoding.EncodeToString(b)
 	return state
 }
@@ -98,7 +101,13 @@ func ApiOAuthCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr := u.GetUser()
+	usr, err := u.GetUser()
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
 	usr.UpdateLastLogin()
 
 	rresp, _ := json.Marshal(usr)

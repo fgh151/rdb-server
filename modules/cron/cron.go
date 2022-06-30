@@ -29,7 +29,7 @@ func (j CronJob) TableName() string {
 	return "cron_job"
 }
 
-func (j CronJob) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (j CronJob) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var jobs []CronJob
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &jobs, make([]string, 0))
@@ -39,17 +39,17 @@ func (j CronJob) List(limit int, offset int, sort string, order string, filter m
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
-func (j CronJob) GetById(id string) interface{} {
+func (j CronJob) GetById(id string) (interface{}, error) {
 	var job CronJob
 
 	conn := db.MetaDb.GetConnection()
 
 	conn.First(&job, "id = ?", id)
 
-	return job
+	return job, nil
 }
 
 func (j CronJob) Delete(id string) {
@@ -66,9 +66,11 @@ func (j CronJob) Schedule(cron *cron.Cron) {
 
 	j.CronId, err = cron.AddFunc(j.TimeParams, func() {
 		log.Debug("Run cron " + utils.CleanInputString(j.Id.String()))
-		function := cf.CloudFunction{}.GetById(j.FunctionId.String()).(cf.CloudFunction)
-		id, _ := uuid.NewUUID()
-		function.Run(id)
+		function, err := cf.CloudFunction{}.GetById(j.FunctionId.String())
+		if err == nil {
+			id, _ := uuid.NewUUID()
+			function.(cf.CloudFunction).Run(id)
+		}
 	})
 
 	if err != nil {
@@ -88,7 +90,7 @@ func InitCron() {
 	var jobs []interface{}
 
 	for {
-		jobs = CronJob{}.List(batchSize, offset, "id", "ASC", nil)
+		jobs, _ = CronJob{}.List(batchSize, offset, "id", "ASC", nil)
 
 		if len(jobs) <= 0 {
 			break

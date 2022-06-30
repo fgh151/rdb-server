@@ -3,6 +3,7 @@ package config
 import (
 	"db-server/modules/project"
 	"db-server/server/db"
+	"errors"
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 )
@@ -20,7 +21,7 @@ func (p Config) TableName() string {
 	return "config"
 }
 
-func (p Config) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (p Config) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var configs []Config
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &configs, make([]string, 0))
@@ -30,21 +31,25 @@ func (p Config) List(limit int, offset int, sort string, order string, filter ma
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
 func (p Config) Total() *int64 {
 	return db.MetaDb.TotalRecords(&Config{})
 }
 
-func (p Config) GetById(id string) interface{} {
+func (p Config) GetById(id string) (interface{}, error) {
 	var config Config
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Preload("Project").First(&config, "id = ?", id)
+	tx := conn.Preload("Project").First(&config, "id = ?", id)
 
-	return config
+	if tx.RowsAffected < 1 {
+		return config, errors.New("no found")
+	}
+
+	return config, nil
 }
 
 func (p Config) Delete(id string) {

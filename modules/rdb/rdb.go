@@ -3,6 +3,7 @@ package rdb
 import (
 	"db-server/modules/project"
 	"db-server/server/db"
+	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
@@ -19,7 +20,7 @@ type Rdb struct {
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
-func (p Rdb) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (p Rdb) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var projects []Rdb
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &projects, make([]string, 0))
@@ -29,7 +30,7 @@ func (p Rdb) List(limit int, offset int, sort string, order string, filter map[s
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
 func (p Rdb) Delete(id string) {
@@ -41,11 +42,16 @@ func (p Rdb) Total() *int64 {
 	return db.MetaDb.TotalRecords(&Rdb{})
 }
 
-func (p Rdb) GetById(id string) interface{} {
+func (p Rdb) GetById(id string) (interface{}, error) {
 	var source Rdb
 	conn := db.MetaDb.GetConnection()
-	conn.First(&source, "id = ?", id)
-	return source
+	tx := conn.First(&source, "id = ?", id)
+
+	if tx.RowsAffected < 1 {
+		return source, errors.New("no found")
+	}
+
+	return source, nil
 }
 
 func (p Rdb) GetByCollection(collection string) Rdb {

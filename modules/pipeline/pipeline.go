@@ -4,6 +4,7 @@ import (
 	"db-server/modules/rdb"
 	"db-server/server"
 	"db-server/server/db"
+	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"os"
@@ -52,7 +53,7 @@ type PipelineProcess interface {
 	PipelineProcess(data interface{})
 }
 
-func (p Pipeline) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (p Pipeline) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var sources []Pipeline
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources, make([]string, 0))
@@ -62,14 +63,19 @@ func (p Pipeline) List(limit int, offset int, sort string, order string, filter 
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
-func (p Pipeline) GetById(id string) interface{} {
+func (p Pipeline) GetById(id string) (interface{}, error) {
 	var source Pipeline
 	conn := db.MetaDb.GetConnection()
-	conn.First(&source, "id = ?", id)
-	return source
+	tx := conn.First(&source, "id = ?", id)
+
+	if tx.RowsAffected < 1 {
+		return source, errors.New("no found")
+	}
+
+	return source, nil
 }
 
 func (p Pipeline) Delete(id string) {
@@ -88,8 +94,10 @@ func RunPipeline(inputName string, inputID uuid.UUID, data interface{}) {
 	if tx.RowsAffected > 0 {
 		switch source.Output {
 		case TopicOutput:
-			t := rdb.Rdb{}.GetById(source.OutputId.String()).(rdb.Rdb)
-			_ = server.SaveTopicMessage(os.Getenv("DB_NAME"), t.Collection, data)
+			t, err := rdb.Rdb{}.GetById(source.OutputId.String())
+			if err == nil {
+				_ = server.SaveTopicMessage(os.Getenv("DB_NAME"), t.(rdb.Rdb).Collection, data)
+			}
 		}
 	}
 	return

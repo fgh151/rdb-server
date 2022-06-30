@@ -147,7 +147,14 @@ func ApiConfigItem(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
-	model := Config{}.GetById(vars["id"]).(Config)
+	m, err := Config{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	model := m.(Config)
 
 	rKey := r.Header.Get("db-key")
 

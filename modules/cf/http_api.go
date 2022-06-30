@@ -122,7 +122,14 @@ func item(w http.ResponseWriter, r *http.Request) {
 func logs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	f := CloudFunction{}.GetById(vars["id"]).(CloudFunction)
+	m, err := CloudFunction{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	f := m.(CloudFunction)
 
 	l, o, s, or := utils.GetPagination(r)
 	arr := ListCfLog(f.Id, l, o, s, or)
@@ -133,7 +140,7 @@ func logs(w http.ResponseWriter, r *http.Request) {
 
 	resp, _ := json.Marshal(arr)
 	w.WriteHeader(200)
-	_, err := w.Write(resp)
+	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }
 
@@ -196,7 +203,14 @@ func update(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 
-	resp, _ := json.Marshal(CloudFunction{}.GetById(vars["id"]))
+	m, err := CloudFunction{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	resp, _ := json.Marshal(m)
 	w.WriteHeader(200)
 	_, err = w.Write(resp)
 	err2.DebugErr(err)
@@ -219,17 +233,22 @@ func CfRun(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
-	cfu := CloudFunction{}.GetById(vars["id"]).(CloudFunction)
+	cfu, err := CloudFunction{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
 
 	id, _ := uuid.NewUUID()
 
-	go cfu.Run(id)
+	go cfu.(CloudFunction).Run(id)
 	m := make(map[string]string)
 	m["id"] = id.String()
 
 	resp, _ := json.Marshal(m)
 	w.WriteHeader(200)
-	_, err := w.Write(resp)
+	_, err = w.Write(resp)
 	err2.DebugErr(err)
 }
 

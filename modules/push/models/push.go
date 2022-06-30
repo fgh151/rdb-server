@@ -3,6 +3,7 @@ package models
 import (
 	"db-server/modules/user"
 	"db-server/server/db"
+	"errors"
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -42,7 +43,7 @@ type Sender interface {
 	SendPush(message PushMessage, device user.UserDevice) error
 }
 
-func (p PushMessage) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (p PushMessage) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var pushMessages []PushMessage
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &pushMessages, make([]string, 0))
@@ -52,17 +53,21 @@ func (p PushMessage) List(limit int, offset int, sort string, order string, filt
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
-func (p PushMessage) GetById(id string) interface{} {
+func (p PushMessage) GetById(id string) (interface{}, error) {
 	var pushMessage PushMessage
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.First(&pushMessage, "id = ?", id)
+	tx := conn.First(&pushMessage, "id = ?", id)
 
-	return pushMessage
+	if tx.RowsAffected < 1 {
+		return pushMessage, errors.New("no found")
+	}
+
+	return pushMessage, nil
 }
 
 func (p PushMessage) Delete(id string) {

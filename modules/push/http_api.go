@@ -135,12 +135,18 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	var exist = models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
+	exist, err := models.PushMessage{}.GetById(vars["id"])
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
 	newm := models.PushMessage{}
 
-	err := json.NewDecoder(r.Body).Decode(&newm)
+	err = json.NewDecoder(r.Body).Decode(&newm)
 
-	newm.CreatedAt = exist.CreatedAt
+	newm.CreatedAt = exist.(models.PushMessage).CreatedAt
 
 	db.MetaDb.GetConnection().Save(&newm)
 
@@ -165,8 +171,12 @@ func update(w http.ResponseWriter, r *http.Request) {
 func run(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
-	message := models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
-	go sendMessage(message)
+	message, err := models.PushMessage{}.GetById(vars["id"])
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+	go sendMessage(message.(models.PushMessage))
 	w.WriteHeader(200)
 }
 

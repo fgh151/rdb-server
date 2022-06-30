@@ -4,6 +4,7 @@ import (
 	err2 "db-server/err"
 	"db-server/modules/project"
 	"db-server/server/db"
+	"errors"
 	"github.com/google/uuid"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -53,7 +54,7 @@ func (p DataSource) TableName() string {
 	return "ds_source"
 }
 
-func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (p DataSource) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var sources []DataSource
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources, make([]string, 0))
@@ -63,21 +64,25 @@ func (p DataSource) List(limit int, offset int, sort string, order string, filte
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
 func (p DataSource) Total() *int64 {
 	return db.MetaDb.TotalRecords(&DataSource{})
 }
 
-func (p DataSource) GetById(id string) interface{} {
+func (p DataSource) GetById(id string) (interface{}, error) {
 	var source DataSource
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.First(&source, "id = ?", id)
+	tx := conn.First(&source, "id = ?", id)
 
-	return source
+	if tx.RowsAffected < 1 {
+		return source, errors.New("no found")
+	}
+
+	return source, nil
 }
 
 func (p DataSource) Delete(id string) {
@@ -108,7 +113,7 @@ func (e DataSourceEndpoint) TableName() string {
 	return "ds_endpoint"
 }
 
-func (e DataSourceEndpoint) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (e DataSourceEndpoint) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var sources []DataSourceEndpoint
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources, make([]string, 0))
@@ -118,7 +123,7 @@ func (e DataSourceEndpoint) List(limit int, offset int, sort string, order strin
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
 var dsConnections = make(map[string]*gorm.DB)
@@ -156,14 +161,18 @@ func (e DataSourceEndpoint) attachConnectionToPool(conn *gorm.DB, err error) (*g
 	return conn, nil
 }
 
-func (e DataSourceEndpoint) GetById(id string) interface{} {
+func (e DataSourceEndpoint) GetById(id string) (interface{}, error) {
 	var source DataSourceEndpoint
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.First(&source, "id = ?", id)
+	tx := conn.First(&source, "id = ?", id)
 
-	return source
+	if tx.RowsAffected < 1 {
+		return source, errors.New("no found")
+	}
+
+	return source, nil
 }
 
 func (e DataSourceEndpoint) Total() *int64 {

@@ -67,9 +67,16 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	var t = Rdb{}.GetById(vars["id"]).(Rdb)
+	m, err := Rdb{}.GetById(vars["id"])
 
-	err := json.NewDecoder(r.Body).Decode(&t)
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+
+	t := m.(Rdb)
+
+	err = json.NewDecoder(r.Body).Decode(&t)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return

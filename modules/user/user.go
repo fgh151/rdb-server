@@ -39,7 +39,7 @@ func (p User) TableName() string {
 	return "user"
 }
 
-func (p User) List(limit int, offset int, sort string, order string, filter map[string]string) []interface{} {
+func (p User) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var users []User
 
 	db.MetaDb.ListQuery(limit, offset, sort, order, filter, users, []string{"Devices"})
@@ -49,21 +49,25 @@ func (p User) List(limit int, offset int, sort string, order string, filter map[
 		y[i] = v
 	}
 
-	return y
+	return y, nil
 }
 
 func (p User) Total() *int64 {
 	return db.MetaDb.TotalRecords(&User{})
 }
 
-func (p User) GetById(id string) interface{} {
+func (p User) GetById(id string) (interface{}, error) {
 	var user User
 
 	conn := db.MetaDb.GetConnection()
 
-	conn.Preload("Devices").First(&user, "id = ?", id)
+	tx := conn.Preload("Devices").First(&user, "id = ?", id)
 
-	return user
+	if tx.RowsAffected < 1 {
+		return user, errors.New("no found")
+	}
+
+	return user, nil
 }
 
 func (p User) GetByEmail(email string) (interface{}, error) {
@@ -77,7 +81,7 @@ func (p User) GetByEmail(email string) (interface{}, error) {
 		return user, nil
 	}
 
-	return user, errors.New("No user found")
+	return user, errors.New("no found")
 }
 
 func (p User) Delete(id string) {
