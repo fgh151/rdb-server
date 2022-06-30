@@ -81,10 +81,6 @@ func InitCron() {
 	log.Debug("Start cron")
 	c := server.Cron.GetScheduler()
 	c.Start()
-	defer func() {
-		log.Debug("Stop cron")
-		c.Stop()
-	}()
 
 	offset := 0
 	batchSize := 20
@@ -104,4 +100,10 @@ func InitCron() {
 
 		offset += batchSize
 	}
+}
+
+func StopCron() {
+	c := server.Cron.GetScheduler()
+	log.Debug("Stop cron")
+	c.Stop()
 }

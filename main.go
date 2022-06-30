@@ -84,6 +84,10 @@ func main() {
 
 	cron.InitCron()
 
+	defer func() {
+		cron.StopCron()
+	}()
+
 	log.Debug("Init web server")
 	web.StartServer(docsFlag)
 }
