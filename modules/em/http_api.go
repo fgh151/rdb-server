@@ -20,26 +20,26 @@ import (
 )
 
 func AddPublicApiRoutes(em *mux.Router) {
-	em.HandleFunc("/find/{topic}", FindHandler).Methods(http.MethodPost, http.MethodOptions)                // each request calls PushHandler
-	em.HandleFunc("/list/{topic}", ListHandler).Methods(http.MethodGet, http.MethodOptions)                 // each request calls PushHandler
-	em.HandleFunc("/subscribe/{topic}/{key}", SubscribeHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
-	em.HandleFunc("/{topic}", PushHandler).Methods(http.MethodPost, http.MethodOptions)                     // each request calls PushHandler
-	em.HandleFunc("/{topic}/{id}", UpdateHandler).Methods(http.MethodPatch, http.MethodOptions)             // each request calls PushHandler
-	em.HandleFunc("/{topic}/{id}", DeleteHandler).Methods(http.MethodDelete, http.MethodOptions)            // each request calls PushHandler
+	em.HandleFunc("/find/{topic}", find).Methods(http.MethodPost, http.MethodOptions)                // each request calls push
+	em.HandleFunc("/list/{topic}", list).Methods(http.MethodGet, http.MethodOptions)                 // each request calls push
+	em.HandleFunc("/subscribe/{topic}/{key}", subscribe).Methods(http.MethodGet, http.MethodOptions) // each request calls push
+	em.HandleFunc("/{topic}", push).Methods(http.MethodPost, http.MethodOptions)                     // each request calls push
+	em.HandleFunc("/{topic}/{id}", update).Methods(http.MethodPatch, http.MethodOptions)             // each request calls push
+	em.HandleFunc("/{topic}/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions)        // each request calls push
 }
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/topics/{topic}/data", TopicData).Methods(http.MethodGet, http.MethodOptions)    // each request calls PushHandler
-	admin.HandleFunc("/em/list/{topic}", AdminListHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/topics/{topic}/data", topicData).Methods(http.MethodGet, http.MethodOptions) // each request calls push
+	admin.HandleFunc("/em/list/{topic}", adminList).Methods(http.MethodGet, http.MethodOptions)     // each request calls push
 }
 
-func GetTopic(r *http.Request) string {
+func getTopic(r *http.Request) string {
 	vars := mux.Vars(r)
 	return vars["topic"]
 }
 
 func checkAccess(w http.ResponseWriter, r *http.Request) bool {
-	topic := GetTopic(r)
+	topic := getTopic(r)
 
 	dbi := rdb.Rdb{}.GetByCollection(topic)
 
@@ -71,7 +71,7 @@ func validateOrigin(p project.Project, origin string) bool {
 	return false
 }
 
-// PushHandler godoc
+// push godoc
 // @Summary      Create
 // @Description  Create topic record
 // @Tags         Entity manager
@@ -81,11 +81,11 @@ func validateOrigin(p project.Project, origin string) bool {
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/{topic} [post]
-func PushHandler(w http.ResponseWriter, r *http.Request) {
+func push(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
+	topic := getTopic(r)
 
 	if checkAccess(w, r) {
 		requestPayload := utils.GetPayload(r)
@@ -101,7 +101,7 @@ var upgrader = websocket.Upgrader{
 	},
 } // use default options
 
-// SubscribeHandler godoc
+// subscribe godoc
 // @Summary      Subscribe
 // @Description  Socket subscribe to topic
 // @Tags         Entity manager
@@ -112,10 +112,10 @@ var upgrader = websocket.Upgrader{
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/subscribe/{topic}/{key} [get]
-func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
+func subscribe(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
+	topic := getTopic(r)
 
 	vars := mux.Vars(r)
 	rkey := vars["key"]
@@ -154,7 +154,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// FindHandler godoc
+// find godoc
 // @Summary      Search
 // @Description  Search in topic
 // @Tags         Entity manager
@@ -164,11 +164,11 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/find/{topic} [get]
-func FindHandler(w http.ResponseWriter, r *http.Request) {
+func find(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
+	topic := getTopic(r)
 	requestPayload := utils.GetPayload(r)
 
 	if checkAccess(w, r) {
@@ -180,7 +180,7 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// ListHandler godoc
+// list godoc
 // @Summary      List
 // @Description  List topic records
 // @Tags         Entity manager
@@ -190,11 +190,11 @@ func FindHandler(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/list/{topic} [get]
-func ListHandler(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
+	topic := getTopic(r)
 
 	if checkAccess(w, r) {
 
@@ -223,7 +223,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// AdminListHandler godoc
+// adminList godoc
 // @Summary      List
 // @Description  List topic records for admin access
 // @Tags         Entity manager
@@ -235,11 +235,11 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {array}   interface{}
 //
 // @Router       /admin/em/list/{topic} [get]
-func AdminListHandler(w http.ResponseWriter, r *http.Request) {
+func adminList(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
+	topic := getTopic(r)
 
 	limit, offset, rorder, sort := utils.GetPagination(r)
 
@@ -265,7 +265,7 @@ func AdminListHandler(w http.ResponseWriter, r *http.Request) {
 	utils.SendResponse(w, 200, res, err)
 }
 
-// UpdateHandler godoc
+// update godoc
 // @Summary      Update
 // @Description  Update entity record
 // @Tags         Entity manager
@@ -276,11 +276,11 @@ func AdminListHandler(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/{topic}/{id} [patch]
-func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
+	topic := getTopic(r)
 
 	if checkAccess(w, r) {
 
@@ -295,7 +295,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// DeleteHandler godoc
+// deleteItem godoc
 // @Summary      Delete
 // @Description  Delete entity record
 // @Tags         Entity manager
@@ -306,11 +306,11 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/{topic}/{id} [delete]
-func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
+	topic := getTopic(r)
 
 	if checkAccess(w, r) {
 		vars := mux.Vars(r)
@@ -322,7 +322,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// TopicData godoc
+// topicData godoc
 // @Summary      Topic output data
 // @Description  topic data
 // @Tags         Entity manager
@@ -334,10 +334,10 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {array} object
 //
 // @Router       /admin/topics/{topic}/data [get]
-func TopicData(w http.ResponseWriter, r *http.Request) {
+func topicData(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
-	topic := GetTopic(r)
+	topic := getTopic(r)
 
 	limit, offset, rorder, sort := utils.GetPagination(r)
 

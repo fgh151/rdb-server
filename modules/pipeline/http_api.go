@@ -12,14 +12,14 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/pl", ListPipeline).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/pl", CreatePipeline).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/pl/{id}", PipelineItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/pl/{id}", DeletePipeline).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/pl/{id}", UpdatePipeline).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/pl", list).Methods(http.MethodGet, http.MethodOptions)               // each request calls PushHandler
+	admin.HandleFunc("/pl", create).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	admin.HandleFunc("/pl/{id}", item).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	admin.HandleFunc("/pl/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/pl/{id}", update).Methods(http.MethodPut, http.MethodOptions)        // each request calls PushHandler
 }
 
-// ListPipeline godoc
+// list godoc
 // @Summary      List pipelines
 // @Description  List pipelines
 // @Tags         Pipeline
@@ -30,11 +30,11 @@ func AddAdminRoutes(admin *mux.Router) {
 // @Success      200  {array}   pipeline.Pipeline
 //
 // @Router       /admin/pl [get]
-func ListPipeline(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(Pipeline{}, []string{"id"}, r, w)
 }
 
-// CreatePipeline
+// create
 // @Summary      Create pipeline
 // @Description  Create pipeline
 // @Tags         Pipeline
@@ -46,7 +46,7 @@ func ListPipeline(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/pl [post]
-func CreatePipeline(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := Pipeline{}
 
@@ -71,7 +71,7 @@ func CreatePipeline(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// PipelineItem godoc
+// item godoc
 // @Summary      Pipeline info
 // @Description  Pipeline detail info
 // @Tags         Pipeline
@@ -83,11 +83,11 @@ func CreatePipeline(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   pipeline.Pipeline
 //
 // @Router       /admin/pl/{id} [get]
-func PipelineItem(w http.ResponseWriter, r *http.Request) {
+func item(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(Pipeline{}, w, r)
 }
 
-// DeletePipeline godoc
+// deleteItem godoc
 // @Summary      Delete pipeline
 // @Description  Delete pipeline
 // @Tags         Pipeline
@@ -99,11 +99,11 @@ func PipelineItem(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/pl/{id} [delete]
-func DeletePipeline(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(Pipeline{}, w, r)
 }
 
-// UpdatePipeline
+// update
 // @Summary      Update pipeline
 // @Description  Update pipeline
 // @Tags         Pipeline
@@ -116,7 +116,7 @@ func DeletePipeline(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/pl/{id} [put]
-func UpdatePipeline(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 	var exist = Pipeline{}.GetById(vars["id"]).(Pipeline)

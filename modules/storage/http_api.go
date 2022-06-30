@@ -11,10 +11,10 @@ import (
 )
 
 func AddApiRoutes(api *mux.Router) {
-	api.HandleFunc("/storage", StoragePut).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	api.HandleFunc("/storage", put).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
 }
 
-// StoragePut
+// put
 // @Summary      Put file to storage
 // @Description  Put file to storage
 // @Tags         Storage
@@ -26,7 +26,7 @@ func AddApiRoutes(api *mux.Router) {
 // @Security bearerAuth
 //
 // @Router       /api/storage [post]
-func StoragePut(w http.ResponseWriter, r *http.Request) {
+func put(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	file, fileHeader, err := r.FormFile("file")

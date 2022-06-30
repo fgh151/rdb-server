@@ -13,24 +13,24 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/ds/dse/{dsId}", ListDse).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/ds/dse/{dsId}", CreateDse).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/ds/dse/{dsId}/{id}", DseItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/ds/dse/{dsId}/{id}", DeleteDse).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/ds/dse/{dsId}/{id}", UpdateDse).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/ds/dse/{dsId}", listDse).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/ds/dse/{dsId}", createDse).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	admin.HandleFunc("/ds/dse/{dsId}/{id}", dseItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/ds/dse/{dsId}/{id}", deleteDse).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/ds/dse/{dsId}/{id}", updateDse).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 
-	admin.HandleFunc("/ds", ListDs).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/ds", CreateDs).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/ds/{id}", DsItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/ds/{id}", DeleteDs).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/ds/{id}", UpdateDs).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/ds", listDs).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
+	admin.HandleFunc("/ds", createDs).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
+	admin.HandleFunc("/ds/{id}", dsItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/ds/{id}", deleteDs).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/ds/{id}", updateDs).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
 }
 
 func AddPublicApiRoutes(r *mux.Router) {
-	r.HandleFunc("/dse/{id}", DSEItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/dse/{id}", publicDesItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 }
 
-// ListDs godoc
+// listDs godoc
 // @Summary      List data sources
 // @Description  List data sources
 // @Tags         Data source
@@ -41,11 +41,11 @@ func AddPublicApiRoutes(r *mux.Router) {
 // @Success      200  {array}   DataSource
 //
 // @Router       /admin/ds [get]
-func ListDs(w http.ResponseWriter, r *http.Request) {
+func listDs(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(DataSource{}, []string{}, r, w)
 }
 
-// ListDse godoc
+// listDse godoc
 // @Summary      List data source endpoints
 // @Description  List data source endpoints
 // @Tags         Data source
@@ -57,7 +57,7 @@ func ListDs(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {array}   DataSourceEndpoint
 //
 // @Router       /admin/ds/{dsIid}/dse [get]
-func ListDse(w http.ResponseWriter, r *http.Request) {
+func listDse(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	l, o, or, so := utils.GetPagination(r)
@@ -75,7 +75,7 @@ func ListDse(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// CreateDs
+// createDs
 // @Summary      Create data source
 // @Description  Create data source
 // @Tags         Data source
@@ -87,7 +87,7 @@ func ListDse(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/ds [post]
-func CreateDs(w http.ResponseWriter, r *http.Request) {
+func createDs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := DataSource{}
 
@@ -109,7 +109,7 @@ func CreateDs(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// CreateDse
+// createDse
 // @Summary      Create data source endpoint
 // @Description  Create data source endpoint
 // @Tags         Data source
@@ -122,7 +122,7 @@ func CreateDs(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/ds/dse/{dsId} [post]
-func CreateDse(w http.ResponseWriter, r *http.Request) {
+func createDse(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
@@ -159,7 +159,7 @@ func CreateDse(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// DsItem godoc
+// dsItem godoc
 // @Summary      Data source info
 // @Description  Data source detail info
 // @Tags         Data source
@@ -171,11 +171,11 @@ func CreateDse(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   DataSource
 //
 // @Router       /admin/ds/{id} [get]
-func DsItem(w http.ResponseWriter, r *http.Request) {
+func dsItem(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(DataSource{}, w, r)
 }
 
-// DseItem godoc
+// dseItem godoc
 // @Summary      Data source endpoint info
 // @Description  Data source endpoint detail info
 // @Tags         Data source
@@ -188,11 +188,11 @@ func DsItem(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   DataSource
 //
 // @Router       /admin/ds/dse/{dsId}/{id} [get]
-func DseItem(w http.ResponseWriter, r *http.Request) {
+func dseItem(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(DataSourceEndpoint{}, w, r)
 }
 
-// DeleteDs godoc
+// deleteDs godoc
 // @Summary      Delete data source
 // @Description  Delete data source
 // @Tags         Data source
@@ -204,11 +204,11 @@ func DseItem(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/ds/{id} [delete]
-func DeleteDs(w http.ResponseWriter, r *http.Request) {
+func deleteDs(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(DataSource{}, w, r)
 }
 
-// DeleteDse godoc
+// deleteDse godoc
 // @Summary      Delete data source endpoint
 // @Description  Delete data source endpoint
 // @Tags         Data source
@@ -221,11 +221,11 @@ func DeleteDs(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /ds/dse/{dsId}/{id} [delete]
-func DeleteDse(w http.ResponseWriter, r *http.Request) {
+func deleteDse(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(DataSource{}, w, r)
 }
 
-// UpdateDs
+// updateDs
 // @Summary      Update date source
 // @Description  Update date source
 // @Tags         Data source
@@ -238,7 +238,7 @@ func DeleteDse(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/ds/{id} [put]
-func UpdateDs(w http.ResponseWriter, r *http.Request) {
+func updateDs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 	var exist = DataSource{}.GetById(vars["id"]).(DataSource)
@@ -256,7 +256,7 @@ func UpdateDs(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// UpdateDse
+// updateDse
 // @Summary      Update date source endpoint
 // @Description  Update date source endpoint
 // @Tags         Data source
@@ -270,7 +270,7 @@ func UpdateDs(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/ds/dse/{dsId}/{id} [put]
-func UpdateDse(w http.ResponseWriter, r *http.Request) {
+func updateDse(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 	var exist = DataSourceEndpoint{}.GetById(vars["id"]).(DataSourceEndpoint)
@@ -288,7 +288,7 @@ func UpdateDse(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// DSEItem godoc
+// publicDesItem godoc
 // @Summary      Get item
 // @Description  Get data source by id
 // @Tags         Data source
@@ -300,7 +300,7 @@ func UpdateDse(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   project.Project
 //
 // @Router       /dse/{id} [get]
-func DSEItem(w http.ResponseWriter, r *http.Request) {
+func publicDesItem(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)

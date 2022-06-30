@@ -14,12 +14,12 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/cf", ListCf).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/cf", CreateCf).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/cf/{id}", CfItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/cf/{id}/log", CfLog).Methods(http.MethodGet, http.MethodOptions)   // each request calls PushHandler
-	admin.HandleFunc("/cf/{id}", DeleteCf).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/cf/{id}", UpdateCf).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/cf", list).Methods(http.MethodGet, http.MethodOptions)               // each request calls PushHandler
+	admin.HandleFunc("/cf", create).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	admin.HandleFunc("/cf/{id}", item).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	admin.HandleFunc("/cf/{id}/log", logs).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/cf/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/cf/{id}", update).Methods(http.MethodPut, http.MethodOptions)        // each request calls PushHandler
 }
 
 func AddApiRoutes(api *mux.Router) {
@@ -28,7 +28,7 @@ func AddApiRoutes(api *mux.Router) {
 	api.HandleFunc("/cf/{id}/run/{rid}", CfRunLog).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 }
 
-// ListCf godoc
+// list godoc
 // @Summary      List cloud functions
 // @Description  List cloud functions
 // @Tags         Cloud functions
@@ -39,11 +39,11 @@ func AddApiRoutes(api *mux.Router) {
 // @Success      200  {array}   cf.CloudFunction
 //
 // @Router       /admin/cf [get]
-func ListCf(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(CloudFunction{}, []string{"id"}, r, w)
 }
 
-// CreateCf
+// create
 // @Summary      Create cloud function
 // @Description  Create cloud function
 // @Tags         Cloud functions
@@ -55,7 +55,7 @@ func ListCf(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/cf [post]
-func CreateCf(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := CloudFunction{}
 
@@ -91,7 +91,7 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// CfItem godoc
+// item godoc
 // @Summary      Function info
 // @Description  Function detail info
 // @Tags         Cloud functions
@@ -103,11 +103,11 @@ func CreateCf(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   cf.CloudFunction
 //
 // @Router       /admin/cf/{id} [get]
-func CfItem(w http.ResponseWriter, r *http.Request) {
+func item(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(CloudFunction{}, w, r)
 }
 
-// CfLog godoc
+// logs godoc
 // @Summary      Logs
 // @Description  Cloud function logs
 // @Tags         Cloud functions
@@ -119,7 +119,7 @@ func CfItem(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   cf.CloudFunctionLog
 //
 // @Router       /admin/cf/{id}/log [get]
-func CfLog(w http.ResponseWriter, r *http.Request) {
+func logs(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 	f := CloudFunction{}.GetById(vars["id"]).(CloudFunction)
@@ -137,7 +137,7 @@ func CfLog(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// DeleteCf godoc
+// deleteItem godoc
 // @Summary      Delete cloud function
 // @Description  Delete cloud function
 // @Tags         Cloud functions
@@ -149,11 +149,11 @@ func CfLog(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/cf/{id} [delete]
-func DeleteCf(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(CloudFunction{}, w, r)
 }
 
-// UpdateCf
+// update
 // @Summary      Update cloud function
 // @Description  Update cloud function
 // @Tags         Cloud functions
@@ -166,7 +166,7 @@ func DeleteCf(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/cf/{id} [put]
-func UpdateCf(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 

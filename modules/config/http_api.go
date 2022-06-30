@@ -12,18 +12,18 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/config", ListConfig).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/config", CreateConfig).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/config/{id}", ConfigItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/config/{id}", DeleteConfig).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/config/{id}", UpdateConfig).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/config", list).Methods(http.MethodGet, http.MethodOptions)               // each request calls PushHandler
+	admin.HandleFunc("/config", create).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	admin.HandleFunc("/config/{id}", item).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	admin.HandleFunc("/config/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/config/{id}", update).Methods(http.MethodPut, http.MethodOptions)        // each request calls PushHandler
 }
 
 func AddApiRoutes(api *mux.Router) {
 	api.HandleFunc("/config/{id}", ApiConfigItem).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 }
 
-// ListConfig godoc
+// list godoc
 // @Summary      List configs
 // @Description  List configs
 // @Tags         Config manager
@@ -34,11 +34,11 @@ func AddApiRoutes(api *mux.Router) {
 // @Success      200  {array}   Config
 //
 // @Router       /admin/config [get]
-func ListConfig(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(Config{}, []string{}, r, w)
 }
 
-// ConfigItem godoc
+// item godoc
 // @Summary      Config info
 // @Description  Config detail info
 // @Tags         Config manager
@@ -50,11 +50,11 @@ func ListConfig(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   Config
 //
 // @Router       /admin/config/{id} [get]
-func ConfigItem(w http.ResponseWriter, r *http.Request) {
+func item(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(Config{}, w, r)
 }
 
-// DeleteConfig godoc
+// deleteItem godoc
 // @Summary      Delete config
 // @Description  Delete config
 // @Tags         Config manager
@@ -66,11 +66,11 @@ func ConfigItem(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/config/{id} [delete]
-func DeleteConfig(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(Config{}, w, r)
 }
 
-// UpdateConfig
+// update
 // @Summary      Update config
 // @Description  Update config
 // @Tags         Config manager
@@ -83,7 +83,7 @@ func DeleteConfig(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/config/{id} [put]
-func UpdateConfig(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	newm := Config{}
 
@@ -96,7 +96,7 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// CreateConfig
+// create
 // @Summary      Create config
 // @Description  Create config
 // @Tags         Config manager
@@ -108,7 +108,7 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/config [post]
-func CreateConfig(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := Config{}
 

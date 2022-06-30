@@ -13,14 +13,14 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/cron", ListCron).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/cron", CreateCron).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/cron/{id}", CronItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/cron/{id}", DeleteCron).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/cron/{id}", UpdateCron).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandlerx
+	admin.HandleFunc("/cron", list).Methods(http.MethodGet, http.MethodOptions)               // each request calls PushHandler
+	admin.HandleFunc("/cron", create).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	admin.HandleFunc("/cron/{id}", item).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	admin.HandleFunc("/cron/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/cron/{id}", update).Methods(http.MethodPut, http.MethodOptions)        // each request calls PushHandlerx
 }
 
-// ListCron godoc
+// list godoc
 // @Summary      List cron jobs
 // @Description  List cron jobs
 // @Tags         Cron
@@ -31,11 +31,11 @@ func AddAdminRoutes(admin *mux.Router) {
 // @Success      200  {array}   cron.CronJob
 //
 // @Router       /admin/cron [get]
-func ListCron(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(CronJob{}, []string{}, r, w)
 }
 
-// CreateCron
+// create
 // @Summary      Create cron job
 // @Description  Create cron job
 // @Tags         Cron
@@ -47,7 +47,7 @@ func ListCron(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/cron [post]
-func CreateCron(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := CronJob{}
 
@@ -73,7 +73,7 @@ func CreateCron(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// CronItem godoc
+// item godoc
 // @Summary      Cron job info
 // @Description  Cron job detail info
 // @Tags         Cron
@@ -85,11 +85,11 @@ func CreateCron(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   cron.CronJob
 //
 // @Router       /admin/cron/{id} [get]
-func CronItem(w http.ResponseWriter, r *http.Request) {
+func item(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(CronJob{}, w, r)
 }
 
-// DeleteCron godoc
+// deleteItem godoc
 // @Summary      Delete cron job
 // @Description  Delete cron job
 // @Tags         Cron
@@ -101,11 +101,11 @@ func CronItem(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/cron/{id} [delete]
-func DeleteCron(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(CronJob{}, w, r)
 }
 
-// UpdateCron
+// update
 // @Summary      Update cron job
 // @Description  Update cron job
 // @Tags         Cron
@@ -118,7 +118,7 @@ func DeleteCron(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/cron/{id} [put]
-func UpdateCron(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 	var exist = CronJob{}.GetById(vars["id"]).(CronJob)

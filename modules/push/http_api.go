@@ -18,24 +18,24 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/push", ListPush).Methods(http.MethodGet, http.MethodOptions)           // each request calls PushHandler
-	admin.HandleFunc("/push", CreatePush).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/push/{id}", PushItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/push/{id}/run", PushItem).Methods(http.MethodGet, http.MethodOptions)  // each request calls PushHandler
-	admin.HandleFunc("/push/{id}", DeletePush).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/push/{id}", UpdatePush).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/push", list).Methods(http.MethodGet, http.MethodOptions)               // each request calls PushHandler
+	admin.HandleFunc("/push", create).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	admin.HandleFunc("/push/{id}", item).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	admin.HandleFunc("/push/{id}/run", item).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
+	admin.HandleFunc("/push/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/push/{id}", update).Methods(http.MethodPut, http.MethodOptions)        // each request calls PushHandler
 }
 
 func AddApiRoutes(api *mux.Router) {
-	api.HandleFunc("/push/{id}/run", PushRun).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	api.HandleFunc("/push/{id}/run", run).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 }
 
 func AddPublicApiRoutes(r *mux.Router) {
-	r.HandleFunc("/api/push/subscribe/{deviceId}", SubscribePushHandler).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/api/push/subscribe/{deviceId}", subscribe).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 
 }
 
-// ListPush godoc
+// list godoc
 // @Summary      List push messages
 // @Description  List push messages
 // @Tags         Push messages
@@ -46,11 +46,11 @@ func AddPublicApiRoutes(r *mux.Router) {
 // @Success      200  {array}   models.PushMessage
 //
 // @Router       /admin/push [get]
-func ListPush(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(models.PushMessage{}, []string{}, r, w)
 }
 
-// CreatePush
+// create
 // @Summary      Create push message
 // @Description  Create push message
 // @Tags         Push messages
@@ -62,7 +62,7 @@ func ListPush(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/push [post]
-func CreatePush(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	model := models.PushMessage{}
 
@@ -87,7 +87,7 @@ func CreatePush(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// PushItem godoc
+// item godoc
 // @Summary      Push info
 // @Description  Push detail info
 // @Tags         Push messages
@@ -99,11 +99,11 @@ func CreatePush(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   models.PushMessage
 //
 // @Router       /admin/push/{id} [get]
-func PushItem(w http.ResponseWriter, r *http.Request) {
+func item(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(models.PushMessage{}, w, r)
 }
 
-// DeletePush godoc
+// deleteItem godoc
 // @Summary      Delete push
 // @Description  Delete push
 // @Tags         Push messages
@@ -115,11 +115,11 @@ func PushItem(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/push/{id} [delete]
-func DeletePush(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(models.PushMessage{}, w, r)
 }
 
-// UpdatePush
+// update
 // @Summary      Update push
 // @Description  Update push
 // @Tags         Push messages
@@ -132,7 +132,7 @@ func DeletePush(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/push/{id} [put]
-func UpdatePush(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 	var exist = models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
@@ -150,7 +150,7 @@ func UpdatePush(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// PushRun
+// run
 // @Summary      Send push
 // @Description  Send push with id
 // @Tags         Push messages
@@ -162,7 +162,7 @@ func UpdatePush(w http.ResponseWriter, r *http.Request) {
 // @Success      200
 //
 // @Router       /api/push/{id}/run [get]
-func PushRun(w http.ResponseWriter, r *http.Request) {
+func run(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 	message := models.PushMessage{}.GetById(vars["id"]).(models.PushMessage)
@@ -220,7 +220,7 @@ var upgrader = websocket.Upgrader{
 	},
 } // use default options
 
-// SubscribePushHandler godoc
+// subscribe godoc
 // @Summary      Subscribe
 // @Description  Socket subscribe to push notifications
 // @Tags         Push messages
@@ -230,7 +230,7 @@ var upgrader = websocket.Upgrader{
 // @Success      200  {array}   interface{}
 //
 // @Router       /api/push/subscribe/{deviceId} [get]
-func SubscribePushHandler(w http.ResponseWriter, r *http.Request) {
+func subscribe(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
 

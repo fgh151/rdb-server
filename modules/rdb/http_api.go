@@ -12,14 +12,14 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/rdb", ListRdbs).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
-	admin.HandleFunc("/rdb", CreateRdb).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/rdb/{id}", RdbItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/rdb/{id}", DeleteRdb).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/rdb/{id}", UpdateRdb).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/rdb", list).Methods(http.MethodGet, http.MethodOptions)               // each request calls PushHandler
+	admin.HandleFunc("/rdb", create).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	admin.HandleFunc("/rdb/{id}", item).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	admin.HandleFunc("/rdb/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/rdb/{id}", update).Methods(http.MethodPut, http.MethodOptions)        // each request calls PushHandler
 }
 
-// ListRdbs godoc
+// list godoc
 // @Summary      List rdb
 // @Description  List rdb
 // @Tags         RDB
@@ -29,11 +29,11 @@ func AddAdminRoutes(admin *mux.Router) {
 // @Success      200  {array}   Rdb
 //
 // @Router       /admin/rdb [get]
-func ListRdbs(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(Rdb{}, []string{}, r, w)
 }
 
-// RdbItem godoc
+// item godoc
 // @Summary      Rdbs item
 // @Description  Rdb detail info
 // @Tags         RDB
@@ -45,11 +45,11 @@ func ListRdbs(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   Rdb
 //
 // @Router       /admin/rdb/{id} [get]
-func RdbItem(w http.ResponseWriter, r *http.Request) {
+func item(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(Rdb{}, w, r)
 }
 
-// UpdateRdb
+// update
 // @Summary      Update rdb
 // @Description  Update rdb
 // @Tags         RDB
@@ -62,7 +62,7 @@ func RdbItem(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/rdb/{id} [put]
-func UpdateRdb(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
@@ -83,7 +83,7 @@ func UpdateRdb(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// DeleteRdb godoc
+// deleteItem godoc
 // @Summary      Delete rdb
 // @Description  Delete rdb
 // @Tags         RDB
@@ -94,11 +94,11 @@ func UpdateRdb(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/rdb/{id} [delete]
-func DeleteRdb(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(Rdb{}, w, r)
 }
 
-// CreateRdb
+// create
 // @Summary      Create rdb
 // @Description  Create rdb
 // @Tags         RDB
@@ -110,7 +110,7 @@ func DeleteRdb(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/rdb [post]
-func CreateRdb(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	var t Rdb

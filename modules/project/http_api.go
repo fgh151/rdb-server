@@ -12,14 +12,14 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/projects", ListProjects).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
-	admin.HandleFunc("/projects", CreateProject).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/projects/{id}", ProjectItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/projects/{id}", DeleteProject).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/projects/{id}", UpdateProject).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/projects", list).Methods(http.MethodGet, http.MethodOptions)               // each request calls PushHandler
+	admin.HandleFunc("/projects", create).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	admin.HandleFunc("/projects/{id}", item).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	admin.HandleFunc("/projects/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/projects/{id}", update).Methods(http.MethodPut, http.MethodOptions)        // each request calls PushHandler
 }
 
-// ListProjects godoc
+// list godoc
 // @Summary      List projects
 // @Description  List projects
 // @Tags         Projects
@@ -29,11 +29,11 @@ func AddAdminRoutes(admin *mux.Router) {
 // @Success      200  {array}   Project
 //
 // @Router       /admin/projects [get]
-func ListProjects(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(Project{}, []string{}, r, w)
 }
 
-// ProjectItem godoc
+// item godoc
 // @Summary      Projects item
 // @Description  Project detail info
 // @Tags         Projects
@@ -45,11 +45,11 @@ func ListProjects(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   Project
 //
 // @Router       /admin/projects/{id} [get]
-func ProjectItem(w http.ResponseWriter, r *http.Request) {
+func item(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(Project{}, w, r)
 }
 
-// UpdateProject
+// update
 // @Summary      Update project
 // @Description  Update project
 // @Tags         Projects
@@ -62,7 +62,7 @@ func ProjectItem(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/projects/{id} [put]
-func UpdateProject(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	vars := mux.Vars(r)
@@ -83,7 +83,7 @@ func UpdateProject(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// DeleteProject godoc
+// deleteItem godoc
 // @Summary      Delete project
 // @Description  Delete project
 // @Tags         Projects
@@ -94,11 +94,11 @@ func UpdateProject(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/projects/{id} [delete]
-func DeleteProject(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(Project{}, w, r)
 }
 
-// CreateProject
+// create
 // @Summary      Create project
 // @Description  Create project
 // @Tags         Projects
@@ -110,7 +110,7 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/projects [post]
-func CreateProject(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	var t Project

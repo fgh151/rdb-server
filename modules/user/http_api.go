@@ -15,25 +15,25 @@ import (
 )
 
 func AddAdminRoutes(admin *mux.Router) {
-	admin.HandleFunc("/users", ListUsers).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
-	admin.HandleFunc("/users", CreateUser).Methods(http.MethodPost, http.MethodOptions)        // each request calls PushHandler
-	admin.HandleFunc("/users/{id}", UserItem).Methods(http.MethodGet, http.MethodOptions)      // each request calls PushHandler
-	admin.HandleFunc("/users/{id}", DeleteUser).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
-	admin.HandleFunc("/users/{id}", UpdateUser).Methods(http.MethodPut, http.MethodOptions)    // each request calls PushHandler
+	admin.HandleFunc("/users", list).Methods(http.MethodGet, http.MethodOptions)               // each request calls PushHandler
+	admin.HandleFunc("/users", create).Methods(http.MethodPost, http.MethodOptions)            // each request calls PushHandler
+	admin.HandleFunc("/users/{id}", item).Methods(http.MethodGet, http.MethodOptions)          // each request calls PushHandler
+	admin.HandleFunc("/users/{id}", deleteItem).Methods(http.MethodDelete, http.MethodOptions) // each request calls PushHandler
+	admin.HandleFunc("/users/{id}", update).Methods(http.MethodPut, http.MethodOptions)        // each request calls PushHandler
 }
 
 func AddPublicApiRoutes(r *mux.Router) {
-	r.HandleFunc("/admin/auth", Auth).Methods(http.MethodPost, http.MethodOptions)                        // each request calls PushHandler
-	r.HandleFunc("/api/user/auth", ApiAuth).Methods(http.MethodPost, http.MethodOptions)                  // each request calls PushHandler
-	r.HandleFunc("/api/user/register", ApiRegister).Methods(http.MethodPost, http.MethodOptions)          // each request calls PushHandler
-	r.HandleFunc("/api/device/register", PushDeviceRegister).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
+	r.HandleFunc("/admin/auth", adminAuth).Methods(http.MethodPost, http.MethodOptions)                   // each request calls PushHandler
+	r.HandleFunc("/api/user/auth", apiAuth).Methods(http.MethodPost, http.MethodOptions)                  // each request calls PushHandler
+	r.HandleFunc("/api/user/register", register).Methods(http.MethodPost, http.MethodOptions)             // each request calls PushHandler
+	r.HandleFunc("/api/device/register", pushDeviceRegister).Methods(http.MethodPost, http.MethodOptions) // each request calls PushHandler
 }
 
 func AddApiRoutes(api *mux.Router) {
 	api.HandleFunc("/user/me", ApiMe).Methods(http.MethodGet, http.MethodOptions) // each request calls PushHandler
 }
 
-// ListUsers godoc
+// list godoc
 // @Summary      List users
 // @Description  List users
 // @Tags         User
@@ -43,11 +43,11 @@ func AddApiRoutes(api *mux.Router) {
 // @Success      200  {array}   User
 //
 // @Router       /admin/users [get]
-func ListUsers(w http.ResponseWriter, r *http.Request) {
+func list(w http.ResponseWriter, r *http.Request) {
 	utils.ListItems(User{}, []string{"id", "email", "admin", "active"}, r, w)
 }
 
-// CreateUser
+// create
 // @Summary      Create user
 // @Description  Create user
 // @Tags         User
@@ -59,7 +59,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/users [post]
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	var t CreateUserForm
@@ -77,7 +77,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// UserItem godoc
+// item godoc
 // @Summary      User info
 // @Description  User detail info
 // @Tags         User
@@ -89,11 +89,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   User
 //
 // @Router       /admin/users/{id} [get]
-func UserItem(w http.ResponseWriter, r *http.Request) {
+func item(w http.ResponseWriter, r *http.Request) {
 	utils.GetItem(User{}, w, r)
 }
 
-// DeleteUser godoc
+// deleteItem godoc
 // @Summary      Delete user
 // @Description  Delete user
 // @Tags         User
@@ -105,11 +105,11 @@ func UserItem(w http.ResponseWriter, r *http.Request) {
 // @Success      204
 //
 // @Router       /admin/users/{id} [delete]
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
+func deleteItem(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteItem(User{}, w, r)
 }
 
-// UpdateUser
+// update
 // @Summary      Update user
 // @Description  Update user
 // @Tags         User
@@ -122,7 +122,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 // @Security bearerAuth
 //
 // @Router       /admin/users/{id} [put]
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 	vars := mux.Vars(r)
 	var exist = User{}.GetById(vars["id"]).(User)
@@ -142,7 +142,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// Auth godoc
+// adminAuth godoc
 // @Summary      Login to admin
 // @Description  Authenticate in admin
 // @Tags         Admin
@@ -153,7 +153,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   User
 //
 // @Router       /admin/auth [post]
-func Auth(w http.ResponseWriter, r *http.Request) {
+func adminAuth(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	var l LoginForm
@@ -178,7 +178,7 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// ApiAuth godoc
+// apiAuth godoc
 // @Summary      Login via api
 // @Description  Authenticate via api
 // @Tags         User
@@ -190,7 +190,7 @@ func Auth(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   User
 //
 // @Router       /api/user/auth [post]
-func ApiAuth(w http.ResponseWriter, r *http.Request) {
+func apiAuth(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	var l LoginForm
@@ -216,7 +216,7 @@ func ApiAuth(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// ApiRegister godoc
+// register godoc
 // @Summary      Register via api
 // @Description  Register via api
 // @Tags         User
@@ -228,7 +228,7 @@ func ApiAuth(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {object}   User
 //
 // @Router       /api/user/register [post]
-func ApiRegister(w http.ResponseWriter, r *http.Request) {
+func register(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	var t CreateUserForm
@@ -273,7 +273,7 @@ func ApiMe(w http.ResponseWriter, r *http.Request) {
 	err2.DebugErr(err)
 }
 
-// PushDeviceRegister
+// pushDeviceRegister
 // @Summary      Register device
 // @Description  Register device to receive push
 // @Tags         Push messages
@@ -284,7 +284,7 @@ func ApiMe(w http.ResponseWriter, r *http.Request) {
 // @Success      200 {object} user.UserDevice
 //
 // @Router       /api/device/register [post]
-func PushDeviceRegister(w http.ResponseWriter, r *http.Request) {
+func pushDeviceRegister(w http.ResponseWriter, r *http.Request) {
 	log.Debug(r.Method, r.RequestURI)
 
 	var result map[string]string
