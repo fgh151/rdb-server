@@ -107,7 +107,7 @@ Authorization: Bearer 123
 
 
 ### Get em list
-GET http://localhost:9090/em/list/logbook?_start=0&_end=20
+GET http://localhost:9090/em/list/logbook?_end=10&_order=ASC&_sort=id&_start=0
 Origin: app
 Accept: */*
 db-key: 123

@@ -61,7 +61,7 @@ func checkAccess(w http.ResponseWriter, r *http.Request) bool {
 func validateOrigin(p project.Project, origin string) bool {
 	pOrigins := strings.Split(p.Origins, ";")
 	for _, pOrigin := range pOrigins {
-		if pOrigin == origin {
+		if pOrigin == "*" || pOrigin == origin {
 			return true
 		}
 	}
