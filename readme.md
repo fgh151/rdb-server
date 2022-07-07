@@ -75,7 +75,35 @@ services:
 
 ### Commands
 
- * ```backup``` Backup data base
- * ```restore``` Restore database
- * ```migrate``` Migrate database
- * ```demo``` Fill database demo data
+#### admin
+Create admin user
+##### Usage:
+```cli admin -e=admin.email.com -p=password```
+##### Params:
+* ```e``` Admin email
+* ```p``` Admin password
+
+#### backup
+Backup databases
+##### Usage:
+```cli backup```
+##### Optional params:
+* ```s3``` Upload backup to s3
+* 
+#### restore
+Restore databases from files
+##### Usage:
+```cli restore -dbPath=db.tar.gz -mongoPath=mongo.targ.gz```
+##### Params:
+* ```dbPath``` Path to bd backup
+* ```mongoPath``` Path to mongo backup
+
+#### migrate
+Run db migrations
+##### Usage:
+```cli imgrate```
+
+#### demo
+Fill data base demo data
+##### Usage:
+```cli demo```
