@@ -21,6 +21,7 @@ func main() {
 	subcommands.Register(&cmd.Restore{}, "")
 	subcommands.Register(&cmd.Migrate{}, "")
 	subcommands.Register(&cmd.Demo{}, "")
+	subcommands.Register(&cmd.CreateAdmin{}, "")
 
 	flag.Parse()
 	ctx := context.Background()
