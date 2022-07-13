@@ -2,6 +2,7 @@ package events
 
 import (
 	err2 "db-server/err"
+	"db-server/utils"
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
@@ -19,6 +20,7 @@ type EventHandler struct {
 }
 
 func (e *EventHandler) Subscribe(topic string, listener *websocket.Conn) {
+	topic = utils.CleanInputString(topic)
 
 	var currentList []*websocket.Conn
 

@@ -4,9 +4,9 @@ import (
 	"context"
 	"db-server/drivers"
 	err2 "db-server/err"
-	"db-server/models"
-	"db-server/server"
-	"db-server/web"
+	"db-server/modules/cron"
+	"db-server/server/db"
+	"db-server/server/web"
 	"flag"
 	"github.com/evalphobia/logrus_sentry"
 	"github.com/joho/godotenv"
@@ -66,7 +66,7 @@ func main() {
 	}
 
 	log.Debug("Init meta db connection")
-	server.MetaDb.GetConnection()
+	db.MetaDb.GetConnection()
 
 	if *mongoFlag {
 		log.Debug("Init mongo db connection")
@@ -82,8 +82,12 @@ func main() {
 		}()
 	}
 
-	models.InitCron()
+	cron.InitCron()
+
+	defer func() {
+		cron.StopCron()
+	}()
 
 	log.Debug("Init web server")
-	web.InitServer(docsFlag)
+	web.StartServer(docsFlag)
 }
