@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"context"
+	"db-server/utils"
 	"github.com/getsentry/sentry-go"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -13,6 +14,7 @@ import (
 )
 
 func UploadToS3(file io.Reader, path string, name string, contentType string) (string, minio.UploadInfo) {
+	name = utils.CleanInputString(name)
 	minioClient, err := getClient()
 	ctx := context.Background()
 
@@ -67,6 +69,11 @@ func getClient() (*minio.Client, error) {
 
 func getSize(stream io.Reader) int64 {
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(stream)
+	_, err := buf.ReadFrom(stream)
+
+	if err != nil {
+		return 0
+	}
+
 	return int64(buf.Len())
 }

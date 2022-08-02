@@ -78,6 +78,11 @@ GET http://localhost:9090/admin/users?_end=10&_order=ASC&_sort=id&_start=0
 Accept: */*
 Authorization: Bearer 123
 
+### Admin topics
+GET http://localhost:9090/admin/topics?_end=10&_order=ASC&_sort=id&_start=0
+Accept: */*
+Authorization: Bearer 123
+
 ### Config
 GET http://localhost:9090/config/0db9a268-c629-11ec-b0ef-acde48001122
 Accept: */*
@@ -102,7 +107,7 @@ Authorization: Bearer 123
 
 
 ### Get em list
-GET http://localhost:9090/em/list/logbook?_start=0&_end=20
+GET http://localhost:9090/em/list/logbook?_end=10&_order=ASC&_sort=id&_start=0
 Origin: app
 Accept: */*
 db-key: 123

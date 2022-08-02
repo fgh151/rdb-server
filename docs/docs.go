@@ -56,7 +56,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -87,7 +87,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.CloudFunction"
+                                "$ref": "#/definitions/cf.CloudFunction"
                             }
                         }
                     }
@@ -118,7 +118,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CloudFunction"
+                            "$ref": "#/definitions/cf.CloudFunction"
                         }
                     }
                 ],
@@ -126,7 +126,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CloudFunction"
+                            "$ref": "#/definitions/cf.CloudFunction"
                         }
                     }
                 }
@@ -164,7 +164,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CloudFunction"
+                            "$ref": "#/definitions/cf.CloudFunction"
                         }
                     }
                 }
@@ -194,7 +194,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DataSource"
+                            "$ref": "#/definitions/ds.DataSource"
                         }
                     },
                     {
@@ -209,7 +209,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DataSource"
+                            "$ref": "#/definitions/ds.DataSource"
                         }
                     }
                 }
@@ -280,7 +280,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CloudFunctionLog"
+                            "$ref": "#/definitions/cf.CloudFunctionLog"
                         }
                     }
                 }
@@ -311,7 +311,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Config"
+                                "$ref": "#/definitions/config.Config"
                             }
                         }
                     }
@@ -342,7 +342,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateUserForm"
+                            "$ref": "#/definitions/user.CreateUserForm"
                         }
                     }
                 ],
@@ -350,7 +350,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -388,7 +388,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Config"
+                            "$ref": "#/definitions/config.Config"
                         }
                     }
                 }
@@ -418,7 +418,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Config"
+                            "$ref": "#/definitions/config.Config"
                         }
                     },
                     {
@@ -433,7 +433,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Config"
+                            "$ref": "#/definitions/config.Config"
                         }
                     }
                 }
@@ -497,7 +497,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.CronJob"
+                                "$ref": "#/definitions/cron.CronJob"
                             }
                         }
                     }
@@ -528,7 +528,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CronJob"
+                            "$ref": "#/definitions/cron.CronJob"
                         }
                     }
                 ],
@@ -536,7 +536,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CronJob"
+                            "$ref": "#/definitions/cron.CronJob"
                         }
                     }
                 }
@@ -574,7 +574,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CronJob"
+                            "$ref": "#/definitions/cron.CronJob"
                         }
                     }
                 }
@@ -604,7 +604,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CronJob"
+                            "$ref": "#/definitions/cron.CronJob"
                         }
                     },
                     {
@@ -619,7 +619,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CronJob"
+                            "$ref": "#/definitions/cron.CronJob"
                         }
                     }
                 }
@@ -683,7 +683,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.DataSource"
+                                "$ref": "#/definitions/ds.DataSource"
                             }
                         }
                     }
@@ -714,7 +714,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DataSource"
+                            "$ref": "#/definitions/ds.DataSource"
                         }
                     }
                 ],
@@ -722,7 +722,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DataSource"
+                            "$ref": "#/definitions/ds.DataSource"
                         }
                     }
                 }
@@ -754,7 +754,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DataSourceEndpoint"
+                            "$ref": "#/definitions/ds.DataSourceEndpoint"
                         }
                     },
                     {
@@ -769,7 +769,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DataSourceEndpoint"
+                            "$ref": "#/definitions/ds.DataSourceEndpoint"
                         }
                     }
                 }
@@ -814,7 +814,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DataSource"
+                            "$ref": "#/definitions/ds.DataSource"
                         }
                     }
                 }
@@ -844,7 +844,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DataSourceEndpoint"
+                            "$ref": "#/definitions/ds.DataSourceEndpoint"
                         }
                     },
                     {
@@ -866,7 +866,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DataSourceEndpoint"
+                            "$ref": "#/definitions/ds.DataSourceEndpoint"
                         }
                     }
                 }
@@ -906,7 +906,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.DataSourceEndpoint"
+                                "$ref": "#/definitions/ds.DataSourceEndpoint"
                             }
                         }
                     }
@@ -945,7 +945,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DataSource"
+                            "$ref": "#/definitions/ds.DataSource"
                         }
                     }
                 }
@@ -975,7 +975,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DataSource"
+                            "$ref": "#/definitions/ds.DataSource"
                         }
                     },
                     {
@@ -990,7 +990,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DataSource"
+                            "$ref": "#/definitions/ds.DataSource"
                         }
                     }
                 }
@@ -1095,7 +1095,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Pipeline"
+                                "$ref": "#/definitions/pipeline.Pipeline"
                             }
                         }
                     }
@@ -1126,7 +1126,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Pipeline"
+                            "$ref": "#/definitions/pipeline.Pipeline"
                         }
                     }
                 ],
@@ -1134,7 +1134,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Pipeline"
+                            "$ref": "#/definitions/pipeline.Pipeline"
                         }
                     }
                 }
@@ -1172,7 +1172,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Pipeline"
+                            "$ref": "#/definitions/pipeline.Pipeline"
                         }
                     }
                 }
@@ -1202,7 +1202,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Pipeline"
+                            "$ref": "#/definitions/pipeline.Pipeline"
                         }
                     },
                     {
@@ -1217,7 +1217,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Pipeline"
+                            "$ref": "#/definitions/pipeline.Pipeline"
                         }
                     }
                 }
@@ -1244,6 +1244,186 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Pipeline id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/admin/projects": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "List projects",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "List projects",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.Project"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Create project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects",
+                    "Admin"
+                ],
+                "summary": "Create project",
+                "parameters": [
+                    {
+                        "description": "project info",
+                        "name": "project",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/projects/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Project detail info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects",
+                    "Admin"
+                ],
+                "summary": "Projects item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Update project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects",
+                    "Admin"
+                ],
+                "summary": "Update project",
+                "parameters": [
+                    {
+                        "description": "Project info",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Project id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects",
+                    "Admin"
+                ],
+                "summary": "Delete project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1442,14 +1622,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/topics": {
+        "/admin/rdb": {
             "get": {
                 "security": [
                     {
                         "bearerAuth": []
                     }
                 ],
-                "description": "List topics",
+                "description": "List rdb",
                 "consumes": [
                     "application/json"
                 ],
@@ -1457,16 +1637,16 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "TopicOutput"
+                    "RDB"
                 ],
-                "summary": "List topics",
+                "summary": "List rdb",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Project"
+                                "$ref": "#/definitions/rdb.Rdb"
                             }
                         }
                     }
@@ -1478,7 +1658,7 @@ const docTemplate = `{
                         "bearerAuth": []
                     }
                 ],
-                "description": "Create topic",
+                "description": "Create rdb",
                 "consumes": [
                     "application/json"
                 ],
@@ -1486,18 +1666,18 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Entity manager",
+                    "RDB",
                     "Admin"
                 ],
-                "summary": "Create topic",
+                "summary": "Create rdb",
                 "parameters": [
                     {
-                        "description": "topic info",
-                        "name": "topic",
+                        "description": "rdb info",
+                        "name": "rdb",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Project"
+                            "$ref": "#/definitions/rdb.Rdb"
                         }
                     }
                 ],
@@ -1505,20 +1685,20 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Project"
+                            "$ref": "#/definitions/rdb.Rdb"
                         }
                     }
                 }
             }
         },
-        "/admin/topics/{id}": {
+        "/admin/rdb/{id}": {
             "get": {
                 "security": [
                     {
                         "bearerAuth": []
                     }
                 ],
-                "description": "topic detail info",
+                "description": "Rdb detail info",
                 "consumes": [
                     "application/json"
                 ],
@@ -1526,14 +1706,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Entity manager",
+                    "RDB",
                     "Admin"
                 ],
-                "summary": "TopicOutput",
+                "summary": "Rdbs item",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "TopicOutput id",
+                        "description": "Rdb id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1543,7 +1723,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Project"
+                            "$ref": "#/definitions/rdb.Rdb"
                         }
                     }
                 }
@@ -1554,7 +1734,7 @@ const docTemplate = `{
                         "bearerAuth": []
                     }
                 ],
-                "description": "Update topic",
+                "description": "Update rdb",
                 "consumes": [
                     "application/json"
                 ],
@@ -1562,23 +1742,23 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Entity manager",
+                    "RDB",
                     "Admin"
                 ],
-                "summary": "Update topic",
+                "summary": "Update rdb",
                 "parameters": [
                     {
-                        "description": "Project info",
+                        "description": "Rdb info",
                         "name": "device",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Project"
+                            "$ref": "#/definitions/rdb.Rdb"
                         }
                     },
                     {
                         "type": "string",
-                        "description": "Project id",
+                        "description": "Rdb id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1588,13 +1768,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Project"
+                            "$ref": "#/definitions/rdb.Rdb"
                         }
                     }
                 }
             },
             "delete": {
-                "description": "Delete topic",
+                "description": "Delete rdb",
                 "consumes": [
                     "application/json"
                 ],
@@ -1602,14 +1782,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Entity manager",
+                    "RDB",
                     "Admin"
                 ],
-                "summary": "Delete topic",
+                "summary": "Delete rdb",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "TopicOutput id",
+                        "description": "Rdb id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1640,11 +1820,11 @@ const docTemplate = `{
                     "Entity manager",
                     "Admin"
                 ],
-                "summary": "TopicOutput data",
+                "summary": "Topic output data",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "TopicOutput name",
+                        "description": "Topic name",
                         "name": "topic",
                         "in": "path",
                         "required": true
@@ -1687,7 +1867,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.User"
+                                "$ref": "#/definitions/user.User"
                             }
                         }
                     }
@@ -1718,7 +1898,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateUserForm"
+                            "$ref": "#/definitions/user.CreateUserForm"
                         }
                     }
                 ],
@@ -1726,7 +1906,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -1764,7 +1944,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -1794,7 +1974,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     },
                     {
@@ -1809,7 +1989,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -1924,7 +2104,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CloudFunctionLog"
+                            "$ref": "#/definitions/cf.CloudFunctionLog"
                         }
                     }
                 }
@@ -1951,7 +2131,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UserDevice"
+                            "$ref": "#/definitions/user.UserDevice"
                         }
                     }
                 ],
@@ -1959,7 +2139,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserDevice"
+                            "$ref": "#/definitions/user.UserDevice"
                         }
                     }
                 }
@@ -2107,7 +2287,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -2150,7 +2330,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -2237,7 +2417,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -2275,7 +2455,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -2400,7 +2580,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Project"
+                            "$ref": "#/definitions/project.Project"
                         }
                     }
                 }
@@ -2634,67 +2814,10 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/settings/{projectId}/oauth": {
-            "get": {
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "description": "List OAuth settings",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "OAuth",
-                    "Admin"
-                ],
-                "summary": "List OAuth settings",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.AppSettings"
-                            }
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
-        "models.AppSettings": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "The UUID\nexample: 6204037c-30e6-408b-8aaa-dd8219860e4b",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "Mnemonic name\nexample: oauth_gh_client_secret",
-                    "type": "string"
-                },
-                "project": {
-                    "description": "The project",
-                    "$ref": "#/definitions/models.Project"
-                },
-                "project_id": {
-                    "description": "The project UUID\nexample: 6204037c-30e6-438b-8aaa-dd8219860e4b",
-                    "type": "string"
-                },
-                "value": {
-                    "description": "Settings value\nexample: 123",
-                    "type": "string"
-                }
-            }
-        },
-        "models.CloudFunction": {
+        "cf.CloudFunction": {
             "type": "object",
             "properties": {
                 "container": {
@@ -2715,7 +2838,7 @@ const docTemplate = `{
                 },
                 "project": {
                     "description": "Linked project",
-                    "$ref": "#/definitions/models.Project"
+                    "$ref": "#/definitions/project.Project"
                 },
                 "project_id": {
                     "description": "The project UUID\nexample: 6204037c-30e6-403b-8aaa-dd8219860b4b",
@@ -2731,7 +2854,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CloudFunctionLog": {
+        "cf.CloudFunctionLog": {
             "type": "object",
             "properties": {
                 "function_id": {
@@ -2752,7 +2875,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Config": {
+        "config.Config": {
             "type": "object",
             "properties": {
                 "body": {},
@@ -2760,7 +2883,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "project": {
-                    "$ref": "#/definitions/models.Project"
+                    "$ref": "#/definitions/project.Project"
                 },
                 "project_id": {
                     "type": "string"
@@ -2770,24 +2893,11 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateUserForm": {
-            "type": "object",
-            "properties": {
-                "Email": {
-                    "description": "new User email",
-                    "type": "string"
-                },
-                "Password": {
-                    "description": "new User password",
-                    "type": "string"
-                }
-            }
-        },
-        "models.CronJob": {
+        "cron.CronJob": {
             "type": "object",
             "properties": {
                 "function": {
-                    "$ref": "#/definitions/models.CloudFunction"
+                    "$ref": "#/definitions/cf.CloudFunction"
                 },
                 "function_id": {
                     "type": "string"
@@ -2803,7 +2913,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DataSource": {
+        "ds.DataSource": {
             "type": "object",
             "properties": {
                 "cache": {
@@ -2817,7 +2927,7 @@ const docTemplate = `{
                 "endpoints": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.DataSourceEndpoint"
+                        "$ref": "#/definitions/ds.DataSourceEndpoint"
                     }
                 },
                 "id": {
@@ -2826,7 +2936,7 @@ const docTemplate = `{
                 },
                 "project": {
                     "description": "Linked project",
-                    "$ref": "#/definitions/models.Project"
+                    "$ref": "#/definitions/project.Project"
                 },
                 "project_id": {
                     "description": "Linked project  UUID\nexample: 6204011c-30e6-408b-8aaa-dd8214860b4b",
@@ -2842,12 +2952,12 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DataSourceEndpoint": {
+        "ds.DataSourceEndpoint": {
             "type": "object",
             "properties": {
                 "dataSource": {
                     "description": "Linked data source",
-                    "$ref": "#/definitions/models.DataSource"
+                    "$ref": "#/definitions/ds.DataSource"
                 },
                 "data_source": {
                     "description": "Linked data source UUID\nexample: 6204011c-33e6-408b-8aaa-dd8214860b4b",
@@ -2867,7 +2977,37 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Pipeline": {
+        "models.PushMessage": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "payload": {},
+                "receivers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.UserDevice"
+                    }
+                },
+                "sent": {
+                    "type": "boolean"
+                },
+                "sent_at": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "pipeline.Pipeline": {
             "type": "object",
             "properties": {
                 "id": {
@@ -2896,7 +3036,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Project": {
+        "project.Project": {
             "type": "object",
             "properties": {
                 "id": {
@@ -2905,45 +3045,45 @@ const docTemplate = `{
                 "key": {
                     "type": "string"
                 },
-                "origins": {
+                "name": {
                     "type": "string"
                 },
-                "topic": {
+                "origins": {
                     "type": "string"
                 }
             }
         },
-        "models.PushMessage": {
+        "rdb.Rdb": {
             "type": "object",
             "properties": {
-                "body": {
+                "collection": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "payload": {},
-                "receivers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.UserDevice"
-                    }
+                "project": {
+                    "$ref": "#/definitions/project.Project"
                 },
-                "sent": {
-                    "type": "boolean"
-                },
-                "sent_at": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "topic": {
+                "project_id": {
                     "type": "string"
                 }
             }
         },
-        "models.User": {
+        "user.CreateUserForm": {
+            "type": "object",
+            "properties": {
+                "Email": {
+                    "description": "new User email",
+                    "type": "string"
+                },
+                "Password": {
+                    "description": "new User password",
+                    "type": "string"
+                }
+            }
+        },
+        "user.User": {
             "type": "object",
             "properties": {
                 "active": {
@@ -2962,7 +3102,7 @@ const docTemplate = `{
                     "description": "user devices",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.UserDevice"
+                        "$ref": "#/definitions/user.UserDevice"
                     }
                 },
                 "email": {
@@ -2983,7 +3123,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UserDevice": {
+        "user.UserDevice": {
             "type": "object",
             "properties": {
                 "device": {

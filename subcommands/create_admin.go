@@ -2,9 +2,9 @@ package subcommands
 
 import (
 	"context"
-	"db-server/models"
-	"db-server/security"
-	"db-server/server"
+	"db-server/modules/user"
+	"db-server/server/db"
+	"db-server/utils"
 	"flag"
 	"github.com/google/subcommands"
 	"github.com/google/uuid"
@@ -30,17 +30,17 @@ func (p *CreateAdmin) SetFlags(f *flag.FlagSet) {
 
 func (p *CreateAdmin) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
 
-	var u = models.User{
+	var u = user.User{
 		Email:        p.UserName,
-		PasswordHash: security.HashPassword(p.Password),
-		Token:        security.GenerateRandomString(10),
+		PasswordHash: utils.HashPassword(p.Password),
+		Token:        utils.GenerateRandomString(10),
 		Active:       true,
 		Admin:        true,
 	}
 
 	u.Id, _ = uuid.NewUUID()
 
-	server.MetaDb.GetConnection().Create(&u)
+	db.MetaDb.GetConnection().Create(&u)
 
 	return subcommands.ExitSuccess
 }

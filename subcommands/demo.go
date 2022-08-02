@@ -2,9 +2,12 @@ package subcommands
 
 import (
 	"context"
-	"db-server/models"
+	"db-server/modules/user"
+	"db-server/server/db"
+	"db-server/utils"
 	"flag"
 	"github.com/google/subcommands"
+	"github.com/google/uuid"
 )
 
 type Demo struct {
@@ -22,7 +25,21 @@ func (p *Demo) SetFlags(f *flag.FlagSet) {
 }
 
 func (p *Demo) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	models.CreateDemo()
+	CreateDemo()
 
 	return subcommands.ExitSuccess
+}
+
+func CreateDemo() {
+	var u = user.User{
+		Email:        "test@example.com",
+		PasswordHash: utils.HashPassword("test"),
+		Token:        "123",
+		Active:       true,
+		Admin:        true,
+	}
+
+	u.Id, _ = uuid.NewUUID()
+
+	db.MetaDb.GetConnection().Create(&u)
 }
