@@ -129,7 +129,7 @@ func GetContainerUri(source string) (ContainerUri, error) {
 func (p CloudFunction) List(limit int, offset int, sort string, order string, filter map[string]string) ([]interface{}, error) {
 	var sources []CloudFunction
 
-	db.MetaDb.ListQuery(limit, offset, sort, order, filter, sources, make([]string, 0))
+	db.MetaDb.ListQuery(limit, offset, sort, order, filter, &sources, make([]string, 0))
 
 	y := make([]interface{}, len(sources))
 	for i, v := range sources {

@@ -66,7 +66,7 @@ func (c connection) ListQuery(limit int, offset int, sort string, order string, 
 
 	query := c.GetConnection().Offset(offset).Limit(limit).Order(clause.OrderBy{Expression: clause.Expr{SQL: "? ?", Vars: []interface{}{[]string{sort, order}}}})
 
-	if filter != nil {
+	if filter != nil && len(filter) > 0 {
 		for k, v := range filter {
 			query.Where(k+" = ?", v)
 		}

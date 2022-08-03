@@ -123,6 +123,11 @@ Content-Type: application/json
   "key": "value"
 }
 
+### CF list
+http://localhost:9090/admin/cf?_end=10&_order=ASC&_sort=id&_start=0
+Accept: */*
+Authorization: Bearer 123
+
 ### Get function by id
 GET http://localhost:9090/admin/cf?id=62e6c3ac-d8bb-11ec-b095-acde48001122
 Accept: */*
