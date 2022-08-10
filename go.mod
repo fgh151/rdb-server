@@ -17,7 +17,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sideshow/apns2 v0.23.0
 	github.com/sirupsen/logrus v1.9.0
-	github.com/swaggo/http-swagger v1.3.1
+	github.com/swaggo/http-swagger v1.3.3
 	github.com/swaggo/swag v1.8.4
 	go.mongodb.org/mongo-driver v1.10.1
 	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
