@@ -182,6 +182,17 @@ definitions:
         description: Mnemonic name
         type: string
     type: object
+  plugin.Plugin:
+    properties:
+      file_name:
+        description: Plugin filename
+        type: string
+      id:
+        description: |-
+          The plugin UUID
+          example: 6204011c-30s6-408b-8aaa-dd8219860b4b
+        type: string
+    type: object
   project.Project:
     properties:
       id:
@@ -1062,6 +1073,124 @@ paths:
       summary: Update pipeline
       tags:
       - Pipeline
+      - Admin
+  /admin/plugin:
+    get:
+      consumes:
+      - application/json
+      description: List plugins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/plugin.Plugin'
+            type: array
+      security:
+      - bearerAuth: []
+      summary: List plugins
+      tags:
+      - Plugin
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create plugin
+      parameters:
+      - description: Plugin info
+        in: body
+        name: plugin
+        required: true
+        schema:
+          $ref: '#/definitions/plugin.Plugin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plugin.Plugin'
+      security:
+      - bearerAuth: []
+      summary: Create plugin
+      tags:
+      - Plugin
+      - Admin
+  /admin/plugin/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete plugin
+      parameters:
+      - description: plugin id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+      security:
+      - bearerAuth: []
+      summary: Delete plugin
+      tags:
+      - Plugin
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Plugin info
+      parameters:
+      - description: Plugin id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plugin.Plugin'
+      security:
+      - bearerAuth: []
+      summary: Plugin info
+      tags:
+      - Plugin
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update plugin
+      parameters:
+      - description: plugin info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/plugin.Plugin'
+      - description: plugin id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plugin.Plugin'
+      security:
+      - bearerAuth: []
+      summary: Update plugin
+      tags:
+      - Plugin
       - Admin
   /admin/projects:
     get:

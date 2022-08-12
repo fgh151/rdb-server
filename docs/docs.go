@@ -1256,6 +1256,192 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/plugin": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "List plugins",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plugin",
+                    "Admin"
+                ],
+                "summary": "List plugins",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/plugin.Plugin"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Create plugin",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plugin",
+                    "Admin"
+                ],
+                "summary": "Create plugin",
+                "parameters": [
+                    {
+                        "description": "Plugin info",
+                        "name": "plugin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/plugin.Plugin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/plugin.Plugin"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/plugin/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Plugin info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plugin",
+                    "Admin"
+                ],
+                "summary": "Plugin info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plugin id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/plugin.Plugin"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Update plugin",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plugin",
+                    "Admin"
+                ],
+                "summary": "Update plugin",
+                "parameters": [
+                    {
+                        "description": "plugin info",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/plugin.Plugin"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "plugin id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/plugin.Plugin"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "description": "Delete plugin",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Plugin",
+                    "Admin"
+                ],
+                "summary": "Delete plugin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "plugin id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/admin/projects": {
             "get": {
                 "security": [
@@ -3032,6 +3218,19 @@ const docTemplate = `{
                 },
                 "title": {
                     "description": "Mnemonic name",
+                    "type": "string"
+                }
+            }
+        },
+        "plugin.Plugin": {
+            "type": "object",
+            "properties": {
+                "file_name": {
+                    "description": "Plugin filename",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The plugin UUID\nexample: 6204011c-30s6-408b-8aaa-dd8219860b4b",
                     "type": "string"
                 }
             }
