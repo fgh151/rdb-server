@@ -10,6 +10,7 @@ import (
 	"db-server/modules/em"
 	"db-server/modules/oauth"
 	"db-server/modules/pipeline"
+	"db-server/modules/plugin"
 	"db-server/modules/project"
 	"db-server/modules/push"
 	"db-server/modules/rdb"
@@ -89,6 +90,7 @@ func StartServer(enableDocs *bool) {
 	pipeline.AddAdminRoutes(admin)
 	push.AddAdminRoutes(admin)
 	cron.AddAdminRoutes(admin)
+	plugin.AddAdminRoutes(admin)
 
 	push.AddPublicApiRoutes(r)
 	oauth.AddPublicApiRoutes(r)

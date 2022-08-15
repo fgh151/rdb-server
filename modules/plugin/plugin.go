@@ -1,10 +1,13 @@
 package plugin
 
 import (
+	"db-server/plugins"
 	"db-server/server/db"
 	"errors"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"plugin"
 	"time"
 )
 
@@ -61,6 +64,28 @@ func (p Plugin) Delete(id string) {
 	conn.Where("id = ?", id).Delete(&p)
 }
 
-func (p Plugin) Run(params interface{}) {
+func (p Plugin) Run(params interface{}) plugins.PluginResult {
 
+	pl, err := plugin.Open(p.FileName)
+	if err != nil {
+		log.Error("Err " + err.Error())
+		return plugins.PluginResult{Err: err}
+	}
+
+	symbol, err := pl.Lookup("Run")
+	if err != nil {
+		log.Error("Err " + err.Error())
+		return plugins.PluginResult{Err: err}
+	}
+
+	var AppPlugin plugins.PluginInterface
+
+	AppPlugin, ok := symbol.(plugins.PluginInterface)
+	if !ok {
+		msg := "Plugin " + p.FileName + " signature is not compatible with plugins.PluginInterface"
+		log.Error(msg)
+		return plugins.PluginResult{Err: errors.New(msg)}
+	}
+
+	return AppPlugin.Run(plugins.PluginParams{Data: params})
 }

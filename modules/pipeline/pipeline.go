@@ -1,6 +1,7 @@
 package pipeline
 
 import (
+	"db-server/modules/plugin"
 	"db-server/modules/rdb"
 	"db-server/server"
 	"db-server/server/db"
@@ -14,7 +15,8 @@ import (
 type PipelineOutputType string
 
 const (
-	TopicOutput PipelineOutputType = "topic"
+	TopicOutput  PipelineOutputType = "topic"
+	PluginOutput PipelineOutputType = "plugin"
 )
 
 type PipelineInputType string
@@ -97,6 +99,11 @@ func RunPipeline(inputName string, inputID uuid.UUID, data interface{}) {
 			t, err := rdb.Rdb{}.GetById(source.OutputId.String())
 			if err == nil {
 				_ = server.SaveTopicMessage(os.Getenv("DB_NAME"), t.(rdb.Rdb).Collection, data)
+			}
+		case PluginOutput:
+			p, err := plugin.Plugin{}.GetById(source.OutputId.String())
+			if err == nil {
+				p.(plugin.Plugin).Run(data)
 			}
 		}
 	}
