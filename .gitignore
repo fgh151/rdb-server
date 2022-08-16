@@ -4,3 +4,4 @@
 *.db
 gen
 *.so
+logic
