@@ -25,7 +25,7 @@ require (
 	gorm.io/datatypes v1.0.7
 	gorm.io/driver/mysql v1.3.6
 	gorm.io/driver/postgres v1.3.10
-	gorm.io/driver/sqlite v1.3.6
+	gorm.io/driver/sqlite v1.4.2
 	gorm.io/gorm v1.24.0
 )
 
@@ -63,7 +63,7 @@ require (
 	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/klauspost/cpuid/v2 v2.1.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/mattn/go-sqlite3 v1.14.12 // indirect
+	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
