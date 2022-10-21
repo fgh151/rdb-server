@@ -19,7 +19,7 @@ require (
 	github.com/sideshow/apns2 v0.23.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/swaggo/http-swagger v1.3.3
-	github.com/swaggo/swag v1.8.6
+	github.com/swaggo/swag v1.8.7
 	go.mongodb.org/mongo-driver v1.10.3
 	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
 	gorm.io/datatypes v1.0.7
@@ -82,10 +82,10 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be // indirect
 	golang.org/x/net v0.0.0-20221002022538-bcab6841153b // indirect
-	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/tools v0.1.10 // indirect
+	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
