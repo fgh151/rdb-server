@@ -7,7 +7,7 @@ require (
 	github.com/appleboy/go-fcm v0.1.5
 	github.com/docker/docker v20.10.21+incompatible
 	github.com/evalphobia/logrus_sentry v0.8.2
-	github.com/getsentry/sentry-go v0.15.0
+	github.com/getsentry/sentry-go v0.16.0
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/handlers v1.5.1
