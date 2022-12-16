@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/gen/lib" isTestSource="false" packagePrefix="OpenAPI\Client\" />
       <sourceFolder url="file://$MODULE_DIR$/gen/test" isTestSource="true" packagePrefix="OpenAPI\Client\Test\" />
       <excludeFolder url="file://$MODULE_DIR$/.docker" />
+      <excludeFolder url="file://$MODULE_DIR$/gen" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
