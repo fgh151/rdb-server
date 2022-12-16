@@ -7,8 +7,9 @@ import (
 	"db-server/modules/cron"
 	"db-server/server/db"
 	"db-server/server/web"
+	"db-server/utils"
 	"flag"
-	"github.com/evalphobia/logrus_sentry"
+	"github.com/getsentry/sentry-go"
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -52,17 +53,19 @@ func main() {
 
 	if *sentryFlag {
 		log.Debug("Init sentry")
-		hook, err := logrus_sentry.NewWithTagsSentryHook(
-			os.Getenv("SENTRY_DSN"),
-			map[string]string{"ENVIRONMENT": os.Getenv("SENTRY_ENVIRONMENT")},
-			[]log.Level{
-				log.PanicLevel,
-				log.FatalLevel,
-				log.ErrorLevel,
-			})
-		if err == nil {
-			log.AddHook(hook)
+
+		err = sentry.Init(sentry.ClientOptions{
+			Dsn:              os.Getenv("SENTRY_DSN"),
+			EnableTracing:    true,
+			TracesSampleRate: 1.0,
+			Environment:      os.Getenv("SENTRY_ENVIRONMENT"),
+		})
+
+		if err != nil {
+			log.Fatal(err)
 		}
+
+		log.AddHook(utils.NewSentryHook([]log.Level{log.PanicLevel, log.FatalLevel, log.ErrorLevel}))
 	}
 
 	log.Debug("Init meta db connection")
