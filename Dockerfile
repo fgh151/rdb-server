@@ -3,7 +3,7 @@ WORKDIR /db-server
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go get -u github.com/swaggo/swag/cmd/swag
+RUN go install github.com/swaggo/swag/cmd/swag@1.8.9
 RUN swag init
 RUN go build -o /db-server main.go && go build -o /db-server/cli cli.go && go build  -buildmode=plugin -o smsc.so /db-server/plugins/smsc/smsc_plugin.go
 
