@@ -9,7 +9,9 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
 	"os"
+	"time"
 )
 
 type connection struct {
@@ -22,15 +24,27 @@ func (c connection) connect() *gorm.DB {
 	var db *gorm.DB
 	var err error
 
+	newLogger := logger.New(
+		log.StandardLogger(), // io writer
+		logger.Config{
+			SlowThreshold:             time.Second,   // Slow SQL threshold
+			LogLevel:                  logger.Silent, // Log level
+			IgnoreRecordNotFoundError: true,          // Ignore ErrRecordNotFound error for logger
+			Colorful:                  false,         // Disable color
+		},
+	)
+
+	config := gorm.Config{Logger: newLogger}
+
 	switch os.Getenv("META_DB_TYPE") {
 	case "sqlite":
-		db, err = gorm.Open(sqlite.Open(os.Getenv("META_DB_DSN")), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open(os.Getenv("META_DB_DSN")), &config)
 	case "mysql":
 		conn := drivers.NewMysqlConnectionFromEnv()
-		db, err = gorm.Open(mysql.Open(conn.GetDsn()), &gorm.Config{})
+		db, err = gorm.Open(mysql.Open(conn.GetDsn()), &config)
 	case "postgres":
 		conn := drivers.NewPostgresConnectionFromEnv()
-		db, err = gorm.Open(postgres.Open(conn.GetDsn()), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(conn.GetDsn()), &config)
 	}
 
 	if err != nil {
