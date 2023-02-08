@@ -6,7 +6,7 @@ require (
 	github.com/RattusPetrucho/smsc v0.0.0-20170716124143-cbe5e9d7ab49
 	github.com/appleboy/go-fcm v0.1.5
 	github.com/docker/docker v20.10.23+incompatible
-	github.com/getsentry/sentry-go v0.17.0
+	github.com/getsentry/sentry-go v0.18.0
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/handlers v1.5.1
