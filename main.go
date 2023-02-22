@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"time"
 )
 
 // @title           Db server API
@@ -66,6 +67,8 @@ func main() {
 		}
 
 		log.AddHook(utils.NewSentryHook([]log.Level{log.PanicLevel, log.FatalLevel, log.ErrorLevel}))
+
+		defer sentry.Flush(2 * time.Second)
 	}
 
 	log.Debug("Init meta db connection")
