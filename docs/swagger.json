@@ -234,7 +234,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -458,7 +458,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -644,7 +644,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1015,7 +1015,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1242,7 +1242,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1428,7 +1428,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1608,7 +1608,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1794,7 +1794,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -1974,7 +1974,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -2200,7 +2200,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -2236,7 +2236,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -2389,7 +2389,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -2718,7 +2718,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -3015,7 +3015,11 @@
                 },
                 "project": {
                     "description": "Linked project",
-                    "$ref": "#/definitions/project.Project"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    ]
                 },
                 "project_id": {
                     "description": "The project UUID\nexample: 6204037c-30e6-403b-8aaa-dd8219860b4b",
@@ -3113,7 +3117,11 @@
                 },
                 "project": {
                     "description": "Linked project",
-                    "$ref": "#/definitions/project.Project"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/project.Project"
+                        }
+                    ]
                 },
                 "project_id": {
                     "description": "Linked project  UUID\nexample: 6204011c-30e6-408b-8aaa-dd8214860b4b",
@@ -3125,7 +3133,11 @@
                 },
                 "type": {
                     "description": "The data source type\nEnum of DsType\nexample: Mysql",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ds.DsType"
+                        }
+                    ]
                 }
             }
         },
@@ -3134,7 +3146,11 @@
             "properties": {
                 "dataSource": {
                     "description": "Linked data source",
-                    "$ref": "#/definitions/ds.DataSource"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/ds.DataSource"
+                        }
+                    ]
                 },
                 "data_source": {
                     "description": "Linked data source UUID\nexample: 6204011c-33e6-408b-8aaa-dd8214860b4b",
@@ -3153,6 +3169,21 @@
                     "type": "string"
                 }
             }
+        },
+        "ds.DsType": {
+            "type": "string",
+            "enum": [
+                "Mysql",
+                "Postgres",
+                "Sqlite",
+                "Xml"
+            ],
+            "x-enum-varnames": [
+                "DSTypeMysql",
+                "DSTypePostgres",
+                "DSTypeSqlite",
+                "DSTypeXML"
+            ]
         },
         "models.PushMessage": {
             "type": "object",
@@ -3201,7 +3232,11 @@
                 },
                 "output": {
                     "description": "Output type",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pipeline.PipelineOutputType"
+                        }
+                    ]
                 },
                 "output_id": {
                     "description": "The pipeline output UUID\nexample: 6204037c-30e6-413b-8saa-dd8219860b4b",
@@ -3212,6 +3247,17 @@
                     "type": "string"
                 }
             }
+        },
+        "pipeline.PipelineOutputType": {
+            "type": "string",
+            "enum": [
+                "topic",
+                "plugin"
+            ],
+            "x-enum-varnames": [
+                "TopicOutput",
+                "PluginOutput"
+            ]
         },
         "plugin.Plugin": {
             "type": "object",
@@ -3337,6 +3383,7 @@
     },
     "securityDefinitions": {
         "ApiKeyAuth": {
+            "description": "Description for what is this security definition being used",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

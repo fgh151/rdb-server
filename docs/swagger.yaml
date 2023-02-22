@@ -20,7 +20,8 @@ definitions:
           example: echo test
         type: string
       project:
-        $ref: '#/definitions/project.Project'
+        allOf:
+        - $ref: '#/definitions/project.Project'
         description: Linked project
       project_id:
         description: |-
@@ -96,7 +97,8 @@ definitions:
           example: 6204011c-30e6-408b-8aaa-dd8219860b4b
         type: string
       project:
-        $ref: '#/definitions/project.Project'
+        allOf:
+        - $ref: '#/definitions/project.Project'
         description: Linked project
       project_id:
         description: |-
@@ -107,11 +109,12 @@ definitions:
         description: Data source title
         type: string
       type:
+        allOf:
+        - $ref: '#/definitions/ds.DsType'
         description: |-
           The data source type
           Enum of DsType
           example: Mysql
-        type: string
     type: object
   ds.DataSourceEndpoint:
     properties:
@@ -121,7 +124,8 @@ definitions:
           example: 6204011c-33e6-408b-8aaa-dd8214860b4b
         type: string
       dataSource:
-        $ref: '#/definitions/ds.DataSource'
+        allOf:
+        - $ref: '#/definitions/ds.DataSource'
         description: Linked data source
       id:
         description: |-
@@ -135,6 +139,18 @@ definitions:
         description: Data source endpoint title
         type: string
     type: object
+  ds.DsType:
+    enum:
+    - Mysql
+    - Postgres
+    - Sqlite
+    - Xml
+    type: string
+    x-enum-varnames:
+    - DSTypeMysql
+    - DSTypePostgres
+    - DSTypeSqlite
+    - DSTypeXML
   models.PushMessage:
     properties:
       body:
@@ -171,8 +187,9 @@ definitions:
           example: 6204037c-30e6-418b-8saa-dd8219860b4b
         type: string
       output:
+        allOf:
+        - $ref: '#/definitions/pipeline.PipelineOutputType'
         description: Output type
-        type: string
       output_id:
         description: |-
           The pipeline output UUID
@@ -182,6 +199,14 @@ definitions:
         description: Mnemonic name
         type: string
     type: object
+  pipeline.PipelineOutputType:
+    enum:
+    - topic
+    - plugin
+    type: string
+    x-enum-varnames:
+    - TopicOutput
+    - PluginOutput
   plugin.Plugin:
     properties:
       file_name:
@@ -374,7 +399,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete cloud function
@@ -516,7 +541,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete config
@@ -634,7 +659,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete cron job
@@ -778,7 +803,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete data source
@@ -1015,7 +1040,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete pipeline
@@ -1133,7 +1158,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete plugin
@@ -1250,7 +1275,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete project
       tags:
       - Projects
@@ -1366,7 +1391,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete push
@@ -1483,7 +1508,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete rdb
       tags:
       - RDB
@@ -1624,7 +1649,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete user
@@ -1702,7 +1727,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Run function
       tags:
       - Cloud functions
@@ -1781,7 +1806,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Send push
       tags:
       - Push messages
@@ -2018,7 +2043,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       security:
       - bearerAuth: []
       summary: Delete data source endpoint
@@ -2206,6 +2231,7 @@ paths:
       - Entity manager
 securityDefinitions:
   ApiKeyAuth:
+    description: Description for what is this security definition being used
     in: header
     name: Authorization
     type: apiKey
