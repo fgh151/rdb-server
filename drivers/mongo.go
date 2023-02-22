@@ -159,9 +159,8 @@ func (s Database) GetConnection() (*mongo.Client, error) {
 	s.client, err = mongo.Connect(s.ctx, options.Client().ApplyURI(conn.GetDsn()))
 
 	// Ping the primary
-	if err := s.client.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
-	}
+	err = s.client.Ping(context.TODO(), readpref.Primary())
+	err2.PanicErr(err)
 
 	return s.client, err
 }

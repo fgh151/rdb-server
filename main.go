@@ -71,9 +71,8 @@ func main() {
 		defer func() {
 			log.Debug("Close mongo db connection")
 
-			if err := client.Disconnect(context.TODO()); err != nil {
-				panic(err)
-			}
+			err := client.Disconnect(context.TODO())
+			err2.PanicErr(err)
 		}()
 	}
 

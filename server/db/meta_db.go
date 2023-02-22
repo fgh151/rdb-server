@@ -2,6 +2,7 @@ package db
 
 import (
 	"db-server/drivers"
+	err2 "db-server/err"
 	"db-server/modules"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
@@ -47,9 +48,7 @@ func (c connection) connect() *gorm.DB {
 		db, err = gorm.Open(postgres.Open(conn.GetDsn()), &config)
 	}
 
-	if err != nil {
-		panic("failed to connect database")
-	}
+	err2.PanicErr(err)
 
 	if log.GetLevel() >= log.DebugLevel {
 		return db.Debug()
