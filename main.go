@@ -55,18 +55,7 @@ func main() {
 	if *sentryFlag {
 		log.Debug("Init sentry")
 
-		err = sentry.Init(sentry.ClientOptions{
-			Dsn:              os.Getenv("SENTRY_DSN"),
-			EnableTracing:    true,
-			TracesSampleRate: 1.0,
-			Environment:      os.Getenv("SENTRY_ENVIRONMENT"),
-		})
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		log.AddHook(utils.NewSentryHook([]log.Level{log.PanicLevel, log.FatalLevel, log.ErrorLevel}))
+		log.AddHook(utils.NewSentryHook(os.Getenv("SENTRY_DSN"), []log.Level{log.PanicLevel, log.FatalLevel, log.ErrorLevel}))
 
 		defer sentry.Flush(2 * time.Second)
 	}

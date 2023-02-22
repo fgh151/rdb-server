@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"log"
+	"os"
 	"reflect"
 
 	"github.com/getsentry/sentry-go"
@@ -31,7 +33,19 @@ type Hook struct {
 	converter Converter
 }
 
-func NewSentryHook(levels []logrus.Level, options ...Option) Hook {
+func NewSentryHook(dsn string, levels []logrus.Level, options ...Option) Hook {
+
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:              dsn,
+		EnableTracing:    true,
+		TracesSampleRate: 1.0,
+		Environment:      os.Getenv("SENTRY_ENVIRONMENT"),
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	h := Hook{
 		levels:    levels,
 		hub:       sentry.CurrentHub(),
@@ -43,30 +57,6 @@ func NewSentryHook(levels []logrus.Level, options ...Option) Hook {
 	}
 
 	return h
-}
-
-func WithTags(tags map[string]string) Option {
-	return func(h *Hook) {
-		h.tags = tags
-	}
-}
-
-func WithExtra(extra map[string]interface{}) Option {
-	return func(h *Hook) {
-		h.extra = extra
-	}
-}
-
-func WithConverter(c Converter) Option {
-	return func(h *Hook) {
-		h.converter = c
-	}
-}
-
-func WithHub(hub *sentry.Hub) Option {
-	return func(h *Hook) {
-		h.hub = hub
-	}
 }
 
 func (hook Hook) Levels() []logrus.Level {
@@ -84,7 +74,7 @@ func (hook Hook) Fire(entry *logrus.Entry) error {
 
 	hook.converter(entry, event, hook.hub)
 
-	hook.hub.CaptureEvent(event)
+	sentry.CaptureEvent(event)
 
 	return nil
 }
