@@ -21,7 +21,7 @@ require (
 	github.com/swaggo/swag v1.8.10
 	go.mongodb.org/mongo-driver v1.11.2
 	golang.org/x/oauth2 v0.5.0
-	gorm.io/datatypes v1.1.0
+	gorm.io/datatypes v1.1.1
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/driver/postgres v1.4.8
 	gorm.io/driver/sqlite v1.4.4
