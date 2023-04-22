@@ -18,7 +18,7 @@ require (
 	github.com/sideshow/apns2 v0.23.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/swaggo/http-swagger v1.3.4
-	github.com/swaggo/swag v1.8.12
+	github.com/swaggo/swag v1.16.1
 	go.mongodb.org/mongo-driver v1.11.4
 	golang.org/x/oauth2 v0.7.0
 	gorm.io/datatypes v1.2.0
