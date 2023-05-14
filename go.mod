@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/RattusPetrucho/smsc v0.0.0-20170716124143-cbe5e9d7ab49
 	github.com/appleboy/go-fcm v0.1.5
-	github.com/docker/docker v23.0.4+incompatible
+	github.com/docker/docker v23.0.6+incompatible
 	github.com/getsentry/sentry-go v0.21.0
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.3.0
