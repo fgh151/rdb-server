@@ -25,7 +25,7 @@ require (
 	gorm.io/driver/mysql v1.5.0
 	gorm.io/driver/postgres v1.5.0
 	gorm.io/driver/sqlite v1.5.0
-	gorm.io/gorm v1.25.1
+	gorm.io/gorm v1.25.4
 )
 
 require (
