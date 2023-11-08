@@ -19,7 +19,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.1
-	go.mongodb.org/mongo-driver v1.12.0
+	go.mongodb.org/mongo-driver v1.13.0
 	golang.org/x/oauth2 v0.12.0
 	gorm.io/datatypes v1.2.0
 	gorm.io/driver/mysql v1.5.2
