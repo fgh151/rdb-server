@@ -22,7 +22,7 @@ require (
 	go.mongodb.org/mongo-driver v1.14.0
 	golang.org/x/oauth2 v0.21.0
 	gorm.io/datatypes v1.2.1
-	gorm.io/driver/mysql v1.5.6
+	gorm.io/driver/mysql v1.5.7
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.12
