@@ -1,6 +1,6 @@
 module db-server
 
-go 1.17
+go 1.23.0
 
 require (
 	github.com/RattusPetrucho/smsc v0.0.0-20170716124143-cbe5e9d7ab49
@@ -45,7 +45,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
