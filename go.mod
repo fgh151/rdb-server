@@ -1,12 +1,12 @@
 module db-server
 
-go 1.17
+go 1.23.0
 
 require (
 	github.com/RattusPetrucho/smsc v0.0.0-20170716124143-cbe5e9d7ab49
 	github.com/appleboy/go-fcm v0.1.7
 	github.com/docker/docker v24.0.9+incompatible
-	github.com/getsentry/sentry-go v0.21.0
+	github.com/getsentry/sentry-go v0.33.0
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/handlers v1.5.2
@@ -77,6 +77,7 @@ require (
 	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools/v3 v3.2.0 // indirect
