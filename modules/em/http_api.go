@@ -190,6 +190,23 @@ func find(w http.ResponseWriter, r *http.Request) {
 // @Success      200  {array}   interface{}
 //
 // @Router       /em/list/{topic} [get]
+
+// sanitizeUserID trims and validates a userId value taken from the URL query
+// before it is used in a MongoDB filter. It returns the sanitized value and
+// a boolean indicating whether the value is acceptable.
+func sanitizeUserID(raw string) (string, bool) {
+	// Trim surrounding whitespace
+	s := strings.TrimSpace(raw)
+	if s == "" {
+		return "", false
+	}
+	// Optionally enforce a maximum length to avoid abuse
+	if len(s) > 256 {
+		return "", false
+	}
+	return s, true
+}
+
 func list(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug(r.Method, r.RequestURI)
@@ -206,7 +223,9 @@ func list(w http.ResponseWriter, r *http.Request) {
 			if v.Has(param) {
 				val := v.Get(param)
 				if val != "" {
-					filter = append(filter, primitive.E{Key: "userId", Value: val})
+					if sanitized, ok := sanitizeUserID(val); ok {
+						filter = append(filter, primitive.E{Key: "userId", Value: sanitized})
+					}
 				}
 			}
 		}
@@ -249,7 +268,9 @@ func adminList(w http.ResponseWriter, r *http.Request) {
 		if v.Has(param) {
 			val := v.Get(param)
 			if val != "" {
-				filter = append(filter, primitive.E{Key: "userId", Value: val})
+				if sanitized, ok := sanitizeUserID(val); ok {
+					filter = append(filter, primitive.E{Key: "userId", Value: sanitized})
+				}
 			}
 		}
 	}
